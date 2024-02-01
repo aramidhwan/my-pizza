@@ -1,0 +1,70 @@
+pipeline { 
+	environment { 
+		gitUrl = "https://github.com/aramidhwan/my-pizza.git"
+		storeImageTag = "aramidhwan/store"  //docker hub id와 repository 이름
+		storeImage = '' 
+		gitCredentialsId = "forGitHub"		// Jenkins에 등록한 Git용 credential ID
+		dockerHubCredentialsId = "forDockerHub"		// Jenkins에 등록한 Git용 credential ID
+	}
+  
+	agent any 
+
+	stages { 
+		stage('Git Clone') {
+			steps {
+			  git branch: 'main', 
+			      credentialsId: gitCredentialsId, 
+			      url: gitUrl
+			}
+		}
+		stage('[Gradle Build] Store') {
+			steps {
+			  dir("./store/") {
+		      sh '''
+		         echo 'START CLEAN, bootJar'
+		         chmod +x gradlew
+		         ./gradlew clean bootJar
+		      '''
+			  }
+			}
+		}
+    stage('[Docker Image] Store') { 
+    	steps {
+    		script { 
+				  dir("./store/") {
+						storeImage = docker.build(storeImageTag + ":$BUILD_NUMBER" ) // Push Image 단계에서 빌드번호를 붙이기 때문에 옵션 제거 가능
+					}
+				}
+			}
+		}
+		stage('Push image to Docker Hub') {
+			steps {
+    		script { 
+					docker.withRegistry('', dockerHubCredentialsId) { // 업로드할 레지스트리 정보, Jenkins Credentials ID for Github
+						storeImage.push() // image에 빌드번호를 태그로 붙인 후 Push
+						storeImage.push("latest") // image에 latest를 태그로 붙인 후 Push
+					}
+				}
+			}
+		}
+		stage('Clean up local image') {
+			steps{
+				sh "docker rmi $storeImageTag:$BUILD_NUMBER"
+			}
+		}
+		stage('K8S Store') {
+			steps{
+				sh '''
+				    echo Getting AKS Credentials
+				    sudo az aks get-credentials --resource-group myPizzaRSG --name myPizzaCluster --overwrite-existing
+				    
+				    echo Creating Application
+				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/init/kubernetes/deployment-dev-app-secret.yml
+				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/init/kubernetes/deployment-dev-app-configmap.yml
+				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/store/kubernetes/deployment-store.yml
+				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/store/kubernetes/service-store.yml
+		      '''
+			}
+		}
+	}
+}
