@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-store
+  namespace: dev-app
+  labels:
+    app: store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store
+  template:
+    metadata:
+      labels:
+        app: store
+    spec:
+      containers:
+        - name: store
+          image: aramidhwan/store:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dev-app-secret
+                  key: db_url
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dev-app-secret
+                  key: db_username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-app-secret
+                  key: db_password
+            - name: KAFKA-BINDER-BROKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-app-configmap
+                  key: kafka_binder_brokers

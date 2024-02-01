@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: order
+  profiles:
+    #    active: k8s
+    active: local

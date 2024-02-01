@@ -1,0 +1,109 @@
+server:
+  port: 84
+
+spring:
+  application:
+    name: customercenter
+  #  h2:
+  #    console:
+  #      enabled: true         # H2 Console? ???? ?? (H2 Console? H2 Database? UI? ????? ??)
+  #      path: /h2-console     # H2 Console? Path
+  #      settings:
+  #        web-allow-others: true
+  # Database Setting Info (Database? H2? ???? ?? H2?? ?? ??)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: admin
+  #    driver-class-name: org.h2.Driver  # Database? H2? ?????.
+  #    url: jdbc:h2:E:/workspace/intellij/my-pizza/order/orderDB  # H2 ?? ??
+  #    username: sa  # H2 ?? ? ??? username ?? (??? ??? ??)
+  #    password:  # H2 ?? ? ??? password ?? (??? ??? ??)
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        # dialect: org.hibernate.dialect.MySQL57Dialect
+    hibernate:
+      # create, create, create-drop, update, validate, none
+      # create : SessionFactory ??? ???? ???? ?? ??
+      # create-drop : SessionFactory ?? ? ???? ??
+      # update : ??? ??? ??(??DB??? ???? ??), SessionFactory ??? DB? ???? ??? ??(??)? ?? ?? ?? ????? ????
+      #          update ???? ??(??) ??? ??? ??? ???? ? ?? ??? ?? ??? ????.
+      # validate : ??? ???? ??? ???? ?? ??????? ??, SessionFactory ??? ????? ???? ???? ?? ??
+      # none: ???? ??
+      # ??????? ?? create, create-drop, update? ???? ??
+      #      ddl-auto: update
+      ddl-auto: validate     # ?? ???? ??? ???? none or validate? ??, generate-ddl? false? ??
+      #      ddl-auto: create        # ?? ??? DROP ? ? ??, ??? ??????? ??(??X)
+      generate-ddl: true      # generate-ddl ? ?? ddl-auto ??? ???? ??? ???? ????.(??? false)
+
+  config:
+    import: optional:configserver:http://admin:admin@localhost:6060 # http://???:????@???:??
+
+  cloud:
+    config:
+      enabled: false
+    function:
+      definition: whenever_Ordered_CreateMyPage; whenever_OrderStatusUpdated_modifyMyPage
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings:
+        whenever_Ordered_CreateMyPage-in-0:
+          group: whenever_Ordered_CreateMyPage
+          destination: myPizza-order
+        whenever_OrderStatusUpdated_modifyMyPage-in-0:
+          group: whenever_OrderStatusUpdated_modifyMyPage
+          destination: myPizza-order
+        deliveryEvent-out-0:
+          destination: myPizza-delivery
+
+  thymeleaf:
+    prefix: classpath:/templates/   # Optional
+    suffix: .html                   # Optional
+    cache: false                    # Optional (default: true)
+
+eureka:
+  client:
+    enabled: true
+    register-with-eureka: true 	#??? ??? ???? ??
+    fetch-registry: true    #??? ??? ??? ???? ??
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka    #??? ?? ?? http://???:????@???:8761/eureka
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+    env:
+      show-values: ALWAYS   # /actuator/env?? value? ???? ?? (ALWAYS/NEVER/WHEN_AUTHORIZED)
+    circuitbreakerevents:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: env    # ?????? ?? ???? ??? ??? ?? (???? gateway)
+
+logging:
+  level:
+    root: info
+    com.study: debug
+    # basic log level for all messages
+    logging.level.org.hibernate: info
+    # Logs the JDBC parameters passed to a query
+    # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
+    #    org.hibernate.orm.jdbc.bind: trace
+    org.springframework.cloud: info
+    org.apache.kafka.common.utils.AppInfoParser: WARN
+    org.apache.kafka.clients.Metadata: WARN
+    org.apache.kafka.clients.admin.AdminClientConfig: WARN
+    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+    org.apache.kafka.clients.producer.ProducerConfig: WARN
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+    org.apache.kafka.common.metrics.Metrics: WARN
+    org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN

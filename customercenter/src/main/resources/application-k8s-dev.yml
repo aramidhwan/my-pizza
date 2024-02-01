@@ -1,0 +1,89 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: customercenter
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+    hibernate:
+      # create, create, create-drop, update, validate, none
+      ddl-auto: create     # ?? ???? ??? ???? none or validate? ??, generate-ddl? false? ??
+      #      ddl-auto: create        # ?? ??? DROP ? ? ??, ??? ??????? ??(??X)
+      generate-ddl: true      # generate-ddl ? ?? ddl-auto ??? ???? ??? ???? ????.(??? false)
+
+  config:
+    import: optional:configserver:http://admin:admin@localhost:6060 # http://???:????@???:??
+
+  cloud:
+    config:
+      enabled: false
+    function:
+      definition: whenever_Ordered_CreateMyPage; whenever_OrderStatusUpdated_modifyMyPage
+    stream:
+      kafka:
+        binder:
+          brokers: ${KAFKA-BINDER-BROKERS}
+      bindings:
+        whenever_Ordered_CreateMyPage-in-0:
+          group: whenever_Ordered_CreateMyPage
+          destination: myPizza-order
+        whenever_OrderStatusUpdated_modifyMyPage-in-0:
+          group: whenever_OrderStatusUpdated_modifyMyPage
+          destination: myPizza-order
+        customercenterEvent-out-0:
+          destination: myPizza-customercenter
+
+  thymeleaf:
+    prefix: classpath:/templates/   # Optional
+    suffix: .html                   # Optional
+    cache: false                    # Optional (default: true)
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: true 	#??? ??? ???? ??
+    fetch-registry: true    #??? ??? ??? ???? ??
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka    #??? ?? ?? http://???:????@???:8761/eureka
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+    env:
+      show-values: ALWAYS   # /actuator/env?? value? ???? ?? (ALWAYS/NEVER/WHEN_AUTHORIZED)
+    circuitbreakerevents:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: env    # ?????? ?? ???? ??? ??? ?? (???? gateway)
+
+logging:
+  level:
+    root: info
+    com.study: debug
+    # basic log level for all messages
+    logging.level.org.hibernate: info
+    # Logs the JDBC parameters passed to a query
+    # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
+    #    org.hibernate.orm.jdbc.bind: trace
+    org.springframework.cloud: info
+    org.apache.kafka.common.utils.AppInfoParser: WARN
+    org.apache.kafka.clients.Metadata: WARN
+    org.apache.kafka.clients.admin.AdminClientConfig: WARN
+    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+    org.apache.kafka.clients.producer.ProducerConfig: WARN
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+    org.apache.kafka.common.metrics.Metrics: WARN
+    org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN

@@ -1,0 +1,7 @@
+2024-01-20 20:22:46.428751+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]
+2024-01-21 12:27:40.455742+09:00 jdbc[24]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]STORE_ORDER"; expected "SAVEPOINT, SCRIPT, SHUTDOWN"; SQL statement:
+STORE_ORDER [42001-224]
+2024-01-22 16:38:25.368965+09:00 jdbc[43]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: The object is already closed [90007-224]

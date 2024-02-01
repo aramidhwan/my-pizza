@@ -1,0 +1,123 @@
+netstat -ano | find "81"
+
+taskkill /pid 19568 /f
+
+
+http POST http://localhost:81/stores regionNm="강남구" openYN=true
+http POST http://localhost:81/stores regionNm="서초구" openYN=false
+http POST http://localhost:81/stores regionNm="종로구" openYN=true
+http POST http://localhost:80/store-service/stores regionNm="중구" openYN=true
+
+http POST http://20.196.224.118/store-service/stores regionNm="강남구" openYN=true
+http POST http://my-pizza.io/store-service/stores regionNm="종로구" openYN=true
+
+
+http POST http://localhost:80/order-service/orders customerId=1 pizzaNm="로또피자" qty=1 regionNm="강남구"
+
+http POST http://20.196.224.118/order-service/orders customerId=1 pizzaNm="로또피자" qty=1 regionNm="강남구"
+http POST http://my-pizza.io/order-service/orders customerId=1 pizzaNm="전복피자" qty=1 regionNm="강남구"
+
+
+
+http POST http://localhost:82/orders customerId=1 pizzaNm="페퍼로니피자" qty=1 regionNm="강남구"
+
+http POST http://localhost:82/orders customerId=1 pizzaNm="페퍼로니피자" qty=1 regionNm="송파구"
+
+http POST http://localhost:82/orders customerId=1 pizzaNm="치즈피자" qty=1 regionNm="종로구"
+
+http POST http://localhost:82/orders customerId=1 pizzaNm="파인애플피자" qty=1 regionNm="강남구"
+
+http POST http://localhost:82/orders customerId=1 pizzaNm="토마토피자" qty=1 regionNm="서초구"
+
+http PATCH http://localhost:80/storeOrders/1 status=Cooked
+
+[기능검증]
+[Store - Store 등록]
+[VitualBox용 - 8090]
+http POST http://localhost:8090/stores regionNm="강남구" openYN=true
+http POST http://localhost:8090/stores regionNm="서초구" openYN=true
+20.196.225.63
+
+http POST http://localhost:8080/stores regionNm="강남구" openYN=true
+http POST http://localhost:8080/stores regionNm="강남구" openYN=false
+http POST http://localhost:8080/stores regionNm="강남구" openYN=true
+http POST http://localhost:8080/stores regionNm="강남구" openYN=true
+http POST http://localhost:8080/stores regionNm="강남구" openYN=true
+http POST http://localhost:8080/stores regionNm="서초구" openYN=false
+
+http POST http://20.41.100.179:8080/stores regionNm="강남구" openYN=true
+http POST http://20.41.100.179:8080/stores regionNm="강남구" openYN=false
+http POST http://20.41.100.179:8080/stores regionNm="강남구" openYN=true
+http POST http://20.41.100.179:8080/stores regionNm="강남구" openYN=true
+http POST http://20.41.100.179:8080/stores regionNm="종로구" openYN=true
+http POST http://20.41.100.179:8080/stores regionNm="서초구" openYN=false
+
+[VitualBox용 - 8090]
+http GET http://localhost:8090/stores
+
+http GET http://20.41.100.179:8080/stores
+http GET http://20.41.100.179:8080/stores/2
+
+[Order - 주문등록]
+[VitualBox용 - 8090]
+http POST http://localhost:8090/orders customerId=1 pizzaNm="페퍼로니피자" qty=1 regionNm="강남구"
+http POST http://localhost:8090/orders customerId=1 pizzaNm="지즈피자" qty=1 regionNm="강남구"
+http POST http://localhost:80/order-service/orders customerId=1 pizzaNm="지즈피자" qty=1 regionNm="강남구"
+
+http POST http://localhost:8080/orders customerId=1 pizzaNm="페퍼로니피자" qty=1 regionNm="강남구"
+http POST http://localhost:8080/orders customerId=1 pizzaNm="하와이안피자" qty=1 regionNm="서초구"
+
+http POST http://20.41.100.179:8080/orders customerId=1 pizzaNm="하와이안피자" qty=1 regionNm="강남구"
+http POST http://20.41.100.179:8080/orders customerId=1 pizzaNm="스테이크피자" qty=1 regionNm="강남구"
+
+http POST http://20.41.100.179:8080/orders customerId=1 pizzaNm="스테이크피자" qty=1 regionNm="서초구"
+http POST http://20.41.100.179:8080/orders customerId=1 pizzaNm="페퍼로니피자" qty=1 regionNm="종로구"
+
+http GET http://20.41.100.179:8080/orders
+
+[주문취소]
+http GET http://localhost:82/orderCancel/1
+http GET http://localhost:80/order-service/orderCancel/73
+http GET http://20.196.224.118/order-service/orderCancel/2
+
+http PATCH http://localhost:8080/orders/4 status="OrderCancelled"
+http PATCH http://20.41.100.179:8080/orders/3 status="OrderCancelled"
+
+[Store - 주문거절]
+http PATCH http://localhost:81/storeOrders/39 status=OrderRejected
+http PATCH http://localhost:80/store-service/storeOrders/115 status=OrderRejected
+http PATCH http://my-pizza.io/store-service/storeOrders/1 status=OrderRejected
+
+[Store - 조리완료 처리]
+http PATCH http://localhost:81/storeOrders/109 status=Cooked
+http PATCH http://localhost:80/store-service/storeOrders/116 status=Cooked
+http PATCH http://my-pizza.io/store-service/storeOrders/3 status=Cooked
+
+[Delivery - 배달시작(pick up)]
+http PATCH http://localhost:83/deliveries/6 status=DeliveryStarted
+http PATCH http://localhost:80/delivery-service/deliveries/7 status=DeliveryStarted
+http PATCH http://my-pizza.io/delivery-service/deliveries/1 status=DeliveryStarted
+
+[Delivery - 배달완료]
+http PATCH http://localhost:83/deliveries/6 status=Delivered
+http PATCH http://my-pizza.io/delivery-service/deliveries/1 status=Delivered
+
+[마이페이지]
+http GET http://localhost:8080/myPages
+http GET http://localhost:8088/myPages/1
+
+http GET http://20.41.100.179:8080/myPages/
+
+kubectl exec -it pod/siege -c siege -n siege -- /bin/bash
+siege -c100 -t60S -v --content-type "application/json" 'http://10.0.153.205:8080/orders POST {"pizzaNm": "하와이안피자", "qty":1, "regionNm":"강남구"}'
+
+
+kubectl set image deployment store store=myacr00.azurecr.io/store:v1.0
+
+
+kubectl run siege --image=apexacme/siege-nginx -n siege
+
+siege -c100 -t120S --content-type "application/json" 'http://10.0.153.205:8080/orders POST {"customerId":"1","pizzaNm":"페퍼로니피자","qty":"1","regionNm":"강남구"}'
+siege -c1 -t10S --content-type "application/json" 'http://10.0.153.205:8080/orders POST {"customerId":"1","pizzaNm":"페퍼로니피자","qty":"1","regionNm":"강남구"}'
+
+siege -c1 -t180S --content-type "application/json" 'http://10.0.153.205:8080/stores POST {"regionNm": "강남구","openYN":"true"}'

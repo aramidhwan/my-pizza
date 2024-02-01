@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-store
+  namespace: dev-app
+  labels:
+    app: store
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: store
+#  type: ClusterIP
+#  type: LoadBalancer

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-kafka-service
+  namespace: dev-kafka
+  labels:
+    app: kafka
+spec:
+  selector:
+    app: kafka
+  ports:
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092
+#  type: NodePort
+#  type: LoadBalancer
+#  type: ClusterIP

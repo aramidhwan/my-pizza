@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-delivery
+  namespace: dev-app
+  labels:
+    app: delivery
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: delivery
+#  type: ClusterIP
+#  type: LoadBalancer

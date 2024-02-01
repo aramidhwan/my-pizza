@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: customerCenter
+  profiles:
+    #    active: k8s
+    active: local

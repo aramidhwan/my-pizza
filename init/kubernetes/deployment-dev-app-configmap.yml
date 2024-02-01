@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dev-app-configmap
+  namespace: dev-app
+data:
+  # property-like keys; each key maps to a simple value
+  feign-url-store-service: http://dev-store
+  kafka_binder_brokers: dev-kafka-headless-svc:9092
+
+  #  player_initial_lives: "3"
+  #  ui_properties_file_name: "user-interface.properties"
+
+  # file-like keys
+#  dev.dbinfo: |
+#    dev.url=aliens,monsters
+#    dev.username=sa
+#    dev.password=

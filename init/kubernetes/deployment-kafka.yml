@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-kafka
+  namespace: dev-kafka
+  labels:
+    app: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: broker
+          image: bitnami/kafka
+          ports:
+            - containerPort: 9092
+          env:
+            - name: TZ
+              value: "Asia/Seoul"
+            - name: KAFKA_DELETE_TOPIC_ENABLE
+              value: "true"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: dev-zookeeper-service:2181
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9092
+#              value: PLAINTEXT://0.0.0.0:9092
+#            - name: KAFKA_ADVERTISED_HOST_NAME
+#              value: dev-kafka-service.dev-kafka.svc.cluster.local
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://dev-kafka-service.dev-kafka.svc.cluster.local:9092
+#              value: PLAINTEXT://dev-kafka-headless-svc:9092 (X)
+#              value: PLAINTEXT://dev-kafka-service:9092 (X)
+#            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+#              value: CLIENT:PLAINTEXT
+#            - name: KAFKA_INTER_BROKER_LISTENER_NAME
+#              value: CLIENT
+
+
+#            - name: KAFKA_BROKER_ID
+#              value: "1"
+#            - name: KAFKA_ZOOKEEPER_CONNECT
+#              value: dev-zookeeper-service:2181
+#            - name: KAFKA_LISTENERS
+#              value: INTERNAL://dev-kafka-service:9092,EXTERNAL://dev-kafka-service:19092
+#            - name: KAFKA_ADVERTISED_LISTENERS
+#              value: INTERNAL://dev-kafka-service:9092,EXTERNAL://dev-kafka-service:19092
+#            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+#              value: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+#            - name: KAFKA_INTER_BROKER_LISTENER_NAME
+#              value: INTERNAL
+
+#            - name: KAFKA_ZOOKEEPER_CONNECT
+#              value: 'dev-zookeeper-service:2181'
+#            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
+#              value: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+#            - name: KAFKA_ADVERTISED_LISTENERS
+#              value: PLAINTEXT://dev-kafka-service:29092,PLAINTEXT_INTERNAL://dev-kafka-service:9092
+
+#            - name: KAFKA_ADVERTISED_HOST_NAME
+#              value: dev-kafka-service
+#            - name: KAFKA_ZOOKEEPER_CONNECT
+#              value: dev-zookeeper-service:2181
+#            - name: KAFKA_CREATE_TOPICS
+#              value: "myPizza-order:2:1, myPizza-store:1:1, myPizza-delivery:1:1"

@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-ingress
+  namespace: dev-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2         # $2는 아래 path 값 중 2번째 그룹을 의미
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: my-pizza.io    # host 설정시 바로 밑에 http의 - 은 삭제해야 함
+    http:
+#  - http:              # 위 host 설정 삭제 시 - 을 붙여주어야 함
+      paths:               # 각 path는 백엔드와 연결됨
+      - path: /store-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-store-headless-svc
+#            name: dev-store.my-pizza.svc.cluster.local
+#            name: "dev-store"."my-pizza".svc.cluster.local
+            port:
+              number: 80
+      - path: /order-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-order-headless-svc
+            port:
+              number: 80
+      - path: /delivery-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-delivery-headless-svc
+            port:
+              number: 80
+      - path: /customercenter-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-customercenter-headless-svc
+            port:
+              number: 80

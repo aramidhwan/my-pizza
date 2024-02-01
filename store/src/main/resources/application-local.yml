@@ -1,0 +1,106 @@
+server:
+  port: 81
+
+spring:
+  application:
+    name: store
+#  h2:
+#    console:
+#      enabled: true  # H2 Console을 사용할지 여부 (H2 Console은 H2 Database를 UI로 제공해주는 기능)
+#      path: /h2-console  # H2 Console의 Path
+  #      settings:
+  #        web-allow-others: true
+  # Database Setting Info (Database를 H2로 사용하기 위해 H2연결 정보 입력)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: admin
+#    driver-class-name: org.h2.Driver  # Database를 H2로 사용하겠다.
+#    url: jdbc:h2:E:/workspace/intellij/my-pizza/store/storeDB  # H2 접속 정보
+#    username: sa  # H2 접속 시 입력할 username 정보 (원하는 것으로 입력)
+#    password:  # H2 접속 시 입력할 password 정보 (원하는 것으로 입력)
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        # dialect: org.hibernate.dialect.MySQL57Dialect
+    hibernate:
+      # create, create-drop, update, validate, none
+      # create : SessionFactory 시작시 스키마를 삭제하고 다시 생성
+      # create-drop : SessionFactory 종료 시 스키마를 삭제
+      # update : 변경된 스키마 적용(운영DB에서는 사용하면 안됨), SessionFactory 연결된 DB와 비교하여 추가된 항목(컬럼)은 추가 만약 같은 변수명이면 오류발생
+      #          update 옵션에서 컬럼(변수) 삭제는 엄청난 문제를 발생시킬 수 있기 때문에 컬럼 추가만 반영된다.
+      # validate : 엔티티 변수들과 테이블 컬럼들이 정상 매핑되었는지만 확인, SessionFactory 시작시 객체구성과 스키마가 다르다면 예외 발생
+      # none: 아무것도 안함
+      # 운영환경에서는 절대 create, create-drop, update를 사용하면 안됨
+      #      ddl-auto: update
+      ddl-auto: create     # 실제 운영에서 서비스 배포시는 none or validate만 사용, generate-ddl도 false로 운영
+      #      ddl-auto: create        # 기존 테이블 DROP 후 재 생성, 반드시 로컬환경에서만 사용(운영X)
+      generate-ddl: true      # generate-ddl 은 위의 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
+
+  config:
+    import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트
+
+  cloud:
+    config:
+      enabled: false
+    function:
+      definition: whenever_ordered_orderAccept
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings:
+        whenever_ordered_orderAccept-in-0:
+          group: whenever_ordered_orderAccept
+          destination: myPizza-order
+        storeEvent-out-0:
+          destination: myPizza-store
+
+  thymeleaf:
+    prefix: classpath:/templates/   # Optional
+    suffix: .html                   # Optional
+    cache: false                    # Optional (default: true)
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: true 	#유레카 서버에 등록할지 여부
+    fetch-registry: true    #유레카 서버의 정보를 가져올지 여부
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka    #유레카 서버 주소 http://아이디:비밀번호@아이피:8761/eureka
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+    env:
+      show-values: ALWAYS   # /actuator/env에서 value를 보여줄지 여부 (ALWAYS/NEVER/WHEN_AUTHORIZED)
+  endpoints:
+    web:
+      exposure:
+        include: env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
+
+logging:
+  level:
+    root: info
+    com.study: debug
+    org.hibernate.type: info
+    org.hibernate.type.BasicTypeRegistry: WARN
+    org.springframework.cloud: info
+    org.apache.kafka.common.utils.AppInfoParser: WARN
+    org.apache.kafka.clients.Metadata: WARN
+    org.apache.kafka.clients.admin.AdminClientConfig: WARN
+    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+    org.apache.kafka.clients.producer.ProducerConfig: WARN
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+    org.apache.kafka.common.metrics.Metrics: WARN
+    org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN
+
+consumer-worker:
+  threads:
+    order-accept:
+      count: 2            # kafka consumer를 처리하는 worker 쓰레드 갯수 지정, Executors.newFixedThreadPool(count)로 사용됨

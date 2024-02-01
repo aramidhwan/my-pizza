@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-order
+  namespace: dev-app
+  labels:
+    app: order
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: aramidhwan/order:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dev-app-secret
+                  key: db_url
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: dev-app-secret
+                  key: db_username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: dev-app-secret
+                  key: db_password
+            - name: KAFKA-BINDER-BROKERS
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-app-configmap
+                  key: kafka_binder_brokers
+            - name: FEIGN-URL-STORE-SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-app-configmap
+                  key: feign-url-store-service

@@ -1,0 +1,197 @@
+server:
+  port: 82
+
+spring:
+  application:
+    name: order
+#  h2:
+#    console:
+#      enabled: true         # H2 Console을 사용할지 여부 (H2 Console은 H2 Database를 UI로 제공해주는 기능)
+#      path: /h2-console     # H2 Console의 Path
+#      settings:
+#        web-allow-others: true
+  # Database Setting Info (Database를 H2로 사용하기 위해 H2연결 정보 입력)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: admin
+#    driver-class-name: org.h2.Driver  # Database를 H2로 사용하겠다.
+#    url: jdbc:h2:E:/workspace/intellij/my-pizza/order/orderDB  # H2 접속 정보
+#    username: sa  # H2 접속 시 입력할 username 정보 (원하는 것으로 입력)
+#    password:  # H2 접속 시 입력할 password 정보 (원하는 것으로 입력)
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        # dialect: org.hibernate.dialect.MySQL57Dialect
+    hibernate:
+      # create, create-drop, update, validate, none
+      # create : SessionFactory 시작시 스키마를 삭제하고 다시 생성
+      # create-drop : SessionFactory 종료 시 스키마를 삭제
+      # update : 변경된 스키마 적용(운영DB에서는 사용하면 안됨), SessionFactory 연결된 DB와 비교하여 추가된 항목(컬럼)은 추가 만약 같은 변수명이면 오류발생
+      #          update 옵션에서 컬럼(변수) 삭제는 엄청난 문제를 발생시킬 수 있기 때문에 컬럼 추가만 반영된다.
+      # validate : 엔티티 변수들과 테이블 컬럼들이 정상 매핑되었는지만 확인, SessionFactory 시작시 객체구성과 스키마가 다르다면 예외 발생
+      # none: 아무것도 안함
+      # 운영환경에서는 절대 create, create-drop, update를 사용하면 안됨
+      #      ddl-auto: update
+      ddl-auto: validate     # 실제 운영에서 서비스 배포시는 none or validate만 사용, generate-ddl도 false로 운영
+      #      ddl-auto: create        # 기존 테이블 DROP 후 재 생성, 반드시 로컬환경에서만 사용(운영X)
+      generate-ddl: true      # generate-ddl 은 위의 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
+
+  config:
+    import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트
+
+  cloud:
+    config:
+      enabled: false
+    function:
+      definition: >
+        whenever_OrderAccepted_updateStatus; whenever_OrderRejected_updateStatus;
+        whenever_Cooked_updateStatus; whenever_DeliveryAccepted_updateStatus;
+        whenever_DeliveryStarted_updateStatus; whenever_Delivered_updateStatus
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092
+      bindings:
+        whenever_Delivered_updateStatus-in-0:
+          group: whenever_Delivered_updateStatus
+          destination: myPizza-delivery
+        whenever_DeliveryStarted_updateStatus-in-0:
+          group: whenever_DeliveryStarted_updateStatus
+          destination: myPizza-delivery
+        whenever_DeliveryAccepted_updateStatus-in-0:
+          group: whenever_DeliveryAccepted_updateStatus
+          destination: myPizza-delivery
+        whenever_Cooked_updateStatus-in-0:
+          group: whenever_Cooked_updateStatus
+          destination: myPizza-store
+        whenever_OrderAccepted_updateStatus-in-0:
+          group: whenever_OrderAccepted_updateStatus
+          destination: myPizza-store
+        whenever_OrderRejected_updateStatus-in-0:
+          group: whenever_OrderRejected_updateStatus
+          destination: myPizza-store
+        orderEvent-out-0:
+          destination: myPizza-order
+
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 1000
+            readTimeout: 2000
+            loggerLevel: BASIC
+          #            NONE, No logging (DEFAULT).
+          #            BASIC, Log only the request method and URL and the response status code and execution time.
+          #            HEADERS, Log the basic information along with request and response headers.
+          #            FULL, Log the headers, body, and metadata for both requests and responses.
+          storeService:
+            url: http://localhost:81
+            readTimeout: 10000
+            loggerLevel: BASIC
+      circuitbreaker:           # CircuitBreaker 기능을 On. (별도로 구현체인 Resilience4 설정 필요)
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
+
+  thymeleaf:
+    prefix: classpath:/templates/   # Optional
+    suffix: .html                   # Optional
+    cache: false                    # Optional (default: true)
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: TIME_BASED   # COUNT_BASED(default), TIME_BASED
+        slidingWindowSize: 30           # Configures the size of the sliding window which is used to record the outcome of calls when the CircuitBreaker is closed.
+        failureRateThreshold: 50        # failure rate threshold in percentage.
+        slowCallRateThreshold: 2
+        slowCallDurationThreshold: 2000 # Configures the duration(ms) threshold above which calls are considered as slow and increase the rate of slow calls.
+        waitDurationInOpenState: 30000   # The time(ms) that the CircuitBreaker should wait before transitioning from open to half-open.
+        maxWaitDurationInHalfOpenState: 0
+        minimumNumberOfCalls: 3
+    instances:
+      StoreServicecheckOpenYnString:     # https://resilience4j.readme.io/docs/circuitbreaker --> Create and configure a CircuitBreaker
+        minimumNumberOfCalls: 5
+#        slidingWindowType: TIME_BASED   # COUNT_BASED(default), TIME_BASED
+#        slidingWindowSize: 10           # Configures the size of the sliding window which is used to record the outcome of calls when the CircuitBreaker is closed.
+#        failureRateThreshold: 50        # failure rate threshold in percentage.
+#        slowCallRateThreshold: 2
+#        slowCallDurationThreshold: 3000 # Configures the duration(ms) threshold above which calls are considered as slow and increase the rate of slow calls.
+#        waitDurationInOpenState: 5000   # The time(ms) that the CircuitBreaker should wait before transitioning from open to half-open.
+#        maxWaitDurationInHalfOpenState: 0
+#        minimumNumberOfCalls: 3
+#        ignoreExceptions:
+#          - com.ebay.seo.linking.service.exception.ESNotAvailableException
+  timelimiter:                         # openfeign 에서 이미 readTimeOut을 설정함
+    configs:
+      default:
+        timeoutDuration: 8s             # 기본값 : 1000 [ms]
+    instances:
+      StoreServicecheckOpenYnString:
+        timeoutDuration: 2s             # 기본값 : 1000 [ms]
+#  retry:
+#    retryAspectOrder: 1
+#    configs:
+#      default:
+#        maxAttempts: 3
+#        waitDuration: 10ms
+#        enableExponentialBackoff: false
+#        retryExceptions:
+#          - java.util.concurrent.TimeoutException
+#          - java.io.IOException
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: true 	#유레카 서버에 등록할지 여부
+    fetch-registry: true    #유레카 서버의 정보를 가져올지 여부
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka    #유레카 서버 주소 http://아이디:비밀번호@아이피:8761/eureka
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+    env:
+      show-values: ALWAYS   # /actuator/env에서 value를 보여줄지 여부 (ALWAYS/NEVER/WHEN_AUTHORIZED)
+    circuitbreakerevents:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
+
+logging:
+  level:
+    root: info
+    com.study: debug
+    # basic log level for all messages
+    logging.level.org.hibernate: info
+    # Logs the JDBC parameters passed to a query
+    # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
+#    org.hibernate.orm.jdbc.bind: trace
+    org.springframework.cloud: info
+    org.apache.kafka.common.utils.AppInfoParser: WARN
+    org.apache.kafka.clients.Metadata: WARN
+    org.apache.kafka.clients.admin.AdminClientConfig: WARN
+    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+    org.apache.kafka.clients.producer.ProducerConfig: WARN
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+    org.apache.kafka.common.metrics.Metrics: WARN
+    org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN
+
+
+api:
+  url:
+    store: http://localhost:81
+
+consumer-worker:
+  threads:
+    update-status:
+      count: 2

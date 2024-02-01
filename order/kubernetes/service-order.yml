@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-order
+  namespace: dev-app
+  labels:
+    app: order
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: order
+#  type: ClusterIP
+#  type: LoadBalancer
