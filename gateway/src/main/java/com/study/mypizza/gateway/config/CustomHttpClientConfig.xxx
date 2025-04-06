@@ -1,0 +1,32 @@
+package com.study.mypizza.gateway.config;
+
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.gateway.config.HttpClientProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import reactor.netty.http.client.HttpClient;
+
+import javax.net.ssl.SSLException;
+
+@Configuration
+public class CustomHttpClientConfig {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public HttpClient gatewayHttpClient(HttpClientProperties properties) throws SSLException {
+        return HttpClient.create()
+                .secure(sslContextSpec -> {
+                    try {
+                        sslContextSpec.sslContext(
+                                SslContextBuilder.forClient()
+                                        .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                                        .build()
+                        );
+                    } catch (SSLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+}

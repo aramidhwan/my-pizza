@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyPizza MSA Platform</title>
+    <!--jquery script-->
+    <script src="/common-service/js/jquery-3.7.1.js"></script>
+    <!--jquery-ui css, js-->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <!--bootstrap 용 css, js-->
+    <link rel="stylesheet" href="/common-service/css/bootstrap.min.css">
+    <script src="/common-service/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $( function() {
+            $("#header").load("header.html");   // static content 호출
+            $("#content").load("orderMain");    // Spring Boot 호출
+        } );
+    </script>
+</head>
+<body>
+<div id="header"></div>
+<br><br><br><br><br><br><br>
+
+<div id="content"></div>
+</body>
+</html>

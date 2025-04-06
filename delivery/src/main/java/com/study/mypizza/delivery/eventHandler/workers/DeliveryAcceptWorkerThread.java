@@ -1,5 +1,7 @@
 package com.study.mypizza.delivery.eventHandler.workers;
 
+import com.study.mypizza.delivery.enums.OrderStatus;
+import com.study.mypizza.delivery.event.StatusUpdated;
 import com.study.mypizza.delivery.repository.DeliveryRepository;
 import com.study.mypizza.delivery.entity.Delivery;
 import com.study.mypizza.delivery.event.Cooked;
@@ -16,7 +18,7 @@ public class DeliveryAcceptWorkerThread implements Runnable {
     @Autowired
     private DeliveryRepository deliveryRepository;
 
-    private Cooked cooked ;
+    private StatusUpdated statusUpdated ;
 
     @Override
     public void run() {
@@ -25,9 +27,10 @@ public class DeliveryAcceptWorkerThread implements Runnable {
 
     // Store에서 조리완료 시 배달 신규 생성(DeliveryAccepted)
     private void deliveryAccept() {
-        Delivery delivery = new Delivery();
-        BeanUtils.copyProperties(cooked, delivery);
-        delivery.setStatus("DeliveryAccepted");
-        deliveryRepository.save(delivery);
+//        Delivery delivery = new Delivery();
+//        BeanUtils.copyProperties(statusUpdated, delivery);
+//        delivery.setStatus(OrderStatus.DELIVERY_ACCEPTED);
+//        log.debug("### [{}] event received..!! : orderId={}, status={}", new Object(){}.getClass().getEnclosingMethod().getName(), statusUpdated.getOrderId(), statusUpdated.getStatus());
+//        deliveryRepository.save(delivery);
     }
 }

@@ -18,11 +18,13 @@ import java.util.Date;
 @Data
 public class AbstractEvent {
     private String eventType ;
+    private String fullClassName ;
     private String timestamp ;
     private static String bindingName = "deliveryEvent-out-0" ;
 
     public AbstractEvent() {
         this.setEventType(this.getClass().getSimpleName());
+        this.setFullClassName(this.getClass().getName());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYYMMdd-HHmmss") ;
         this.setTimestamp(simpleDateFormat.format(new Date()));
     }

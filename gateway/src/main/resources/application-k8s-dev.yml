@@ -1,0 +1,47 @@
+server:
+  port: 7070
+
+spring:
+  application:
+    name: gateway
+
+  #  config:
+  #    active:
+  #      on-profile: local
+
+  cloud:
+    gateway:
+      routes:
+        - id: board
+          uri: http://board:8090   # 단일 포트
+          #          uri: lb://BOARD       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/board-service/**
+          filters:
+            - RewritePath=/board-service/(?<segment>.*), /$\{segment}
+            - name: L1Filter
+              args.pre: true
+              args.post: true
+        - id: firstproject
+          uri: http://localhost:8083   # 단일 PDO
+          predicates:
+            - Path=/firstproject/**
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://admin:admin@localhost:8761/eureka
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway,env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
+#        include: gateway,health    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정
+#        exclude: metrics

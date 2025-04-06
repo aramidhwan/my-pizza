@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPizza</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        label, input { display:block; }
+        input.text { margin-bottom:12px; width:95%; padding: .4em; }
+        fieldset { padding:0; border:0; margin-top:25px; }
+        h1 { font-size: 1.2em; margin: .6em 0; }
+        .ui-dialog .ui-state-error { padding: .3em; }
+        .validateTips { border: 1px solid transparent; padding: 0.3em; }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+    <script>
+        $( function() {
+          var dialog, form,
+
+            // From https://html.spec.whatwg.org/multipage/input.html#e-mail-state-%28type=email%29
+            emailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+            storeNm = $( "#storeNm" ),
+            regionNm = $( "#regionNm" ),
+            addr = $( "#addr" ),
+            allFields = $( [] ).add( storeNm ).add( regionNm ).add( addr ),
+            tips = $( ".validateTips" );
+
+        fetchList() ;
+
+        function fetchList() {
+            fetch('/stores') // 서버에서 Store 목록을 가져옵니다.
+                .then(response => response.json()) // 서버 응답을 JSON 형식으로 변환합니다.
+                .then(data => {
+                    const storeList = document.getElementById('storeList');
+                    storeList.innerHTML = ''; // 목록을 초기화합니다.
+                    data.forEach(store => {
+                        const li = document.createElement('li'); // 새로운 리스트 아이템을 만듭니다.
+                        li.className = "list-group-item d-flex justify-content-between align-items-center"; // 부트스트랩 스타일을 적용
+
+                        // 체크박스
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.checked = store.openYN; // 완료 상태에 따라 체크 여부 설정
+                        checkbox.onclick = () => toggleStoreOpenYn(store); // 체크박스를 클릭할 때 상태 변경
+
+                        // 상점명 텍스트
+                        const storeInfo = document.createElement('span');
+                        storeInfo.textContent = store.storeNm + ' ' + store.regionNm + (store.openYN ? ' (영업중)' : ' (준비중)'); // 할 일을 표시
+
+                        // 삭제 버튼
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '삭제';
+                        deleteButton.className = "btn btn-danger btn-sm ml-2"; // 오른쪽 여백 추가
+                        deleteButton.onclick = () => deleteStore(store); // 삭제 함수 호출
+
+                        li.appendChild(checkbox); // 체크박스를 리스트 아이템에 추가
+                        li.appendChild(storeInfo); // 할 일 텍스트를 리스트 아이템에 추가
+                        li.appendChild(deleteButton); // 삭제 버튼을 리스트 아이템에 추가
+                        storeList.appendChild(li); // 목록에 추가합니다.
+                    });
+                });
+        }
+
+        // 할 일의 완료 상태를 토글하는 함수
+        function toggleStoreOpenYn(store) {
+            fetch(`/udpateStore`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                        'storeId': store.storeId,
+                        'storeNm': store.storeNm,
+                        'regionNm': store.regionNm,
+                        'addr': store.addr,
+                        'openYN': !store.openYN
+                    })
+            })
+            .then(() => {
+                fetchList(); // 수정 후 Store 목록을 새로 고칩니다.
+            });
+        }
+
+        function updateTips( t ) {
+            tips
+              .text( t )
+              .addClass( "ui-state-highlight" );
+            setTimeout(function() {
+              tips.removeClass( "ui-state-highlight", 1500 );
+            }, 500 );
+        }
+
+        function checkLength( o, n, min, max ) {
+            if ( o.val().length > max || o.val().length < min ) {
+              o.addClass( "ui-state-error" );
+              updateTips( n + " 길이를 맞추어 주세요 \n(min:" +
+                min + " and max:" + max + ")" );
+              return false;
+            } else {
+              return true;
+            }
+        }
+
+        function checkSelect( o, n ) {
+            if ( o.val() == "" ) {
+              o.addClass( "ui-state-error" );
+              updateTips( n + " 선택이 필요합니다." );
+              return false;
+            } else {
+              return true;
+            }
+        }
+
+        function checkRegexp( o, regexp, n ) {
+            if ( !( regexp.test( o.val() ) ) ) {
+              o.addClass( "ui-state-error" );
+              updateTips( n );
+              return false;
+            } else {
+              return true;
+            }
+        }
+
+        function addStore() {
+            var valid = true;
+            allFields.removeClass( "ui-state-error" );
+
+            valid = valid && checkLength( storeNm, "상점명", 2, 20 );
+            valid = valid && checkSelect( regionNm, "지역명" ) ;
+            valid = valid && checkLength( addr, "주소", 2, 50 );
+
+      //      valid = valid && checkRegexp( storeNm, /^[a-z]([0-9a-z_\s])+$/i, "Username may consist of a-z, 0-9, underscores, spaces and must begin with a letter." );
+      //      valid = valid && checkRegexp( regionNm, emailRegex, "eg. ui@jquery.com" );
+      //      valid = valid && checkRegexp( addr, /^([0-9a-zA-Z])+$/, "Password field only allow : a-z 0-9" );
+
+            if ( valid ) {
+                fetch('/createStore', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', // 데이터 형식 설정
+                    },
+                    body: JSON.stringify({
+                        'storeNm': storeNm.val(),
+                        'regionNm': regionNm.val(),
+                        'addr': addr.val(),
+                        'openYN': $("input:radio[name='openYN']:checked").val()
+                    })
+                })
+                .then(response => response.json()) // 서버 응답을 JSON 형식으로 변환합니다.
+                .then(store => {
+                    fetchList(); // TODO 목록을 새로 고칩니다.
+                });
+                dialog.dialog( "close" );
+            }
+            return valid;
+        }
+
+        function deleteStore(store) {
+            if (store.openYN) {
+                alert("영업중인 Store는 삭제하실 수 없습니다. ["+store.storeNm+"]") ;
+                return;
+            }
+
+            if (confirm("["+store.storeNm+"] 정말로 삭제하시겠습니까?")) { // 삭제 확인 메시지
+                fetch(`/deleteStore/${store.storeId}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    fetchList(); // 삭제 후 TODO 목록을 새로 고칩니다.
+                });
+            }
+        }
+
+          dialog = $( "#dialog-form" ).dialog({
+            autoOpen: false,
+            height: 400,
+            width: 350,
+            modal: true,
+            buttons: {
+              "신규생성": addStore,
+              "취소": function() {
+                dialog.dialog( "close" );
+              }
+            },
+            close: function() {
+              form[ 0 ].reset();
+              allFields.removeClass( "ui-state-error" );
+            }
+          });
+
+          form = dialog.find( "form" ).on( "submit", function( event ) {
+            event.preventDefault();
+            addStore();
+          });
+
+          $( "#create-user" ).button().on( "click", function() {
+            dialog.dialog( "open" );
+          });
+
+      }
+
+    );
+    </script>
+</head>
+<body>
+<div class="container mt-5">
+    <h1>MyPizza Store</h1>
+</div>
+
+<div id="dialog-form" title="Store 등록">
+    <p class="validateTips">신규 등록 상점 정보를 입력하십시요.</p>
+
+    <form>
+        <fieldset>
+            <label for="storeNm">상점명</label>
+            <input type="text" name="storeNm" id="storeNm" value="" class="text ui-widget-content ui-corner-all">
+            <label for="regionNm">지역명</label>
+            <select name="regionNm" id="regionNm">
+                <option value="" selected="">...선택...</option>
+                <option value="강남구">강남구</option>
+                <option value="서초구">서초구</option>
+                <option>중구</option>
+                <option>분당구</option>
+                <option>마포구</option>
+                <option>영등포구</option>
+                <option>기타</option>
+            </select>
+            <label for="addr">주소</label>
+            <input type="text" name="addr" id="addr" value="" class="text ui-widget-content ui-corner-all">
+            <fieldset>
+                <legend>영업유무</legend>
+                <label for="openYn1">영업중</label>
+                <input type="radio" name="openYN" id="openYn1" value="true" checked>
+                <label for="openYn2">임시휴무</label>
+                <input type="radio" name="openYN" id="openYn2" value="false">
+            </fieldset>
+
+            <!-- Allow form submission with keyboard without duplicating the dialog button -->
+            <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+    </form>
+</div>
+
+<div class="container mt-5">
+    <div class="ui-widget">
+        <table>
+            <tbody>
+            <tr>
+                <th><h1>기존의 Stores:</h1></th>
+                <th><button id="create-user">Create new store</button></th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <ul id="storeList" class="list-group"> <!-- 등록된 Store가 동적으로 추가될 부분 -->
+        <!-- Store가 여기에 추가됩니다 -->
+    </ul>
+</div>
+
+</body>
+</html>

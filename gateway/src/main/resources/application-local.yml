@@ -1,0 +1,139 @@
+server:
+  port: 90
+
+spring:
+  application:
+    name: gateway
+
+#  config:
+#    active:
+#      on-profile: local
+
+  cloud:
+    gateway:
+#      default-filters:
+#        https://velog.io/@mrcocoball2/Spring-Cloud-Spring-Cloud-Gateway-CORS-%EA%B4%80%EB%A0%A8-%EC%84%A4%EC%A0%95
+#        DedupeResponseHeader : 응답 시 중복 헤더를 삭제해주는 필터인데, globalcors에서 allow-credentials를 설정할 경우
+#  CORS 필터가 추가되어 해당 헤더를 응답에 포함시키는데 이전 응답에 이와 관련된 헤더가 존재할 경우 중복될 수 있으므로 중복 헤더를 방지하기 위해 처리합니다.
+#        물론 위의 DedupeResponseHeader 필터는 필수 설정은 아닙니다. 게이트웨이와 마이크로서비스의 CORS 설정을 따로
+#        가져갈 일이 없다면 위의 필터를 빼고 게이트웨이의 CORS 설정을 전역적으로 적용하면 됩니다.
+#        위에서처럼 DedupeResponseHeader 필터를 설정했을 경우 API 게이트웨이 뿐만 아니라 마이크로서비스에서도 CORS 설정을 해줘야 합니다. 이는 Spring Security를 통해 처리할 수 있습니다
+#        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+#      globalcors:
+#        add-to-simple-url-handler-mapping: true
+#        cors-configurations:
+#          '[/**]':
+#            allowedOrigins:
+#              - 'https://39.118.150.37:9090' # 허용하려는 도메인
+#              - 'https://localhost:90' # 허용하려는 도메인
+#            allow-credentials: true # 요청 시 인증 정보를 전송하도록 허가
+#            allowedHeaders:
+#              - '*' # 허용하려는 헤더
+#            allowedMethods: # 허용하려는 HTTP 메서드
+#              - PUT
+#              - GET
+#              - POST
+#              - DELETE
+#              - OPTIONS
+      globalcors:
+#        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "https://39.118.150.37:9090"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+      httpclient:
+        ssl:
+          useInsecureTrustManager: true
+      routes:
+        - id: store
+          uri: https://localhost:8443   # 단일 포트
+#          uri: lb://STORE       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/store-service/**
+          filters:
+            - RewritePath=/store-service/(?<segment>.*), /$\{segment}
+#            - name: JwtAuthentication # 적용할 필터 팩토리이름
+        - id: order
+          uri: https://localhost:8442   # 단일 포트
+#          uri: lb://ORDER       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
+#            - name: JwtAuthentication # 적용할 필터 팩토리이름
+        - id: delivery
+          uri: https://localhost:8444   # 단일 포트
+          #          uri: lb://BOARD       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/delivery-service/**
+          filters:
+            - RewritePath=/delivery-service/(?<segment>.*), /$\{segment}
+#            - name: JwtAuthentication # 적용할 필터 팩토리이름
+        - id: mypage
+          uri: https://localhost:8445   # 단일 포트
+          #          uri: lb://BOARD       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/mypage-service/**
+          filters:
+            - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
+#            - name: JwtAuthentication # 적용할 필터 팩토리이름
+        - id: root
+          uri: https://localhost:8441
+          predicates:
+#            - Path=/**   # --> 요거는 '/'를 포함하지 않음
+            - Path=/
+        - id: ignore-favicon
+          uri: http://localhost  # 아무거나, 실제 요청 안 함
+          predicates:
+            - Path=/favicon.ico
+          filters:
+            - SetStatus=204
+        - id: common
+          uri: https://localhost:8441   # 단일 포트
+          #          uri: http://localhost:85   # 단일 포트
+          #          uri: lb://COMMON       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/common-service/**
+#            - Path=/**   # --> 요거는 '/'를 포함하지 않음
+#            - Path=/
+          filters:
+            - RewritePath=/common-service/(?<segment>.*), /$\{segment}
+#            - RewritePath=/(?<segment>.*), /$\{segment}
+#            - name: JwtAuthentication # 적용할 필터 팩토리이름
+#              args: # Config 클래스에 사용할 멤버변수 정의
+#                granted: Bearer
+
+  data:
+    redis:
+      #      url: redis://default:5ZpXqxXLhYmcNfwPElUUAypbIvyecML6@redis-13136.c53.west-us.azure.redns.redis-cloud.com:13136
+      host: redis-13136.c53.west-us.azure.redns.redis-cloud.com
+      port: 13136
+      #      username: default
+      password: 5ZpXqxXLhYmcNfwPElUUAypbIvyecML6
+#      ssl:
+#        enabled: true
+#      lettuce:
+#        pool:
+#          enabled: true   # commons-pool2 디펜던시를 추가해야 한다
+#          max-active: 30
+#          max-idle: 30
+#          min-idle: 30  # 이 설정은 time-between-eviction-runs 설정 시간이 양수인 경우에 적용됨.
+#          time-between-eviction-runs: 60  # 제거 스레드의 실행 시간 주기 설정. 음수 값이 지정된 경우 제거 스레드를 실행되지 않음.제거 스레드를 통해서 min-idle, max-idle 에 설정된 수치를 넘어선 경우 불필요한 idle connection을 제거하여 리소스를 효율적으로 관리함.
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://admin:admin@localhost:7761/eureka

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.mypizza.order.OrderApplication;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
@@ -18,13 +19,19 @@ import java.util.Date;
 @Data
 public class AbstractEvent {
     private String eventType ;
+    private String fullClassName ;
     private String timestamp ;
     private static String bindingName = "orderEvent-out-0" ;
 
     public AbstractEvent() {
         this.setEventType(this.getClass().getSimpleName());
+        this.setFullClassName(this.getClass().getName());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYYMMdd-HHmmss") ;
         this.setTimestamp(simpleDateFormat.format(new Date()));
+    }
+
+    public void toEntity(Object entity) {
+        BeanUtils.copyProperties(this, entity);
     }
 
     @SuppressWarnings("deprecation")
@@ -54,15 +61,15 @@ public class AbstractEvent {
     }
 
     private String toJson() {
-        String json = null ;
+        String jsonString = null ;
 
         try {
-            json = new ObjectMapper().writeValueAsString(this) ;
+            jsonString = new ObjectMapper().writeValueAsString(this) ;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        return json ;
+        return jsonString ;
     }
 
     public boolean validate(){

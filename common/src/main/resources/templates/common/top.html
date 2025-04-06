@@ -1,0 +1,74 @@
+<!DOCTYPE>
+<html lagn="ko" xmlns:th="http://www.thymeleaf.org">
+<!-- th:fragment="footer" : 이 페이지 전체를 footer라는 이름으로 정의 할거야-->
+<!-- 다른 분들이 적용하신 걸 많이 찾아봤는데 Div 에 th:fragment 를 주거나 하는 경우가 많았는데
+     나는 그냥 이 푸터 전체에 fragment를 주는 방법을 선택했다.
+     Footer만 들어가는 css나 스크립트가 있다면 그것도 자유롭게 수정하고 싶어서!-->
+<th:block th:fragment="top">
+    <!--도미노피자(상단) 용 css-->
+    <link rel="stylesheet" type="text/css" href="/common-service/css/domino.css">
+    <script src="/common-service/js/top.js"></script>
+    <style>
+        .a_header {
+            text-decoration-line: none;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+<div id="header">
+    <!-- //top_event_bnr -->
+    <div class="top-wrap">
+        <div class="inner-box" id="tip-box-top">
+            <a href="/main" class="btn-logo">
+                <img src="/common-service/images/mypizza_logo.gif" width="200" height="40">
+            </a>
+
+            <div class="util-nav">
+                <a id='signYN' href='javascript:void(0);' data-value="N"></a>
+                <a href="/api/auth/sign-up">회원가입</a>
+                <!--2020-03-17 추가(s)-->
+                <a href="javascript:void(0);" class="lang">
+                    <div class="select-type2 language">
+                        <select id="select-type2">
+                            <option value="/main?locale=ko">KOR</option>
+                            <option value="/main?locale=en">ENG</option>
+                        </select>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- main 1dep menu -->
+    <div id="gnb" class="gnb-wrap">
+        <div class="gnb-inner">
+            <ul>
+                <li id="liStoreAdmin" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadStoreAdminMain();"><span>가맹점</span></a>
+                </li>
+                <li id="liDeliveryAdmin" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadDeliveryAdminMain();"><span>배달점</span></a>
+                </li>
+                <li id="liStore" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadStoreMain();"><span>가맹점관리</span></a>
+                </li>
+                <li id="liOrder" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadOrderMain();"><span>주문</span></a>
+                </li>
+                <li id="liDelivery" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadDeliveryMain();"><span>배달점</span></a>
+                </li>
+                <li id="liMyPage" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadMyPageMain();"><span>마이페이지</span></a>
+                </li>
+                <li id="liAdmin" class="hidden">
+                    <a href='javascript:void(0);' class="a_header" onclick="loadRoleMain();"><span>ADMIN</span></a>
+                </li>
+            </ul>
+            <a href="javascript:void(0);" class="snb-more a_header">더보기</a>
+        </div>  <!-- div class="gnb-inner" -->
+    </div>  <!-- div id="gnb"-->
+    <!-- //main 1dep menu -->
+</div>
+</th:block>

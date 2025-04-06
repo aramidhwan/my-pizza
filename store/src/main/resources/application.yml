@@ -1,5 +1,160 @@
+server:
+  ssl:
+    enabled: true
+    key-store: src/main/resources/mypizza.p12
+    #    key-store: classpath:mypizza.p12     # classpath: 가 src/main/resources 와 동일한 의미임
+    key-store-password: shin22
+    key-store-type: PKCS12
+    key-alias: mypizza
+
 spring:
   application:
     name: store
-  profiles:
-    active: local
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        highlight_sql: true
+#        dialect: org.hibernate.dialect.MySQLDialect
+        # dialect: org.hibernate.dialect.MySQL57Dialect
+    hibernate:
+      # create, create-drop, update, validate, none
+      # create : SessionFactory 시작시 스키마를 삭제하고 다시 생성
+      # create-drop : SessionFactory 종료 시 스키마를 삭제
+      # update : 변경된 스키마 적용(운영DB에서는 사용하면 안됨), SessionFactory 연결된 DB와 비교하여 추가된 항목(컬럼)은 추가 만약 같은 변수명이면 오류발생
+      #          update 옵션에서 컬럼(변수) 삭제는 엄청난 문제를 발생시킬 수 있기 때문에 컬럼 추가만 반영된다.
+      # validate : 엔티티 변수들과 테이블 컬럼들이 정상 매핑되었는지만 확인, SessionFactory 시작시 객체구성과 스키마가 다르다면 예외 발생
+      # none: 아무것도 안함
+      # 운영환경에서는 절대 create, create-drop, update를 사용하면 안됨
+      #      ddl-auto: update
+      ddl-auto: validate     # 실제 운영에서 서비스 배포시는 none or validate만 사용, generate-ddl도 false로 운영
+#      ddl-auto: create        # 기존 테이블 DROP 후 재 생성, 반드시 로컬환경에서만 사용(운영X)
+      generate-ddl: true      # generate-ddl 은 위의 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
+
+#  data:
+#    rest:
+#      base-path: /  # API 기본 경로 설정
+#  hateoas:
+#    use-hal-as-default-json-format: true # HAL 형식 활성화
+
+  config:
+    import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트
+
+  cloud:
+    config:
+      enabled: false
+    function:
+      definition: whenever_ordered_orderAccept; whenever_orderDetailOrdered_saveStoreOrderDetail
+    stream:
+      bindings:
+        whenever_ordered_orderAccept-in-0:
+          group: whenever_ordered_orderAccept
+          destination: myPizza-order
+        whenever_orderDetailOrdered_saveStoreOrderDetail-in-0:
+          group: whenever_orderDetailOrdered_saveStoreOrderDetail
+          destination: myPizza-order
+        storeEvent-out-0:
+          destination: myPizza-store
+
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 1000
+            readTimeout: 2000
+            loggerLevel: BASIC
+          ORDER:        # @FeignClient(name="ORDER")에 해당하는 부분 기술
+            readTimeout: 4000
+            loggerLevel: BASIC
+      circuitbreaker:           # CircuitBreaker 기능을 On. (별도로 구현체인 Resilience4 설정 필요)
+        #        enabled: true           # 이 값이 true이면 @Retry나 @CircuitBreaker의 fallback이 아닌 @FeignClient의 fallback이 실행되버린다.
+        alphanumeric-ids:
+          enabled: true
+
+  cache:
+    cache-names: "cache1,cache2"
+
+  thymeleaf:
+    prefix: classpath:/templates/   # Optional
+    suffix: .html                   # Optional
+    cache: false                    # Optional (default: true)
+
+resilience4j:
+  circuitbreaker:
+    circuit-breaker-aspect-order: 1    # 우선순위 설정(숫자가 높을수록 우선순위가 높다.)
+    configs:
+      default:
+        registerHealthIndicator: true   # For Actuator
+        slidingWindowType: TIME_BASED   # COUNT_BASED(default), TIME_BASED
+        slidingWindowSize: 30           # Configures the size of the sliding window which is used to record the outcome of calls when the CircuitBreaker is closed.
+        failureRateThreshold: 50        # failure rate threshold in percentage.
+        slowCallDurationThreshold: 2000 # 호출시간이 설정값보다 길면 느린호출로 판단, Configures the duration(ms) threshold above which calls are considered as slow and increase the rate of slow calls.
+        slowCallRateThreshold: 2        # 느린 호출 비율(%)이 설정값 보다 크거나 같으면 서킷 브레이커가 OPEN 상태로 전환되고 호출 차단
+        waitDurationInOpenState: 30000   # The time(ms) that the CircuitBreaker should wait before transitioning from open to half-open.
+        maxWaitDurationInHalfOpenState: 0
+        minimumNumberOfCalls: 3
+  #        ignoreExceptions:
+  #          - com.ebay.seo.linking.service.exception.ESNotAvailableException
+  #    instances:
+  #      StoreGatewaygetStoreNmString:     # @FeignClient이 달린 Class명+Method명+리턴TYPE, https://resilience4j.readme.io/docs/circuitbreaker --> Create and configure a CircuitBreaker
+  #        minimumNumberOfCalls: 5
+  timelimiter:                         # openfeign 에서 이미 readTimeOut을 설정함
+    configs:
+      default:
+        timeoutDuration: 2s             # 기본값 : 1000 [ms]
+    instances:
+      OrderGatewaygetItemNmString:
+        timeoutDuration: 4s             # 기본값 : 1000 [ms]
+  retry:
+    retryAspectOrder: 2
+    configs:
+      default:
+        maxAttempts: 1
+        waitDuration: 100ms
+#        enableExponentialBackoff: false
+#        retryExceptions:
+#          - java.util.concurrent.TimeoutException
+#          - java.io.IOException
+
+eureka:
+  client:
+    register-with-eureka: true 	#유레카 서버에 등록할지 여부
+    fetch-registry: true    #유레카 서버의 정보를 가져올지 여부
+
+jwt:
+  header: Authorization
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+    env:
+      show-values: ALWAYS   # /actuator/env에서 value를 보여줄지 여부 (ALWAYS/NEVER/WHEN_AUTHORIZED)
+  endpoints:
+    web:
+      exposure:
+        include: env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
+
+logging:
+  level:
+    root: info
+    com.study: debug
+    # 참고로
+    # logging.level.org.hibernate.type=TRACE나
+    # logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+    # 위 설정들은 스프링 부트 3버전에서는 적용되지 않는 것 같습니다.
+    # org.hibernate.type: trace
+    org.hibernate.orm.jdbc.bind: info
+    org.hibernate.type.BasicTypeRegistry: WARN
+    org.springframework.cloud: info
+    org.apache.kafka.common.utils.AppInfoParser: WARN
+    org.apache.kafka.clients.Metadata: WARN
+    org.apache.kafka.clients.admin.AdminClientConfig: WARN
+    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+    org.apache.kafka.clients.producer.ProducerConfig: WARN
+    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+    org.apache.kafka.common.metrics.Metrics: WARN
+    org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN

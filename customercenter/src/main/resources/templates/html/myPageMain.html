@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--bootstrap 용 css-->
+    <link rel="stylesheet" href="/mypage-service/css/bootstrap.min.css">
+    <script src="/mypage-service/js/myPageMain.js"></script>
+    <style>
+        table th {
+            white-space: nowrap;
+            overflow: hidden;   // 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다.
+            text-overflow: ellipsis;
+        }
+        table td {
+            white-space: nowrap;
+            overflow: hidden;   // 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다.
+            text-overflow: ellipsis;
+        }
+        .cssAlignCenter {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .no-line {
+            text-decoration: none;
+        }
+        .custom-popover {
+          --bs-popover-max-width: 200px;
+          --bs-popover-border-color: var(--bd-violet-bg);
+          --bs-popover-header-bg: var(--bd-violet-bg);
+          --bs-popover-header-color: var(--bs-white);
+          --bs-popover-body-padding-x: 1rem;
+          --bs-popover-body-padding-y: .5rem;
+        }
+        div.colcss1 {
+            padding-bottom: 3px;
+            display: flex;
+            justify-content: right;
+        }
+        img.css1 {
+            object-fit: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container-sm">
+
+    <div class="row">
+        <div class="col">
+            <h4 style="white-space:nowrap;">주문 내역을 확인해 보세요.</h4>
+        </div>
+        <div class="col colcss1" th:switch="${viewType}">
+            <a id="aViewType" th:case="onlyToday" href="javascript:void(0);" onclick="loadMyOrder('all');">
+                <img class="css1" id="imgViewType" src="/mypage-service/images/myPageMain2.jpg" alt="이전내역도보기">
+            </a>
+            <a id="aViewType" th:case="all" href="javascript:void(0);" onclick="loadMyOrder('onlyToday');">
+                <img class="css1" id="imgViewType" src="/mypage-service/images/myPageMain1.jpg" alt="오늘내역만보기">
+            </a>
+            <a th:case="*" href='javascript:void(0);' onclick="loadMyPageMain();">알 수 없는 viewType : [[${viewType}]]</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="tableContainer" class="col">   <!--  style="overflow-y: scroll;" -->
+<!--            <table class="table table-striped" id="tableMyOrders">-->
+<!--                <thead>-->
+<!--                <tr class="table-warning">-->
+<!--                    <th class="cssAlignCenter" style="width: 40px">#</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 180px">배정상점</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 150px">주문메뉴</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 60px">수량</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 250px">처리상태</th>-->
+<!--                    <th class="cssAlignCenter">주문시간</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                </tbody>-->
+<!--            </table>-->
+        </div>
+    </div>
+</div>      <!-- div class="container-sm" -->
+</body>
+</html>

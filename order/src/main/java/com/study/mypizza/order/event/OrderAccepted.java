@@ -1,5 +1,6 @@
 package com.study.mypizza.order.event;
 
+import com.study.mypizza.order.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,5 +13,6 @@ public class OrderAccepted extends AbstractEvent {
     private Long storeId;
     private Long orderId;
     private Date acceptDt;
-    private String status;
+    private OrderStatus status;
+    private String statusInfo;
 }

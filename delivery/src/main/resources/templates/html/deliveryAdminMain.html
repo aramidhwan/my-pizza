@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/delivery-service/css/bootstrap.min.css">
+    <!--Store 용 js-->
+    <script src="/delivery-service/js/deliveryAdminMain.js"></script>
+    <style>
+        table td {
+            white-space: nowrap;
+            overflow: hidden;   // 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다.
+            text-overflow: ellipsis;
+        }
+        .cssAlignCenter {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .center-checkbox {
+            display: flex;
+            justify-content: center;
+        }
+        .div-css1 {
+            padding-bottom: 3px;
+            display: flex;
+            justify-content: right;
+        }
+        .img-css1 {
+            object-fit: none;
+        }
+        .validateTips {
+            border: 1px solid transparent;
+            padding: 0.3em;
+        }
+        .animateTips {
+            animation-name: blink;
+            animation-duration: 1s;
+            animation-iteration-count: 2;
+        }
+        .ui-state-error  {
+            border: 1px solid #f1a899;
+            background: #fddfdf;
+            color: #5f3f3f;
+        }
+        .ui-state-highlight {
+            border: 1px solid #dad55e;
+            background: #fffa90;
+            color: #777620;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+<div class="container-sm">
+
+    <div class="row align-items-center">
+        <div class="col">
+            <h4 style="white-space:nowrap;">최고의 수익 보장! MyPizza의 배달 멤버가 되어 보세요!</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
+
+    <div class="row" style="white-space:nowrap;">
+        <div id="tableContainer" class="col" style="overflow-y: scroll;">
+
+<!--            <span id="divTblStoreAdminTitle1">[강남1호점]</span>-->
+<!--            <table id="tblStoreAdmin1" class="table table-striped table-bordered" style="max-height: 150px; overflow-y: scroll;">-->
+<!--                <thead>-->
+<!--                <tr class="table-warning">-->
+<!--                    <th class="cssAlignCenter" style="width: 70px">상점명</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 180px">주문번호</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 70px">상태</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 70px">접수시간</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 70px">배달시작</th>-->
+<!--                    <th class="cssAlignCenter" style="width: 70px">배달완료</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                <tr>-->
+<!--                    <td class="cssAlignCenter">강남1호점</td>-->
+<!--                    <td class="cssAlignCenter">315</td>-->
+<!--                    <td class="cssAlignCenter">배달시작(DeliveryStarted)</td>-->
+<!--                    <td class="cssAlignCenter">2025년 03월 16일 10:17:06</td>-->
+<!--                    <td class="cssAlignCenter"><div class="form-check form-switch cssAlignCenter"><input name="deliveryStarted" value="Y" data-order-id="315" class="form-check-input" type="checkbox" role="switch"></div></td>-->
+<!--                    <td class="cssAlignCenter"><div class="form-check form-switch cssAlignCenter"><input name="delivered" value="Y" data-order-id="315" class="form-check-input" type="checkbox" role="switch"></div></td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

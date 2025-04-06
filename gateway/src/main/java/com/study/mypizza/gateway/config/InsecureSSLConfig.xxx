@@ -1,0 +1,28 @@
+package com.study.mypizza.gateway.config;
+
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.springframework.cloud.gateway.config.HttpClientCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.net.ssl.SSLException;
+
+@Configuration
+public class InsecureSSLConfig {
+
+    @Bean
+    public HttpClientCustomizer trustAllCustomizer() {
+        return httpClient -> httpClient.secure(sslContextSpec -> {
+            try {
+                sslContextSpec.sslContext(
+                        SslContextBuilder.forClient()
+                                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                                .build()
+                );
+            } catch (SSLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+}

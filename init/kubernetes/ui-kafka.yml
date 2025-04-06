@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-ui-kafka
+  namespace: dev-kafka
+  labels:
+    app: ui-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-kafka
+  template:
+    metadata:
+      labels:
+        app: ui-kafka
+    spec:
+      containers:
+        - name: ui-kafka
+          image: provectuslabs/kafka-ui
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: "Azure K8S Kafka Cluster"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+#              value: dev-kafka-service:9092 # 참고로 kafka 브로커는 9092, 9093, 9094 임
+              value: dev-kafka-1-svc:9092,dev-kafka-2-svc:9093,dev-kafka-3-svc:9094 # 참고로 kafka 브로커는 9092, 9093, 9094 임
+            - name: KAFKA_CLUSTERS_0_ZOOKEEPER
+              value: "dev-zookeeper-service:2181"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-ui-kafka-service
+  namespace: dev-kafka
+  labels:
+    app: ui-kafka
+spec:
+  selector:
+    app: ui-kafka
+  ports:
+    - protocol: TCP
+      port: 8989
+      targetPort: 8080
+#  type: NodePort
+  type: LoadBalancer
+#  type: ClusterIP
+#  type: ExternalName

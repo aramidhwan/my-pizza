@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--jquery script-->
+<!--    <script src="/store-service/js/jquery-3.7.1.js"></script>-->
+    <!--bootstrap 용 css-->
+    <link rel="stylesheet" href="/store-service/css/bootstrap.min.css">
+    <!--bootstrap 용 js-->
+<!--    <script src="/store-service/js/bootstrap.bundle.min.js"></script>-->
+    <!--MyPizza 용 js-->
+<!--    <script src="/store-service/js/mypizza-util.js"></script>-->
+    <!--Store 용 js-->
+    <script src="/store-service/js/storeMain.js"></script>
+    <style>
+        .cssAlignCenter {
+            text-align: center;
+        }
+        .div-css1 {
+            padding-bottom: 3px;
+            display: flex;
+            justify-content: right;
+        }
+        .img-css1 {
+            object-fit: none;
+        }
+        .validateTips {
+            border: 1px solid transparent;
+            padding: 0.3em;
+        }
+        .animateTips {
+            animation-name: blink;
+            animation-duration: 1s;
+            animation-iteration-count: 2;
+        }
+        .ui-state-error  {
+            border: 1px solid #f1a899;
+            background: #fddfdf;
+            color: #5f3f3f;
+        }
+        .ui-state-highlight {
+            border: 1px solid #dad55e;
+            background: #fffa90;
+            color: #777620;
+        }
+    </style>
+    <script>
+    </script>
+</head>
+<body>
+<div class="container-sm">
+
+    <div class="row align-items-center">
+        <div class="col">
+            <h4 style="white-space:nowrap;">최고의 수익 보장! MyPizza의 멤버가 되어 보세요!</h4>
+        </div>
+        <div class="col div-css1">
+            <a href="javascript:void(0);">
+                <img class="img-css1" data-bs-toggle="modal" data-bs-target="#registModal" data-bs-storeId="" src="/store-service/images/store1.gif" alt="신규 가맹점 등록">
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
+
+    <div class="row" style="white-space:nowrap;">
+        <div class="col" style="overflow-y: scroll;">
+            <table id="tableStore" class="table table-striped table-bordered" style="max-height: 150px; overflow-y: scroll;">
+                <thead>
+                <tr class="table-warning">
+                    <th class="cssAlignCenter" style="width: 40px">#</th>
+                    <th class="cssAlignCenter" style="width: 200px">상점명</th>
+                    <th class="cssAlignCenter" style="width: 120px">지역명</th>
+                    <th class="cssAlignCenter" style="width: 120px">영업여부</th>
+<!--                    <th class="cssAlignCenter" style="width: 120px">주문건수</th>-->
+                    <th class="cssAlignCenter">주소</th>
+                </tr>
+                </thead>
+                <tbody>
+                <th:block th:each="store : ${storeDtos}">
+                    <tr>
+                        <td class="cssAlignCenter">[[${storeStat.count}]]</td>
+                        <td class="cssAlignCenter"><a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#registModal" th:data-bs-storeId="${store.storeId}" th:data-bs-storeNm="${store.storeNm}" th:data-bs-regionNm="${store.regionNm}" th:data-bs-addr="${store.addr}" th:data-bs-openYN="${store.openYN}" href="#">[[${store.storeNm}]]</a></td>
+                        <td class="cssAlignCenter">[[${store.regionNm}]]</td>
+                        <td class="cssAlignCenter" th:if="${store.openYN}">영업중</td>
+                        <td class="cssAlignCenter" th:unless="${store.openYN}">휴업</td>
+                        <td class="cssAlignCenter"><a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#orderCntModal" th:data-bs-storeId="${store.storeId}" href="#">[[${store.getOrderCnt}]]건</a></td>
+                        <td>[[${store.addr}]]</td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="registModal" tabindex="-1" aria-labelledby="registModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="registModalLabel">New message to @mdo</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="validateTips">상점 정보를 입력하십시요.</p>
+                    <form>
+                        <div class="mb-3">
+                            <label for="storeNm" class="col-form-label">상점명:</label>
+                            <input type="text" class="form-control" id="storeNm">
+                        </div>
+                        <div id="dropdownRegion" class="dropdown">
+                            <button id="regionNm" style="border:1px solid" class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                지역을 선택하세요...
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">강남구</a></li>
+                                <li><a class="dropdown-item" href="#">서초구</a></li>
+                                <li><a class="dropdown-item" href="#">종로구</a></li>
+                                <li><a class="dropdown-item" href="#">중구</a></li>
+                                <li><a class="dropdown-item" href="#">분당구</a></li>
+                            </ul>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addr" class="col-form-label">주소:</label>
+                            <input type="text" class="form-control" id="addr">
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="openY" name="openYN" value="true" checked>
+                            <label class="form-check-label" for="openY">
+                                영업중
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="openN" name="openYN" value="false">
+                            <label class="form-check-label" for="openN">
+                                휴업중
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="registCancel" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" id="buttonCreateStore">신규등록</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="orderCntModal" tabindex="-1" aria-labelledby="orderCntModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="orderCntModalLabel">[상점명] 주문 접수 내역</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <h3 class="modal-title fs-3 validateTips">접수 내역을 확인하세요.</h3>
+                    <table id="tblStoreOrder" class="table table-striped table-bordered" style="max-height: 150px; overflow-y: scroll;">
+                        <thead>
+                        <tr class="table-warning">
+                            <th class="cssAlignCenter" style="width: 80px">주문번호</th>
+                            <th class="cssAlignCenter" style="width: 200px">주문상태</th>
+                            <th class="cssAlignCenter" style="width: 120px">접수시간</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="orderCntCancel" data-bs-dismiss="modal">닫기</button>
+<!--                    <button type="button" class="btn btn-primary" id="buttonCreateStore">신규등록</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login Page</title>
+
+    <!--jquery script-->
+    <script src="/common-service/js/jquery-3.7.1.js"></script>
+    <!--bootstrap 용 css, js-->
+    <link rel="stylesheet" href="/common-service/css/bootstrap.min.css">
+    <script src="/common-service/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="/common-service/css/common.css">
+    <script src="/common-service/js/loginPage.js"></script>
+    <script src="/common-service/js/common.js"></script>
+</head>
+<body>
+<div class="container right-panel-active">
+
+    <!-- Sign In -->
+    <div class="container__form container--signin">
+        <form action="#" class="form" id="formSignIn">
+            <h2 class="form__title">Sign In</h2>
+            <input id="emailSignIn" type="email" placeholder="Email" class="input" value="aramidkim@naver.com" autocomplete="username"/>
+            <input id="passwordSignIn" type="password" placeholder="Password" class="input" value="shin22" autocomplete="current-password"/>
+            <input id="redirectUrl" type="hidden" th:value="${redirectUrl}"/>
+            <a href="#" class="link">Forgot your password?</a>
+            <button type="submit" class="btn">Sign In</button>
+            <button type="submit" class="btn">Sign In</button>
+            <button type="submit" class="btn">Sign In</button>
+            <button type="submit" class="btn">Sign In</button>
+        </form>
+    </div>
+
+    <!-- Sign Up -->
+    <div class="container__form container--signup">
+        <form action="#" class="form" id="formSignUp">
+            <h2 class="form__title">Sign Up</h2>
+            <input id="customerIdSignUp" type="text" placeholder="User" class="input" value="aramidchul"/>
+            <input id="emailSignUp" type="email" placeholder="Email" class="input" value="aramidchul@naver.com"/>
+            <input id="passwordSignUp" type="password" placeholder="Password" class="input" value="shin22"/>
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+    </div>
+
+    <!-- Overlay -->
+    <div class="container__overlay">
+        <div class="overlay">
+            <div class="overlay__panel overlay--left">
+                <button class="btn" id="signIn">Sign In</button>
+            </div>
+            <div class="overlay__panel overlay--right">
+                <button class="btn" id="signUp">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+<span
+</body>
+</html>

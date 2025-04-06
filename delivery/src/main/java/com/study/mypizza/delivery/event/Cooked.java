@@ -1,5 +1,6 @@
 package com.study.mypizza.delivery.event;
 
+import com.study.mypizza.delivery.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,5 +13,5 @@ public class Cooked extends AbstractEvent {
     private Long storeId;
     private Long orderId;
     private Date acceptDt;
-    private String status;
+    private OrderStatus status;
 }
