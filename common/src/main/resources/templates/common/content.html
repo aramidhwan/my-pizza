@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<!-- layout:decorate="~{common/layout}" : 우리가 쓸 레이아웃 경로는 여기야 -->
+<!-- layout:fragment="content" : 이 페이지는 content라고 명명할거야. -->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/layout}">
+
+    <th:block layout:fragment="content">
+        <!-- Begin Page Content -->
+            <h1>레이아웃을 사용해 페이지 구성하기!</h1>
+    </th:block>
+</html>

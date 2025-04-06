@@ -1,0 +1,62 @@
+server:
+  port: 8441
+#  port: 85
+
+spring:
+#  h2:
+#    console:
+#      enabled: true  # H2 Console을 사용할지 여부 (H2 Console은 H2 Database를 UI로 제공해주는 기능)
+#      path: /h2-console  # H2 Console의 Path
+  #      settings:
+  #        web-allow-others: true
+  # Database Setting Info (Database를 H2로 사용하기 위해 H2연결 정보 입력)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+#    url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: admin
+    hikari:
+#      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+#      jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+#      username: admin
+#      password: admin
+      maximum-pool-size: 10 #최대 pool 크기
+      minimum-idle: 10 #최소 pool 크기
+      connectionTimeout: 2000   # ms, 기본값(30000), 최소값(250ms)
+#      idle-timeout: 600000 #연결 위한 최대 유후 시간
+#      maxLifetime: 1800000 # Default: 1800000 (30 minutes), 반납된 커넥션의 최대 수명, 0이면 무한.
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost:9092   #, localhost:9093, localhost:9094
+
+  data:
+    redis:
+#      url: redis://default:5ZpXqxXLhYmcNfwPElUUAypbIvyecML6@redis-13136.c53.west-us.azure.redns.redis-cloud.com:13136
+      host: redis-13136.c53.west-us.azure.redns.redis-cloud.com
+      port: 13136
+#      username: default
+      password: 5ZpXqxXLhYmcNfwPElUUAypbIvyecML6
+#      ssl:
+#        enabled: true
+#      lettuce:
+#        pool:
+#          enabled: true   # commons-pool2 디펜던시를 추가해야 한다
+#          max-active: 30
+#          max-idle: 30
+#          min-idle: 30  # 이 설정은 time-between-eviction-runs 설정 시간이 양수인 경우에 적용됨.
+#          time-between-eviction-runs: 60  # 제거 스레드의 실행 시간 주기 설정. 음수 값이 지정된 경우 제거 스레드를 실행되지 않음.제거 스레드를 통해서 min-idle, max-idle 에 설정된 수치를 넘어선 경우 불필요한 idle connection을 제거하여 리소스를 효율적으로 관리함.
+
+eureka:
+  client:
+    enabled: false
+    service-url:
+      defaultZone: http://admin:admin@localhost:7761/eureka    #유레카 서버 주소 http://아이디:비밀번호@아이피:8761/eureka
+
+mypizza:
+  cors:
+    allowedOrigins: https://my-pizza.io:90, https://my-pizza.io:9090, https://39.118.150.37:9090

@@ -1,99 +1,105 @@
 package com.study.mypizza.order.entity;
 
-import com.study.mypizza.order.OrderApplication;
-import com.study.mypizza.order.event.OrderCancelled;
-import com.study.mypizza.order.event.OrderRejected;
-import com.study.mypizza.order.event.Ordered;
-import com.study.mypizza.order.event.StatusUpdated;
+import com.study.mypizza.order.config.OrderStatusConverter;
+import com.study.mypizza.order.event.*;
+import com.study.mypizza.order.enums.OrderStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
 
 @Entity
-@Table(name="Order_table")
-@Data
+@Table(name="t_order")
+@SuperBuilder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@ToString
 @Slf4j
-public class Order {
+@EntityListeners(AuditingEntityListener.class)
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="order_id")
     private Long orderId;
-    private Long customerId;
-    private String pizzaNm;
-    private Integer qty;
-    private String status;
+    private int customerNo;
+    private Long storeId;
+    @Convert(converter = OrderStatusConverter.class) // 변환기 적용
+    @Column(name = "status", columnDefinition = "VARCHAR(255)")
+    private OrderStatus status;
     private String statusInfo;
     private String regionNm;
-    private Date orderDt;
+    private Integer totalPrice;
 
-    public void setStatus(String status) {
-        if (this.statusInfo != null) {
-            this.setStatusInfo(this.statusInfo + "::" + status);
-        } else {
-            this.setStatusInfo(status);
-        }
-        this.status = status ;
+    public void assignStore(Long storeId) {
+        this.storeId = storeId ;
     }
 
-    @PrePersist
-    private void onPrePersist() {
-        // Req/Res Calling
-        boolean bResult = false;
+    public void statusUpdate(OrderStatus status) {
+        this.status = status ;
+        setStatusInfo(status.getStatus());
+    }
 
-        // mappings goes here
-        try {
-            bResult = OrderApplication.applicationContext.getBean(com.study.mypizza.order.external.StoreService.class).checkOpenYn(this.regionNm) ;
-        } catch(Exception e) {
-            e.printStackTrace();
+    private void setStatusInfo(String statusInfo) {
+        if ( statusInfo != null ) {
+            if (this.statusInfo != null) {
+                this.statusInfo = this.statusInfo + "::" + statusInfo;
+            } else {
+                this.statusInfo = statusInfo;
+            }
         }
-
-        // 주문 요청된 지역에 오픈중인 Store가 있을 경우
-        if ( bResult ) {
-            this.setStatus("Ordered") ;
-        // 주문 요청된 지역에 오픈중인 Store가 없을 경우
-        } else {
-            this.setStatus("OrderRejected") ;
-        }
-
-        this.orderDt = new Date();
     }
 
     @PostPersist
     private void onPostPersist() {
-        log.debug("### {} :: {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName());
-        if ( "Ordered".equals(this.status)) {
-            Ordered ordered = new Ordered() ;
+//        log.debug("### {} :: {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName());
+        if ( status == OrderStatus.ORDERED ) {
+            Ordered ordered = new Ordered();
             BeanUtils.copyProperties(this, ordered);
             ordered.publishAfterCommit();
-            log.debug("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), ordered.toString());
-        } else if ( "OrderRejected".equals(this.status)) {
+            log.trace("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), ordered.toString());
+        } else if ( status == OrderStatus.ORDER_REJECTED ) {
             OrderRejected orderRejected = new OrderRejected();
             BeanUtils.copyProperties(this, orderRejected);
             orderRejected.publishAfterCommit();
-            log.debug("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), orderRejected.toString());
+            log.trace("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), orderRejected.toString());
+        } else {
+            log.warn("### SOMETHING WRONG!! onPostPersist : {}", this.toString()); ;
         }
-
     }
 
     @PostUpdate
     private void onPostUpdate() {
-        // 주문 취소 시
-        if ( "OrderCancelled".equals(this.status)) {
-            OrderCancelled orderCancelled = new OrderCancelled() ;
-            BeanUtils.copyProperties(this, orderCancelled);
-            orderCancelled.publishAfterCommit();
-            log.debug("#### Published in= [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), orderCancelled.toString());
+        if ( "Cooked".equals(this.status.getStatus())) {
+            if ( "Ordered::Cooked".equals(this.statusInfo)) {
+                log.debug("#### onPostUpdate 상태이상!!, Skip..!! : orderId={}, status={}[{}.{}()] : {}", orderId, status, this.getClass().getSimpleName(), new Object() {
+                }.getClass().getEnclosingMethod().getName(), this.toString());
+                return;
+            }
+            // 모든 경우의 status 상태 변화 시 이벤트 발행
+            StatusUpdated statusUpdated = new StatusUpdated();
+            BeanUtils.copyProperties(this, statusUpdated);
+            statusUpdated.publishAfterCommit();
+            log.trace("#### Published in= [{}.{}()] : {}", this.getClass().getSimpleName(), new Object() {
+            }.getClass().getEnclosingMethod().getName(), statusUpdated.toString());
+
+        } else if ( "OrderAccepted".equals(this.status.getStatus())) {
+            OrderAccepted orderAccepted = new OrderAccepted();
+            BeanUtils.copyProperties(this, orderAccepted);
+            orderAccepted.publishAfterCommit();
+            log.trace("#### Published in= [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), orderAccepted.toString());
+
+        } else {
+            // 모든 경우의 status 상태 변화 시 이벤트 발행
+            StatusUpdated statusUpdated = new StatusUpdated();
+            BeanUtils.copyProperties(this, statusUpdated);
+            statusUpdated.publishAfterCommit();
+            log.trace("#### Published in= [{}.{}()] : {}", this.getClass().getSimpleName(), new Object() {
+            }.getClass().getEnclosingMethod().getName(), statusUpdated.toString());
         }
-
-        // 모든 status 상태 변화 시 이벤트 발행
-        StatusUpdated statusUpdated = new StatusUpdated();
-        BeanUtils.copyProperties(this, statusUpdated);
-        statusUpdated.publishAfterCommit();
-        log.debug("#### Published in= [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), statusUpdated.toString());
     }
-
-
 }

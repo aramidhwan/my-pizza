@@ -1,0 +1,57 @@
+server:
+  ssl:
+    enabled: true
+#    key-store: src/main/resources/mypizza.p12
+    key-store: classpath:mypizza.p12     # classpath: 가 src/main/resources 와 동일한 의미임
+    key-store-password: shin22
+    key-store-type: PKCS12
+    key-alias: mypizza
+
+spring:
+  application:
+    name: gateway
+
+  profiles:
+    #    active: ${SPRING-PROFILES-ACTIVE}
+    active: local
+
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+
+  web:
+    resources:
+      add-mappings: false   # Spring Web 정적 리소스 핸들링 비활성화
+
+# Auth MSA에서 secretKey를 사용하여 JWT 서명을 생성하였습니다.
+# 해당 토큰을 사용하여 gateway에서 인가처리를 해주어야하기 때문에 gateway에도 secretKey가 있어야 합니다.
+jwt:
+  login_page: /common-service/auth/loginPage
+  refresh_token_url: /common-service/api/auth/refresh-token
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+  endpoints:
+    web:
+      exposure:
+#        /actuator/gateway/routes 경로를 통하여 정보 확인 가능
+        include: gateway,env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
+#        include: gateway,health    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정
+#        exclude: metrics
+
+logging:
+  level:
+    root: info
+    com.study.mypizza: debug
+#    org.springframework.cloud.gateway: DEBUG
+#    reactor.netty: DEBUG
+#    org.springframework.http.server.reactive: DEBUG
+#      springframework.cloud.gateway.filter: debug
+
+mypizza:
+  domain:
+    http-port: 80
+    https-port: 90

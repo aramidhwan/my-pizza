@@ -1,0 +1,26 @@
+server:
+  port: ${SERVER_PORT}
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+#    url: jdbc:log4jdbc:mysql://mysql:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: admin
+    hikari:
+      maximum-pool-size: 40 #최대 pool 크기
+      minimum-idle: 30 #최소 pool 크기
+
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: INTERNAL://kafka-1:19092, INTERNAL://kafka-2:19093, INTERNAL://kafka-3:19094
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://admin:admin@eurekaserver:8761/eureka    #유레카 서버 주소 http://아이디:비밀번호@아이피:8761/eureka

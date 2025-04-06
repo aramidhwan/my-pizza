@@ -1,0 +1,71 @@
+server:
+  ssl:
+    enabled: true
+    key-store: src/main/resources/mypizza.p12
+    #    key-store: classpath:mypizza.p12     # classpath: 가 src/main/resources 와 동일한 의미임
+    key-store-password: shin22
+    key-store-type: PKCS12
+    key-alias: mypizza
+
+spring:
+  application:
+    name: common
+  datasource:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+    hikari:
+#      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+#      jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/test?characterEncoding=utf-8
+      username: admin
+      password: admin
+  jpa:
+# @Transactional  붙은 해당 메소드가 끝이 날 때
+# spring.jpa.open-in-view=true 면 영속성 컨텍스트가 데이터베이스 커넥션을 반납하지않고,
+# spring.jpa.open-in-view=false 면 영속성 컨텍스트가 데이터베이스 커넥션을 반납한다.
+# spring.jpa.open-in-view=true 일 때는 Client에게 응답이 되고 난 후에 DB 커넥션을 반납한다. 
+# false 사용 하는 경우
+# 사용량이 많은 서비스를 제공하는 어플리케이션 에서는 false로 두어 DB 커넥션을 바로 반납하게 하여, 마르지 않도록 하는 것이 좋으며,
+# 대신  @Transaciotnal이 붙은 메소드 안에서 (필요에 따라) 지연로딩과 관련 초기화를 전부 시켜줘야 한다.
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+      #      ddl-auto: create, validate
+      generate-ddl: true      # generate-ddl ? ?? ddl-auto ??? ???? ??? ???? ????.(??? false)
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never  # never, always
+
+  thymeleaf:
+    prefix: classpath:/templates/   # Optional
+    suffix: .html                     # Optional
+    cache: false                    # Optional (default: true)
+
+  mvc:
+    view:
+      prefix: /html/
+      suffix: .html
+
+jwt:
+  header: Authorizationa
+  # HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  # echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+  access-token-expiration-millis: 3600000 # 3600000:1시간
+  refresh-token-expiration-millis: 4000000 # 864000000  # 864000000:240시간, 10일
+  issuer: com.study.mypizza
+
+aes:
+  secret-key: aeskey1234567898  # AES-128는 128비트(16바이트)의 키
+
+logging:
+  level:
+    root: info
+    com.study.mypizza: debug
+#    org.springframework.security: trace
+
+

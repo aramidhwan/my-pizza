@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--MyPizza 용 js-->
+    <script src="/order-service/js/orderMain.js"></script>
+    <!--bootstrap 용 css-->
+    <link rel="stylesheet" href="/order-service/css/bootstrap.min.css">
+    <style>
+        .ui-menu { width: 300px; }
+        .ui-widget-header { padding: 0.2em; }
+
+        .item {
+            float:left;
+            width: 200px;
+        }
+
+        .pricePerOne {
+            display:inline-block;
+            width: 80px;
+            margin-left:10px;
+            text-align: right;
+        }
+
+        div.hidden_info {
+            diplay:none;
+        }
+
+        content1 {
+          position: fixed;
+          padding-top: 101px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-sm content1">
+
+    <div class="row">
+        <div class="col">
+            <h4 style="white-space:nowrap;">최고의 맛과 품질을 보장합니다!</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-4">
+            <ul id="menu">
+                <th:block th:each="item : ${itemDtos}">
+                    <li th:if="${itemStat.first}" th:name="${item.itemGroup}" class="ui-widget-header menu_group"><div>[[${item.itemGroup}]]</div></li>
+                    <li th:if="${!itemStat.first && itemDtos[itemStat.index].itemGroup!=itemDtos[itemStat.index-1].itemGroup}" th:name="${item.itemGroup}" class="ui-widget-header menu_group"><div>[[${item.itemGroup}]]</div></li>
+                    <li id="menu_li" th:value="${item.itemId+'^'+item.itemNm+'^'+item.pricePerOne}"><span class="item">[[${item.itemNm}]]</span><span class="pricePerOne">[[${#numbers.formatInteger(item.pricePerOne,1,'COMMA')}+'원']]</span></li>
+                </th:block>
+            </ul>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <table id="tableOrdered" class="table">
+                        <thead>
+                        <tr id="dummy1" class="table-warning">
+                            <th scope="col">#</th>
+                            <th scope="col">메뉴명</th>
+                            <th scope="col">수량</th>
+                            <th scope="col">단가(개당)</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td id="tdTotalPrice" value="0" colspan="5">주문하실 메뉴를 선택해 주세요.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <!-- 주문버튼 -->
+                    <button type="button" class="btn btn-primary" id="btnOrder" style="float: right;">
+                        Order HERE! →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--주문 시 필요한 추가 정보들-->
+<div id="customerNo" class="hidden_info" th:value="${customerNo}"></div>
+<div id="regionNm" class="hidden_info" th:value="${regionNm}"></div>
+</body>
+</html>

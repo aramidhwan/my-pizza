@@ -1,19 +1,107 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  name: dev-kafka-1-headless-svc
+  namespace: dev-app
+spec:
+  type: ExternalName
+  # {Service Name}.{Namespace}.svc.cluster.local 형식으로 작성
+  externalName: dev-kafka-1-svc.dev-kafka.svc.cluster.local
+  selector:
+    app: kafka-1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  name: dev-kafka-2-headless-svc
+  namespace: dev-app
+spec:
+  type: ExternalName
+  # {Service Name}.{Namespace}.svc.cluster.local 형식으로 작성
+  externalName: dev-kafka-2-svc.dev-kafka.svc.cluster.local
+  selector:
+    app: kafka-2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  name: dev-kafka-3-headless-svc
+  namespace: dev-app
+spec:
+  type: ExternalName
+  # {Service Name}.{Namespace}.svc.cluster.local 형식으로 작성
+  externalName: dev-kafka-3-svc.dev-kafka.svc.cluster.local
+  selector:
+    app: kafka-3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-kafka-1-svc
+  namespace: dev-kafka
+  labels:
+    app: kafka-1
+spec:
+  selector:
+    app: kafka-1
+  ports:
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092
+#  type: NodePort
+#  type: LoadBalancer
+#  type: ClusterIP
+#  type: ExternalName
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-kafka-2-svc
+  namespace: dev-kafka
+  labels:
+    app: kafka-2
+spec:
+  selector:
+    app: kafka-2
+  ports:
+    - protocol: TCP
+      port: 9093
+      targetPort: 9093
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-kafka-3-svc
+  namespace: dev-kafka
+  labels:
+    app: kafka-3
+spec:
+  selector:
+    app: kafka-3
+  ports:
+    - protocol: TCP
+      port: 9094
+      targetPort: 9094
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dev-kafka
+  name: dev-kafka-1
   namespace: dev-kafka
   labels:
-    app: kafka
+    app: kafka-1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kafka
+      app: kafka-1
   template:
     metadata:
       labels:
-        app: kafka
+        app: kafka-1
     spec:
       containers:
         - name: broker
@@ -23,48 +111,90 @@ spec:
           env:
             - name: TZ
               value: "Asia/Seoul"
+            - name: KAFKA_BROKER_ID
+              value: "1"
             - name: KAFKA_DELETE_TOPIC_ENABLE
               value: "true"
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: dev-zookeeper-service:2181
             - name: KAFKA_LISTENERS
               value: PLAINTEXT://0.0.0.0:9092
-#              value: PLAINTEXT://0.0.0.0:9092
-#            - name: KAFKA_ADVERTISED_HOST_NAME
-#              value: dev-kafka-service.dev-kafka.svc.cluster.local
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: PLAINTEXT://dev-kafka-service.dev-kafka.svc.cluster.local:9092
-#              value: PLAINTEXT://dev-kafka-headless-svc:9092 (X)
-#              value: PLAINTEXT://dev-kafka-service:9092 (X)
-#            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-#              value: CLIENT:PLAINTEXT
-#            - name: KAFKA_INTER_BROKER_LISTENER_NAME
-#              value: CLIENT
+              value: PLAINTEXT://dev-kafka-1-svc.dev-kafka.svc.cluster.local:9092
+#            - name: KAFKA_DEFAULT_REPLICATION_FACTOR
+#              value: "3"
+#            - name: KAFKA_NUM_PARTITIONS
+#              value: "2"                      # 토픽이 몇 개의 파티션으로 생성되는지. 기본 값
 
-
-#            - name: KAFKA_BROKER_ID
-#              value: "1"
-#            - name: KAFKA_ZOOKEEPER_CONNECT
-#              value: dev-zookeeper-service:2181
-#            - name: KAFKA_LISTENERS
-#              value: INTERNAL://dev-kafka-service:9092,EXTERNAL://dev-kafka-service:19092
-#            - name: KAFKA_ADVERTISED_LISTENERS
-#              value: INTERNAL://dev-kafka-service:9092,EXTERNAL://dev-kafka-service:19092
-#            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-#              value: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-#            - name: KAFKA_INTER_BROKER_LISTENER_NAME
-#              value: INTERNAL
-
-#            - name: KAFKA_ZOOKEEPER_CONNECT
-#              value: 'dev-zookeeper-service:2181'
-#            - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-#              value: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-#            - name: KAFKA_ADVERTISED_LISTENERS
-#              value: PLAINTEXT://dev-kafka-service:29092,PLAINTEXT_INTERNAL://dev-kafka-service:9092
-
-#            - name: KAFKA_ADVERTISED_HOST_NAME
-#              value: dev-kafka-service
-#            - name: KAFKA_ZOOKEEPER_CONNECT
-#              value: dev-zookeeper-service:2181
-#            - name: KAFKA_CREATE_TOPICS
-#              value: "myPizza-order:2:1, myPizza-store:1:1, myPizza-delivery:1:1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-kafka-2
+  namespace: dev-kafka
+  labels:
+    app: kafka-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-2
+  template:
+    metadata:
+      labels:
+        app: kafka-2
+    spec:
+      containers:
+        - name: broker
+          image: bitnami/kafka
+          ports:
+            - containerPort: 9093
+          env:
+            - name: TZ
+              value: "Asia/Seoul"
+            - name: KAFKA_BROKER_ID
+              value: "2"
+            - name: KAFKA_DELETE_TOPIC_ENABLE
+              value: "true"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: dev-zookeeper-service:2181
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9093
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://dev-kafka-2-svc.dev-kafka.svc.cluster.local:9093
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-kafka-3
+  namespace: dev-kafka
+  labels:
+    app: kafka-3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-3
+  template:
+    metadata:
+      labels:
+        app: kafka-3
+    spec:
+      containers:
+        - name: broker
+          image: bitnami/kafka
+          ports:
+            - containerPort: 9094
+          env:
+            - name: TZ
+              value: "Asia/Seoul"
+            - name: KAFKA_BROKER_ID
+              value: "3"
+            - name: KAFKA_DELETE_TOPIC_ENABLE
+              value: "true"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: dev-zookeeper-service:2181
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://0.0.0.0:9094
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://dev-kafka-3-svc.dev-kafka.svc.cluster.local:9094

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lagn="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="1; url=/common-service/common/layout" />
+    <style>
+        @keyframes blink {
+          0% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+        .blinking-text {
+          animation: blink 1s infinite; /* 1초 간격으로 무한 반복 */
+        }
+    </style>
+</head>
+
+<body>
+<br><br>
+<h1 style="text-align:center">MyPizza Platform에 오신것을 환영합니다.</h1>
+<h2 class="blinking-text" style="text-align:center"><a href="/items" style="text-decoration-line: none;">주문 화면으로 이동합니다.</a></h2>
+</body>
+</html>

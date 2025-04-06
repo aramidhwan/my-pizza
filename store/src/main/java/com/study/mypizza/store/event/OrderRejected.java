@@ -1,9 +1,8 @@
 package com.study.mypizza.store.event;
 
+import com.study.mypizza.store.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
@@ -11,6 +10,5 @@ public class OrderRejected extends AbstractEvent {
     private Long storeOrderId;
     private Long storeId;
     private Long orderId;
-    private Date acceptDt;
-    private String status;
+    private OrderStatus status;
 }

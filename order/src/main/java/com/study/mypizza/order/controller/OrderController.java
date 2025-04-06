@@ -1,49 +1,68 @@
 package com.study.mypizza.order.controller;
 
-import com.study.mypizza.order.entity.Order;
-import com.study.mypizza.order.external.StoreService;
-import com.study.mypizza.order.repository.OrderRepository;
+import com.study.mypizza.order.dto.*;
+import com.study.mypizza.order.exception.MyPizzaException;
+import com.study.mypizza.order.service.ItemService;
+import com.study.mypizza.order.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
-@RestController
+@Controller
+@RequiredArgsConstructor
 @Slf4j
 public class OrderController {
-    @Autowired
-    OrderRepository orderRepository ;
-    @Autowired
-    StoreService storeService ;
+    private final OrderService orderService ;
+    private final ItemService itemService ;
 
-    @GetMapping("/orderCancel/{orderId}")
-    public String orderCancel(@PathVariable("orderId") Long orderId) {
-        String rtnMsg = null ;
-        Optional<Order> optional = orderRepository.findById(orderId) ;
+    @GetMapping("/html/orderMain")
+    public String orderMain(Model model) {
+        List<ItemDto> itemDtos = itemService.getItems() ;
+        model.addAttribute("itemDtos", itemDtos);
+        model.addAttribute("regionNm", "강남구");
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+        return "/html/orderMain";
+    }
 
-        if (optional.isPresent()) {
-            Order order = optional.get() ;
+    @PostMapping("/api/createOrder")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_ADMIN')") // 여러개 권한 주기
+    public ResponseEntity<ResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
+        Assert.isTrue(!orderRequestDto.getItems().isEmpty(), "한개라도 주문하라고!!");
 
-            // 주문 접수 이전 단계에서만 취소가능
-            if ( "Ordered".equals(order.getStatus()) ) {
-                // 취소 전에 주문받은 Store가 있는지 Store MSA에서 다시 한 번 체크
-                if (storeService.checkOrderCancel(orderId)) {
-                    order.setStatus("OrderCancelled");
-                    orderRepository.save(order) ;
-                // 취소 불가능
-                } else {
-                    rtnMsg = "### 주문 취소 불가능 :: 이미 Store에서 준비중입니다." ;
-                }
-            } else {
-                // 취소 불가능
-                rtnMsg = "### 주문 취소 불가능 :: 이미 Ordered 이후 단계("+order.getStatus()+")로 진행되었습니다." ;
-            }
-        }
+        // Authentication 에서 customerNo 가져오기
+        Integer customerNo = (Integer) authentication.getDetails();
+        orderRequestDto.setCustomerNo(customerNo);
+        OrderDto newOrderDto = orderService.createOrder(orderRequestDto) ;
 
-        log.debug(rtnMsg);
-        return rtnMsg ;
+        ResponseDto responseDto = ResponseDto.builder()
+                .BIZ_SUCCESS(0)
+                .msg("✅ 주문이 완료되었습니다!")
+                .data(newOrderDto)
+                .build();
+        return ResponseEntity.ok(responseDto) ;
+    }
+
+    @PatchMapping("/orders/orderCancel/{orderId}")
+    public String orderCancel(@PathVariable("orderId") Long orderId) throws MyPizzaException {
+        orderService.orderCancel(orderId);
+        return "취소되었습니다." ;
+    }
+
+    @GetMapping("/favicon.ico")
+    public void returnNoFavicon() {
     }
 }

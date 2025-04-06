@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lagn="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="~{common/config :: config}">
+    <!--    <title layout:title-pattern="$LAYOUT_TITLE : $CONTENT_TITLE">공통 타이틀</title>-->
+</head>
+<body>
+<!--common/top 위치에 있는 파일의 fragment가 top 걸 head에 Import 할거야.-->
+<!--(아까 top.html 파일에서 명명한 이름을 여기다가 쓰는 것.)-->
+<div th:replace="~{common/top :: top}"></div>
+
+<br><br><br><br><br><br><br>
+
+<!--이 위치에다가 fragment가 content 인걸 head에 Import 할거야.-->
+<div id="content"></div>
+
+<!-- common/config 위치에 있는 파일의 fragment가 footer인 걸 footer에 Import 할거야. -->
+<!--<footer th:replace="common/footer::footer"></footer>-->
+</body>
+</html>

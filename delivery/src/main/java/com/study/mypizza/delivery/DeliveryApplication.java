@@ -2,9 +2,13 @@ package com.study.mypizza.delivery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableJpaAuditing
+@EnableFeignClients(basePackages = "com.study.mypizza.delivery.external") // 패키지 등록
 public class DeliveryApplication {
 	public static ApplicationContext applicationContext ;
 

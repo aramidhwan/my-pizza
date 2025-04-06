@@ -1,0 +1,64 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: gateway
+
+#  config:
+#    active:
+#      on-profile: local
+
+  cloud:
+    gateway:
+      routes:
+        - id: store
+#          uri: http://store:8091   # 단일 포트
+          uri: lb://STORE       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/store-service/**
+          filters:
+            - RewritePath=/store-service/(?<segment>.*), /$\{segment}
+#            - name: L1Filter
+#              args.pre: true
+#              args.post: true
+        - id: order
+#          uri: http://order:8092   # 단일 포트
+          uri: lb://ORDER       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
+        - id: delivery
+#          uri: http://delivery:8093   # 단일 포트
+          uri: lb://DELIVERY       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/delivery-service/**
+          filters:
+            - RewritePath=/delivery-service/(?<segment>.*), /$\{segment}
+        - id: mypage
+#          uri: http://mypage:8094   # 단일 포트
+          uri: lb://MYPAGE       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          predicates:
+            - Path=/mypage-service/**
+          filters:
+            - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
+
+eureka:
+  client:
+    enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://admin:admin@eurekaserver:8761/eureka
+
+management:                 # Spring Actuator
+  endpoint:
+    gateway:
+      enabled: true         # default: true
+  endpoints:
+    web:
+      exposure:
+        include: gateway,env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
+#        include: gateway,health    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정
+#        exclude: metrics
