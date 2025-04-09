@@ -80,7 +80,7 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
             
         // JWT 토큰 검증 수행
         } else {
-            log.debug("🔍 Jwt1GlobalFilter 시작 : {}", requestPath);
+            log.trace("🔍 Jwt1GlobalFilter 시작 : {}", requestPath);
 
             // JWT 토큰 추출
             String jwtToken = resolveJWTToken(request) ;
@@ -89,34 +89,34 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
                 // JWT 토큰 유효성 인증 성공! next filter
                 if ( jwtToken == null ) {
                     errorMsg = "🔍 JWT 토큰이 없습니다. ["+requestPath+"]" ;
-                    log.debug(errorMsg);
+                    log.trace(errorMsg);
                     okGo = JWTAuth.NO_JWT ;
                 } else if ( tokenProvider.validateToken(jwtToken) ) {
-                    log.debug("🔍 JWT 토큰 유효성 인증 성공! {}",requestPath);
+                    log.trace("🔍 JWT 토큰 유효성 인증 성공! {}",requestPath);
                     // 다음 필터로 이동한다.
                     okGo = JWTAuth.OK ;
                 } else {
                     errorMsg = "🔍 JWT 토큰 Validation 실패! ["+requestPath+"]" ;
-                    log.debug(errorMsg);
+                    log.trace(errorMsg);
                     okGo = JWTAuth.WRONG_JWT ;
                 }
             } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
                 errorMsg = "🔍 잘못된 JWT 토큰입니다. ["+requestPath+"]" ;
                 okGo = JWTAuth.WRONG_JWT ;
-                log.debug(errorMsg, e.getMessage());
+                log.trace(errorMsg, e.getMessage());
             } catch (io.jsonwebtoken.ExpiredJwtException e) {
                 errorMsg = "🔍 만료된 JWT 서명입니다. ["+requestPath+"]["+jwtToken+"]" ;
                 okGo = JWTAuth.JWT_EXPIRED ;
-                log.debug(errorMsg, e.getMessage());
+                log.trace(errorMsg, e.getMessage());
 //                handleExpiredToken(exchange, chain) ;
             } catch (io.jsonwebtoken.UnsupportedJwtException e) {
                 errorMsg = "🔍 지원되지 않는 JWT 토큰입니다. ["+requestPath+"]" ;
                 okGo = JWTAuth.WRONG_JWT ;
-                log.debug(errorMsg, e.getMessage());
+                log.trace(errorMsg, e.getMessage());
             } catch (IllegalArgumentException e) {
                 errorMsg = "🔍 JWT 토큰이 잘못되었습니다. ["+requestPath+"]" ;
                 okGo = JWTAuth.WRONG_JWT ;
-                log.debug(errorMsg, e.getMessage());
+                log.trace(errorMsg, e.getMessage());
             }
         }
 
@@ -124,7 +124,7 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
         if (okGo == JWTAuth.OK) {
             return chain.filter(exchange);
         } else if (okGo == JWTAuth.JWT_EXPIRED) {
-            log.debug("🔍 JWT 토큰 재발급 URL Redirect : {}", tokenProvider.REFRESH_TOKEN_URL);
+            log.trace("🔍 JWT 토큰 재발급 URL Redirect : {}", tokenProvider.REFRESH_TOKEN_URL);
             // 토큰 만료 시 리다이렉트 처리
             exchange.getResponse().setStatusCode(HttpStatus.SEE_OTHER);
             exchange.getResponse().getHeaders().setLocation(URI.create(tokenProvider.REFRESH_TOKEN_URL+"?redirect="+requestPath));
@@ -140,7 +140,7 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
                     .build() ;
         // JWT 검증 미통과
         } else {
-            log.debug("🔍 JWT 검증 미통과 : " + okGo);
+            log.trace("🔍 JWT 검증 미통과 : " + okGo);
             // JWT 토큰 유효성 인증 실패 Response
             responseDto = ResponseDto.builder()
                     .httpStatus(HttpStatus.UNAUTHORIZED)
@@ -185,14 +185,14 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
             List<HttpCookie> httpCookies = request.getCookies().get(TokenProvider.ACCESS_TOKEN_COOKIE) ;
             if (httpCookies!=null && !httpCookies.isEmpty()) {
                 authorizationString = httpCookies.get(0).getValue() ;
-                log.debug("🔍 Get AccessToken from COOKIE! [{}]",authorizationString);
+                log.trace("🔍 Get AccessToken from COOKIE! [{}]",authorizationString);
             }
 
             if ( authorizationString == null ) {
-                log.debug("🔍 authorizationString is NULL!! Path : {}", request.getPath().toString());
+                log.trace("🔍 authorizationString is NULL!! Path : {}", request.getPath().toString());
             }
         } else {
-            log.debug("🔍 Get AccessToken from HEADER! [{}]",authorizationString);
+            log.trace("🔍 Get AccessToken from HEADER! [{}]",authorizationString);
             authorizationString = authorizationString.substring(TokenProvider.BEARER_TYPE.length()+1) ;
         }
 

@@ -124,11 +124,13 @@ function addEventToCheckBox() {
     });
 }
 
+// 가맹점주가 "Cooked" 처리했을 시 응답처리
 function successfullyUpdated(json) {
     const selectedCheckBox = document.querySelector('input[name="cooked"][data-order-id="'+json.data.orderId+'"]');
     selectedCheckBox.checked = true ;
 }
 
+// 가맹점주 화면 ("Cooked" 처리) 그리기
 function createStoreAdminTable(storeId, storeNm) {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");

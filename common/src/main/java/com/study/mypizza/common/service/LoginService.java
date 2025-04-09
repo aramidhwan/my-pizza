@@ -82,7 +82,7 @@ public class LoginService implements UserDetailsService {         // 회원가�
     // LoginFilter/UsernamePasswordAuthenticationFilter.attemptAuthentication 에서 여기로 호출됨
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.debug("### LoginService.loadUserByUsername() 로그인 시도 email : {}", email);
+        log.trace("### LoginService.loadUserByUsername() 로그인 시도 email : {}", email);
 
         Customer customer = customerRepository.findOneByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 e-mail 입니다. [" + email + "]"));
