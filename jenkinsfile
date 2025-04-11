@@ -17,16 +17,16 @@ pipeline {
         stage('Detect Changes') {
             steps {
                 script {
-                    changedFiles = sh(script: "git diff --name-only origin/main", returnStdout: true).trim().split('\n')
+                    def changedFiles = sh(script: "git diff --name-only origin/main", returnStdout: true).trim().split('\n')
 
                     echo "?? 변경된 파일 목록:"
                     changedFiles.each { echo it }
 
-                    BUILD_COMMON   = changedFiles.any { it.startsWith("common-service/") }
-                    BUILD_ORDER    = changedFiles.any { it.startsWith("order-service/") }
-                    BUILD_STORE    = changedFiles.any { it.startsWith("store-service/") }
-                    BUILD_DELIVERY = changedFiles.any { it.startsWith("delivery-service/") }
-                    BUILD_MYPAGE   = changedFiles.any { it.startsWith("mypage-service/") }
+                    def BUILD_COMMON   = changedFiles.any { it.startsWith("common-service/") }
+                    def BUILD_ORDER    = changedFiles.any { it.startsWith("order-service/") }
+                    def BUILD_STORE    = changedFiles.any { it.startsWith("store-service/") }
+                    def BUILD_DELIVERY = changedFiles.any { it.startsWith("delivery-service/") }
+                    def BUILD_MYPAGE   = changedFiles.any { it.startsWith("mypage-service/") }
                 }
             }
         }
