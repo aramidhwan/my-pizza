@@ -46,10 +46,10 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'forGitHub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        """
+                        '''
 
                         if (env.BUILD_COMMON == 'true') {
                             sh """
