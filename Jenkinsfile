@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         PROJECT_NAME = 'my-pizza'
-        DOCKER_HUB_USER = 'aramidhwan' // ?? 사용자에 맞게 수정
-        IMAGE_TAG = "latest" // 필요시 PR 번호나 커밋 해시로 바꿔도 됨
+        DOCKER_HUB_USER = 'aramidhwan'
+        IMAGE_TAG = "latest"
     }
 
     stages {
