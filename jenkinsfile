@@ -1,70 +1,65 @@
-pipeline { 
-	environment { 
-		gitUrl = "https://github.com/aramidhwan/my-pizza.git"
-		storeImageTag = "aramidhwan/store"  //docker hub id¿Í repository ÀÌ¸§
-		storeImage = '' 
-		gitCredentialsId = "forGitHub"		// Jenkins¿¡ µî·ÏÇÑ Git¿ë credential ID
-		dockerHubCredentialsId = "forDockerHub"		// Jenkins¿¡ µî·ÏÇÑ Git¿ë credential ID
-	}
-  
-	agent any 
+pipeline {
+    agent any
 
-	stages { 
-		stage('Git Clone') {
-			steps {
-			  git branch: 'main', 
-			      credentialsId: gitCredentialsId, 
-			      url: gitUrl
-			}
-		}
-		stage('[Gradle Build] Store') {
-			steps {
-			  dir("./store/") {
-		      sh '''
-		         echo 'START CLEAN, bootJar'
-		         chmod +x gradlew
-		         ./gradlew clean bootJar
-		      '''
-			  }
-			}
-		}
-    stage('[Docker Image] Store') { 
-    	steps {
-    		script { 
-				  dir("./store/") {
-						storeImage = docker.build(storeImageTag + ":$BUILD_NUMBER" ) // Push Image ´Ü°è¿¡¼­ ºôµå¹øÈ£¸¦ ºÙÀÌ±â ¶§¹®¿¡ ¿É¼Ç Á¦°Å °¡´É
-					}
-				}
-			}
-		}
-		stage('Push image to Docker Hub') {
-			steps {
-    		script { 
-					docker.withRegistry('', dockerHubCredentialsId) { // ¾÷·ÎµåÇÒ ·¹Áö½ºÆ®¸® Á¤º¸, Jenkins Credentials ID for Github
-						storeImage.push() // image¿¡ ºôµå¹øÈ£¸¦ ÅÂ±×·Î ºÙÀÎ ÈÄ Push
-						storeImage.push("latest") // image¿¡ latest¸¦ ÅÂ±×·Î ºÙÀÎ ÈÄ Push
-					}
-				}
-			}
-		}
-		stage('Clean up local image') {
-			steps{
-				sh "docker rmi $storeImageTag:$BUILD_NUMBER"
-			}
-		}
-		stage('K8S Store') {
-			steps{
-				sh '''
-				    echo Getting AKS Credentials
-				    sudo az aks get-credentials --resource-group myPizzaRSG --name myPizzaCluster --overwrite-existing
-				    
-				    echo Creating Application
-				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/init/kubernetes/deployment-dev-app-secret.yml
-				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/init/kubernetes/deployment-dev-app-configmap.yml
-				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/store/kubernetes/deployment-store.yml
-				    sudo kubectl apply -f /home/shshin/workspace/intellij/my-pizza/store/kubernetes/service-store.yml
-		      '''
-			}
-		}
-	}
+    environment {
+        PROJECT_NAME = 'my-pizza'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Detect Changes') {
+            steps {
+                script {
+                    // PR ë˜ëŠ” ë¸Œëœì¹˜ì—ì„œ ë³€ê²½ëœ íŒŒì¼ ê²½ë¡œ ì¶”ì¶œ
+                    changedFiles = sh(script: "git diff --name-only origin/main", returnStdout: true).trim().split('\n')
+                    
+                    echo "ğŸ“ ë³€ê²½ëœ íŒŒì¼ ëª©ë¡:"
+                    changedFiles.each { echo it }
+
+                    // ë³€ê²½ëœ ì„œë¸Œí´ë” í”Œë˜ê·¸ ì„¤ì •
+                    BUILD_COMMON     = changedFiles.any { it.startsWith("common-service/") }
+                    BUILD_ORDER     = changedFiles.any { it.startsWith("order-service/") }
+                    BUILD_STORE     = changedFiles.any { it.startsWith("store-service/") }
+                    BUILD_DELIVERY    = changedFiles.any { it.startsWith("delivery-service/") }
+                    BUILD_MYPAGE   = changedFiles.any { it.startsWith("mypage-service/") }
+                }
+            }
+        }
+
+        stage('Build Changed Services') {
+            steps {
+                script {
+                    if (BUILD_COMMON) {
+                        echo 'ğŸš€ common-service ë¹Œë“œ ì¤‘...'
+                        // sh 'cd common-service && ./gradlew build'
+                    }
+                    if (BUILD_ORDER) {
+                        echo 'ğŸš€ order-service ë¹Œë“œ ì¤‘...'
+                        // sh 'cd order-service && ./gradlew build'
+                    }
+                    if (BUILD_STORE) {
+                        echo 'ğŸš€ store-service ë¹Œë“œ ì¤‘...'
+                        // sh 'cd store-service && ./gradlew build'
+                    }
+                    if (BUILD_DELIVERY) {
+                        echo 'ğŸš€ delivery-service ë¹Œë“œ ì¤‘...'
+                        // sh 'cd delivery-service && ./gradlew build'
+                    }
+                    if (BUILD_MYPAGE) {
+                        echo 'ğŸš€ mypage-service ë¹Œë“œ ì¤‘...'
+                        // sh 'cd mypage-service && ./gradlew build'
+                    }
+
+                    if (!(BUILD_COMMON || BUILD_ORDER || BUILD_DELIVERY || BUILD_STORE || BUILD_MYPAGE)) {
+                        echo 'â„¹ï¸ ë³€ê²½ëœ ì„œë¹„ìŠ¤ê°€ ì—†ì–´ ë¹Œë“œí•  ê²ƒì´ ì—†ìŠµë‹ˆë‹¤.'
+                    }
+                }
+            }
+        }
+    }
 }
