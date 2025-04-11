@@ -17,10 +17,16 @@ pipeline {
         stage('Detect Changes') {
             steps {
                 script {
-                    def changedFiles = sh(script: "git diff --name-only origin/main", returnStdout: true).trim().split('\n')
+                    def changedFiles = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim().split('\n')
 
                     echo "📁 변경된 파일 목록:"
                     changedFiles.each { echo it }
+                    
+                    if (changedFiles.size() == 0) {
+                        echo '⚠️ 변경된 파일이 없습니다.'
+                    } else {
+                        echo "✅ 변경 감지됨!"
+                    }
 
                     env.BUILD_COMMON   = changedFiles.any { it.startsWith("common-service/") }.toString()
                     env.BUILD_ORDER    = changedFiles.any { it.startsWith("order-service/") }.toString()
