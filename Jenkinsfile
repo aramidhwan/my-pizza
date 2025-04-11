@@ -40,11 +40,11 @@ pipeline {
         stage('Build Services') {
             steps {
                 script {
-                    if (env.BUILD_COMMON == 'true')   { echo '🚧 common-service 빌드'   /* sh 'cd common-service && ./gradlew build' */ }
-                    if (env.BUILD_ORDER == 'true')    { echo '🚧 order-service 빌드'    /* sh 'cd order-service && ./gradlew build' */ }
-                    if (env.BUILD_STORE == 'true')    { echo '🚧 store-service 빌드'    /* sh 'cd store-service && ./gradlew build' */ }
-                    if (env.BUILD_DELIVERY == 'true') { echo '🚧 delivery-service 빌드' /* sh 'cd delivery-service && ./gradlew build' */ }
-                    if (env.BUILD_MYPAGE == 'true')   { echo '🚧 mypage-service 빌드'   /* sh 'cd mypage-service && ./gradlew build' */ }
+                    if (env.BUILD_COMMON == 'true')   { echo '🚧 common 빌드'   /* sh 'cd common && ./gradlew build' */ }
+                    if (env.BUILD_ORDER == 'true')    { echo '🚧 order 빌드'    /* sh 'cd order && ./gradlew build' */ }
+                    if (env.BUILD_STORE == 'true')    { echo '🚧 store 빌드'    /* sh 'cd store && ./gradlew build' */ }
+                    if (env.BUILD_DELIVERY == 'true') { echo '🚧 delivery 빌드' /* sh 'cd delivery && ./gradlew build' */ }
+                    if (env.BUILD_MYPAGE == 'true')   { echo '🚧 mypage 빌드'   /* sh 'cd customercenter && ./gradlew build' */ }
                 }
             }
         }
