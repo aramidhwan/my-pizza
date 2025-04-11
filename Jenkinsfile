@@ -17,51 +17,82 @@ pipeline {
         stage('Detect Changes') {
             steps {
                 script {
-                    // PR 또는 브랜치에서 변경된 파일 경로 추출
                     changedFiles = sh(script: "git diff --name-only origin/main", returnStdout: true).trim().split('\n')
-                    
-                    echo "📁 변경된 파일 목록:"
+
+                    echo "?? 변경된 파일 목록:"
                     changedFiles.each { echo it }
 
-                    // 변경된 서브폴더 플래그 설정
-                    BUILD_COMMON     = changedFiles.any { it.startsWith("common-service/") }
-                    BUILD_ORDER     = changedFiles.any { it.startsWith("order-service/") }
-                    BUILD_STORE     = changedFiles.any { it.startsWith("store-service/") }
-                    BUILD_DELIVERY    = changedFiles.any { it.startsWith("delivery-service/") }
+                    BUILD_COMMON   = changedFiles.any { it.startsWith("common-service/") }
+                    BUILD_ORDER    = changedFiles.any { it.startsWith("order-service/") }
+                    BUILD_STORE    = changedFiles.any { it.startsWith("store-service/") }
+                    BUILD_DELIVERY = changedFiles.any { it.startsWith("delivery-service/") }
                     BUILD_MYPAGE   = changedFiles.any { it.startsWith("mypage-service/") }
                 }
             }
         }
 
-        stage('Build Changed Services') {
+        stage('Build Services') {
             steps {
                 script {
-                    if (BUILD_COMMON) {
-                        echo '🚀 common-service 빌드 중...'
-                        // sh 'cd common-service && ./gradlew build'
-                    }
-                    if (BUILD_ORDER) {
-                        echo '🚀 order-service 빌드 중...'
-                        // sh 'cd order-service && ./gradlew build'
-                    }
-                    if (BUILD_STORE) {
-                        echo '🚀 store-service 빌드 중...'
-                        // sh 'cd store-service && ./gradlew build'
-                    }
-                    if (BUILD_DELIVERY) {
-                        echo '🚀 delivery-service 빌드 중...'
-                        // sh 'cd delivery-service && ./gradlew build'
-                    }
-                    if (BUILD_MYPAGE) {
-                        echo '🚀 mypage-service 빌드 중...'
-                        // sh 'cd mypage-service && ./gradlew build'
-                    }
+                    if (BUILD_COMMON)   { echo '?? common-service 빌드'   /* sh 'cd common-service && ./gradlew build' */ }
+                    if (BUILD_ORDER)    { echo '?? order-service 빌드'    /* sh 'cd order-service && ./gradlew build' */ }
+                    if (BUILD_STORE)    { echo '?? store-service 빌드'    /* sh 'cd store-service && ./gradlew build' */ }
+                    if (BUILD_DELIVERY) { echo '?? delivery-service 빌드' /* sh 'cd delivery-service && ./gradlew build' */ }
+                    if (BUILD_MYPAGE)   { echo '?? mypage-service 빌드'   /* sh 'cd mypage-service && ./gradlew build' */ }
+                }
+            }
+        }
 
-                    if (!(BUILD_COMMON || BUILD_ORDER || BUILD_DELIVERY || BUILD_STORE || BUILD_MYPAGE)) {
-                        echo 'ℹ️ 변경된 서비스가 없어 빌드할 것이 없습니다.'
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'forGitHub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh """
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        """
+
+                        if (BUILD_COMMON) {
+                            sh """
+                                docker build -t ${DOCKER_HUB_USER}/common-service:${IMAGE_TAG} ./common-service
+                                docker push ${DOCKER_HUB_USER}/common-service:${IMAGE_TAG}
+                            """
+                        }
+                        if (BUILD_ORDER) {
+                            sh """
+                                docker build -t ${DOCKER_HUB_USER}/order-service:${IMAGE_TAG} ./order-service
+                                docker push ${DOCKER_HUB_USER}/order-service:${IMAGE_TAG}
+                            """
+                        }
+                        if (BUILD_STORE) {
+                            sh """
+                                docker build -t ${DOCKER_HUB_USER}/store-service:${IMAGE_TAG} ./store-service
+                                docker push ${DOCKER_HUB_USER}/store-service:${IMAGE_TAG}
+                            """
+                        }
+                        if (BUILD_DELIVERY) {
+                            sh """
+                                docker build -t ${DOCKER_HUB_USER}/delivery-service:${IMAGE_TAG} ./delivery-service
+                                docker push ${DOCKER_HUB_USER}/delivery-service:${IMAGE_TAG}
+                            """
+                        }
+                        if (BUILD_MYPAGE) {
+                            sh """
+                                docker build -t ${DOCKER_HUB_USER}/mypage-service:${IMAGE_TAG} ./mypage-service
+                                docker push ${DOCKER_HUB_USER}/mypage-service:${IMAGE_TAG}
+                            """
+                        }
                     }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo '? 전체 파이프라인 완료'
+        }
+        failure {
+            echo '? 오류 발생 - 로그를 확인하세요'
         }
     }
 }
