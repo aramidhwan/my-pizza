@@ -28,11 +28,11 @@ pipeline {
                         echo "✅ 변경 감지됨!"
                     }
 
-                    env.BUILD_COMMON   = changedFiles.any { it.startsWith("common-service/") }.toString()
-                    env.BUILD_ORDER    = changedFiles.any { it.startsWith("order-service/") }.toString()
-                    env.BUILD_STORE    = changedFiles.any { it.startsWith("store-service/") }.toString()
-                    env.BUILD_DELIVERY = changedFiles.any { it.startsWith("delivery-service/") }.toString()
-                    env.BUILD_MYPAGE   = changedFiles.any { it.startsWith("mypage-service/") }.toString()
+                    env.BUILD_COMMON   = changedFiles.any { it.startsWith("common/") }.toString()
+                    env.BUILD_ORDER    = changedFiles.any { it.startsWith("order/") }.toString()
+                    env.BUILD_STORE    = changedFiles.any { it.startsWith("store/") }.toString()
+                    env.BUILD_DELIVERY = changedFiles.any { it.startsWith("delivery/") }.toString()
+                    env.BUILD_MYPAGE   = changedFiles.any { it.startsWith("customercenter/") }.toString()
                 }
             }
         }
