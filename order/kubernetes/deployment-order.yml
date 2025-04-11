@@ -19,7 +19,7 @@ spec:
         - name: order
           image: aramidhwan/order:latest
           ports:
-            - containerPort: 80
+            - containerPort: 443
           env:
             - name: DB_URL
               valueFrom:
@@ -56,8 +56,8 @@ metadata:
     app: order
 spec:
   ports:
-    - port: 80
-      targetPort: 80
+    - port: 443
+      targetPort: 443
   selector:
     app: order
 #  type: ClusterIP

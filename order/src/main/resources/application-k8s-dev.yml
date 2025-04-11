@@ -1,5 +1,5 @@
 server:
-  port: 80
+  port: 443
 
 spring:
   datasource:
@@ -26,3 +26,7 @@ spring:
 eureka:
   client:
     enabled: false
+
+mypizza:
+  cors:
+    allowedOrigins: https://my-pizza.io

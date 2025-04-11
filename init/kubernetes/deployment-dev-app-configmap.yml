@@ -6,6 +6,7 @@ metadata:
 data:
   # property-like keys; each key maps to a simple value
   feign-url-store-service: http://dev-store
+  feign-url-order-service: http://dev-order
   kafka_binder_brokers: dev-kafka-1-headless-svc:9092,dev-kafka-2-headless-svc:9093;dev-kafka-3-headless-svc:9094
 
   #  player_initial_lives: "3"

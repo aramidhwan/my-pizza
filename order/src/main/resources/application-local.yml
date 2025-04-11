@@ -24,7 +24,6 @@ spring:
       client:
         config:
           STORE:        # @FeignClient(name="STORE")에 해당하는 부분 기술
-#            url: http://localhost:81
             url: https://my-pizza.io:90
 
 eureka:

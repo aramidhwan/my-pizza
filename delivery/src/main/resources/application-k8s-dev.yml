@@ -1,5 +1,5 @@
 server:
-  port: 80
+  port: 443
 
 spring:
   datasource:
@@ -19,6 +19,16 @@ spring:
         binder:
           brokers: ${KAFKA-BINDER-BROKERS}
 
+    openfeign:
+      client:
+        config:
+          STORE:        # @FeignClient(name="STORE")에 해당하는 부분 기술
+            url: https://my-pizza.io:90/store-service
+
 eureka:
   client:
     enabled: false
+
+mypizza:
+  cors:
+    allowedOrigins: https://my-pizza.io

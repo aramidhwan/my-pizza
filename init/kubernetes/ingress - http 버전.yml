@@ -5,14 +5,9 @@ metadata:
   namespace: dev-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2         # $2는 아래 path 값 중 2번째 그룹을 의미
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"               # HTTP → HTTPS 리디렉션 활성화
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"         # HTTPS 강제화 (추가 보안)
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts:
-        - my-pizza.io
-      secretName: my-pizza-tls      # 🔑 TLS 인증서가 담긴 Secret 이름 (아래 설명 참고)
   rules:
   - host: my-pizza.io    # host 설정시 바로 밑에 http의 - 은 삭제해야 함
     http:
@@ -26,25 +21,25 @@ spec:
 #            name: dev-store.my-pizza.svc.cluster.local
 #            name: "dev-store"."my-pizza".svc.cluster.local
             port:
-              number: 443
+              number: 80
       - path: /order-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
         pathType: ImplementationSpecific
         backend:           # 연결될 서비스이름과 port
           service:
             name: dev-order-headless-svc
             port:
-              number: 443
+              number: 80
       - path: /delivery-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
         pathType: ImplementationSpecific
         backend:           # 연결될 서비스이름과 port
           service:
             name: dev-delivery-headless-svc
             port:
-              number: 443
+              number: 80
       - path: /customercenter-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
         pathType: ImplementationSpecific
         backend:           # 연결될 서비스이름과 port
           service:
             name: dev-customercenter-headless-svc
             port:
-              number: 443
+              number: 80
