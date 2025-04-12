@@ -38,6 +38,19 @@ pipeline {
         }
 
         stage('Build Services') {
+			    steps {
+			        script {
+			            sh '''
+			                chmod +x ./common/gradlew || true
+			                chmod +x ./order/gradlew || true
+			                chmod +x ./store/gradlew || true
+			                chmod +x ./delivery/gradlew || true
+			                chmod +x ./customercenter/gradlew || true
+			            '''
+			            ...
+			        }
+			    }
+    
             steps {
                 script {
                     if (env.BUILD_COMMON == 'true') {
