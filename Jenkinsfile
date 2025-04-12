@@ -105,7 +105,7 @@ pipeline {
                         }
                         if (env.BUILD_MYPAGE == 'true') {
                             sh """
-                                docker build -t ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG} ./mypage
+                                docker build -t ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG} ./customercenter
                                 docker push ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG}
                             """
                         }

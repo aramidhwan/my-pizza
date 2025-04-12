@@ -62,6 +62,6 @@ dependencyManagement {
 	}
 }
 
-//tasks.named('test') {
+//tasks.named('test') {x
 //	useJUnitPlatform()
 //}
