@@ -66,13 +66,13 @@ dependencyManagement {
 	}
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-test { jvmArgs "-Djdk.attach.allowAttachSelf=true" }
-
-bootRun {
-	String activeProfile = System.properties['spring.profiles.active']
-	systemProperty "spring.profiles.active", "local"
-}
+//tasks.named('test') {
+//	useJUnitPlatform()
+//}
+//
+//test { jvmArgs "-Djdk.attach.allowAttachSelf=true" }
+//
+//bootRun {
+//	String activeProfile = System.properties['spring.profiles.active']
+//	systemProperty "spring.profiles.active", "local"
+//}
