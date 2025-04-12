@@ -66,7 +66,7 @@ dependencies {
 	testImplementation 'org.springframework.cloud:spring-cloud-stream-test-binder'
 	testImplementation 'org.projectlombok:lombok'
 }
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
+//
+//tasks.named('test') {
+//	useJUnitPlatform()
+//}
