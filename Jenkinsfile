@@ -1,4 +1,4 @@
-pipeline {
+﻿pipeline {
     agent any
 
     environment {
@@ -38,8 +38,8 @@ pipeline {
         }
 
         stage('Build Services') {
-			    steps {
-			        script {
+            steps {
+                script {
 			            sh '''
 			                chmod +x ./common/gradlew || true
 			                chmod +x ./order/gradlew || true
@@ -47,12 +47,6 @@ pipeline {
 			                chmod +x ./delivery/gradlew || true
 			                chmod +x ./customercenter/gradlew || true
 			            '''
-			            ...
-			        }
-			    }
-    
-            steps {
-                script {
                     if (env.BUILD_COMMON == 'true') {
                         echo '🚧 common 빌드'
                         sh 'cd common && ./gradlew build --no-daemon'
