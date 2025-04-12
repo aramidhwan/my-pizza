@@ -32,20 +32,6 @@ spring:
 
   config:
     import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트
-#  boot:
-#    admin:
-#      client:
-#        instance:
-#          # Client display name
-#          name: mypizza-order
-#          # 현재 돌아가고 있는 서버, 즉 spring boot admin client의 주소
-#          service-url: "http://my-pizza.io:90/order-service"
-#        # spring boot admin server의 주소
-#        url: "http://localhost:97"
-#        # true로 설정하면 애플리케이션을 등록하는 주기적인 작업이 애플리케이션이 준비된 후 자동으로 예약됨
-#        auto-registration: true
-#        username: admin
-#        password: admin
 
   cloud:
     config:
