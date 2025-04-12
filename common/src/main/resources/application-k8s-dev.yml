@@ -21,7 +21,7 @@ spring:
 #        enabled: true
 #      lettuce:
 #        pool:
-#          enabled: true   # commons-pool2 디펜던시를 추가해야 한다xxxxxx
+#          enabled: true   # commons-pool2 디펜던시를 추가해야 한다xxxxxxx
 #          max-active: 30
 #          max-idle: 30
 #          min-idle: 30  # 이 설정은 time-between-eviction-runs 설정 시간이 양수인 경우에 적용됨.

@@ -1,4 +1,4 @@
-pipeline {
+﻿pipeline {
     agent any
 
     environment {
@@ -18,6 +18,7 @@ pipeline {
             steps {
                 script {
                     def changedFiles = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim().split('\n')
+
                     echo "📁 변경된 파일 목록:"
                     changedFiles.each { echo it }
 
@@ -39,11 +40,26 @@ pipeline {
         stage('Build Services') {
             steps {
                 script {
-                    if (env.BUILD_COMMON == 'true')   { echo '🚧 common 빌드'   }
-                    if (env.BUILD_ORDER == 'true')    { echo '🚧 order 빌드'    }
-                    if (env.BUILD_STORE == 'true')    { echo '🚧 store 빌드'    }
-                    if (env.BUILD_DELIVERY == 'true') { echo '🚧 delivery 빌드' }
-                    if (env.BUILD_MYPAGE == 'true')   { echo '🚧 mypage 빌드'   }
+                    if (env.BUILD_COMMON == 'true') {
+                        echo '🚧 common 빌드'
+                        sh 'cd common && ./gradlew build --no-daemon'
+                    }
+                    if (env.BUILD_ORDER == 'true') {
+                        echo '🚧 order 빌드'
+                        sh 'cd order && ./gradlew build --no-daemon'
+                    }
+                    if (env.BUILD_STORE == 'true') {
+                        echo '🚧 store 빌드'
+                        sh 'cd store && ./gradlew build --no-daemon'
+                    }
+                    if (env.BUILD_DELIVERY == 'true') {
+                        echo '🚧 delivery 빌드'
+                        sh 'cd delivery && ./gradlew build --no-daemon'
+                    }
+                    if (env.BUILD_MYPAGE == 'true') {
+                        echo '🚧 mypage 빌드'
+                        sh 'cd customercenter && ./gradlew build --no-daemon'
+                    }
                 }
             }
         }
