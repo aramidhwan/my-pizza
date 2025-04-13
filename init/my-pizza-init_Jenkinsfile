@@ -16,7 +16,7 @@ pipeline {
         // AZURE_CLIENT_SECRET 		: "password" 항목
         // AZURE_TENANT_ID 				: "tenant" 항목
         AZURE_CLIENT_ID = "cdf1d46e-3f80-49c7-b414-f10d3c595b56"
-        AZURE_CLIENT_SECRET = "Gje8Q~ICEUKkgBsrNFQhO3S6TiVcOg4oCL_ZQcsY"
+        AZURE_CLIENT_SECRET = "idV8Q~LDZtuJPSuqFuItUabGNLElOqSfMcxBRcz_"
         AZURE_TENANT_ID = "a781af68-05e4-446a-92a7-d9a45d90d58c"
         AZURE_SUBSCRIPTION_ID = "eee3d1d2-f4eb-444b-8dcf-2e731df0aac7"
     }
@@ -50,7 +50,7 @@ pipeline {
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-customercenter.yml
 
                     echo ■ Waiting for ingress-nginx-controller-admission to be ready
-                    sleep 10
+                    kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=90s
 
                     echo ■ Creating TLS Secret
                     kubectl create secret tls my-pizza-tls --cert=$CERT_PATH --key=$KEY_PATH -n dev-ingress || true
