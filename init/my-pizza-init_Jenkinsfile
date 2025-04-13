@@ -41,7 +41,7 @@ pipeline {
                     echo ■ Creating Namespace
                     kubectl apply -f $KUBE_INIT_DIR/namespace.yml
 
-                    echo ■ Creating Ingress Controller & Headless Services
+                    echo ■ Creating Ingress Controller, Headless Services
                     kubectl apply -f $KUBE_INIT_DIR/ingress-controller.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-common.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-store.yml
