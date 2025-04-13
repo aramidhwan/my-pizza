@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+
+    environment {
+        RESOURCE_GROUP = "myPizzaRSG"
+        CLUSTER_NAME = "myPizzaCluster"
+
+        // Git 저장소 기준 상대경로 사용
+        KUBE_INIT_DIR = "init/kubernetes"
+        CERT_PATH = "gateway/src/main/resources/mypizza.crt"
+        KEY_PATH = "gateway/src/main/resources/mypizza-decrypted.key"
+
+        // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
+        // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
+        // AZURE_CLIENT_ID					: "appId" 항목
+        // AZURE_CLIENT_SECRET 		: "password" 항목
+        // AZURE_TENANT_ID 				: "tenant" 항목
+        AZURE_CLIENT_ID = "cdf1d46e-3f80-49c7-b414-f10d3c595b56"
+        AZURE_CLIENT_SECRET = "Gje8Q~ICEUKkgBsrNFQhO3S6TiVcOg4oCL_ZQcsY"
+        AZURE_TENANT_ID = "a781af68-05e4-446a-92a7-d9a45d90d58c"
+        AZURE_SUBSCRIPTION_ID = "eee3d1d2-f4eb-444b-8dcf-2e731df0aac7"
+    }
+
+    stages {
+        stage('소스코드 체크아웃') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Kubernetes 환경구성') {
+            steps {
+                sh '''
+                    echo Azure 로그인
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+                    az account set --subscription $AZURE_SUBSCRIPTION_ID
+
+                    echo ■ Getting AKS Credentials
+                    az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
+
+                    echo ■ Creating Namespace
+                    kubectl apply -f $KUBE_INIT_DIR/namespace.yml
+
+                    echo ■ Creating Ingress Controller & Headless Services
+                    kubectl apply -f $KUBE_INIT_DIR/ingress-controller.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-common.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-store.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-order.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-delivery.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-customercenter.yml
+
+                    echo ■ Waiting for ingress-nginx-controller-admission to be ready
+                    sleep 10
+
+                    echo ■ Creating TLS Secret
+                    kubectl create secret tls my-pizza-tls --cert=$CERT_PATH --key=$KEY_PATH -n dev-ingress || true
+                    
+                    echo ■ Creating Ingress Resource
+                    kubectl apply -f $KUBE_INIT_DIR/ingress.yml
+                '''
+            }
+        }
+    }
+}
