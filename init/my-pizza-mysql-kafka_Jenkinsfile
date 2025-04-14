@@ -9,6 +9,7 @@ pipeline {
         KUBE_INIT_DIR = "init/kubernetes"
         CERT_PATH = "gateway/src/main/resources/mypizza.crt"
         KEY_PATH = "gateway/src/main/resources/mypizza-decrypted.key"
+        NAMESPACE = "dev-db"
 
         // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
         // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
@@ -42,6 +43,12 @@ pipeline {
                     kubectl apply -f $KUBE_INIT_DIR/deployment-dev-db-secret.yml
                     kubectl apply -f $KUBE_INIT_DIR/deployment-mysql.yml
 
+                    echo ⏳ Waiting for MySQL pod to be ready...
+                    kubectl wait --namespace $NAMESPACE --for=condition=ready pod -l app=mysql --timeout=120s
+
+                    echo 🧩 Applying SQL from mypizza.sql...
+                    kubectl exec -n $NAMESPACE \$(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 < $KUBE_INIT_DIR/mypizza.sql
+      
                     echo ■ Creating Zookeeper
                     kubectl apply -f $KUBE_INIT_DIR/deployment-zookeeper.yml
 
