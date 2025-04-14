@@ -5,6 +5,16 @@ pipeline {
         PROJECT_NAME = 'my-pizza'
         ACR_NAME = 'mypizzaacr.azurecr.io'      // ACR 주소
         IMAGE_TAG = "latest"
+
+        // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
+        // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
+        // AZURE_CLIENT_ID					: "appId" 항목
+        // AZURE_CLIENT_SECRET 		: "password" 항목
+        // AZURE_TENANT_ID 				: "tenant" 항목
+        AZURE_CLIENT_ID = "cdf1d46e-3f80-49c7-b414-f10d3c595b56"
+        AZURE_CLIENT_SECRET = "idV8Q~LDZtuJPSuqFuItUabGNLElOqSfMcxBRcz_"
+        AZURE_TENANT_ID = "a781af68-05e4-446a-92a7-d9a45d90d58c"
+        AZURE_SUBSCRIPTION_ID = "eee3d1d2-f4eb-444b-8dcf-2e731df0aac7"
     }
     
     stages {
@@ -74,7 +84,7 @@ pipeline {
         stage('Docker Build & Push to ACR') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'azure-acr-credential', usernameVariable: 'AZURE_USER', passwordVariable: 'AZURE_PASS')]) {
+                    //withCredentials([usernamePassword(credentialsId: 'azure-acr-credential', usernameVariable: 'AZURE_USER', passwordVariable: 'AZURE_PASS')]) {
                         sh '''
                             echo ■ Azure 로그인
                             az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
