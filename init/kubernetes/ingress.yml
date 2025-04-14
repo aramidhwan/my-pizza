@@ -48,10 +48,17 @@ spec:
             name: dev-delivery-headless-svc
             port:
               number: 443
-      - path: /customercenter-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+      - path: /mypage-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
         pathType: ImplementationSpecific
         backend:           # 연결될 서비스이름과 port
           service:
-            name: dev-customercenter-headless-svc
+            name: dev-mypage-headless-svc
+            port:
+              number: 443
+      - path: /						# path: / + pathType: Prefix는 /로 시작하는 모든 요청을 포함, 최하단에 위치해야 우선순위가 낮아짐
+        pathType: Prefix
+        backend:
+          service:
+            name: dev-common-headless-svc
             port:
               number: 443

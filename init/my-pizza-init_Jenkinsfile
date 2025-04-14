@@ -47,7 +47,7 @@ pipeline {
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-store.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-order.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-delivery.yml
-                    kubectl apply -f $KUBE_INIT_DIR/service-headless-customercenter.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-mypage.yml
 
                     echo ■ Waiting for ingress-nginx-controller-admission to be ready
                     kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=180s
