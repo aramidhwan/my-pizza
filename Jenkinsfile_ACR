@@ -94,8 +94,6 @@ pipeline {
 
                             echo ■ Getting AKS Credentials
                             az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
-
-                            echo ■ "$AZURE_PASS" | az login --username "$AZURE_USER" --password --output none || true
                             az acr login --name ${ACR_NAME%%.*} --output none
                         '''
 
