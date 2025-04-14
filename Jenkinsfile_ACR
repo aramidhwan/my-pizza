@@ -71,7 +71,6 @@ pipeline {
             }
         }
 
-
         stage('Docker Build & Push to ACR') {
             steps {
                 script {
@@ -110,49 +109,6 @@ pipeline {
                         }
                         if (env.BUILD_MYPAGE == 'true') {
                             pushImage('customercenter', 'mypage')
-                        }
-                    }
-                }
-            }
-        }
-        
-        stage('Docker Build & Push') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credential', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        '''
-
-                        if (env.BUILD_COMMON == 'true') {
-                            sh """
-                                docker build -t ${DOCKER_HUB_USER}/common:${IMAGE_TAG} ./common
-                                docker push ${DOCKER_HUB_USER}/common:${IMAGE_TAG}
-                            """
-                        }
-                        if (env.BUILD_ORDER == 'true') {
-                            sh """
-                                docker build -t ${DOCKER_HUB_USER}/order:${IMAGE_TAG} ./order
-                                docker push ${DOCKER_HUB_USER}/order:${IMAGE_TAG}
-                            """
-                        }
-                        if (env.BUILD_STORE == 'true') {
-                            sh """
-                                docker build -t ${DOCKER_HUB_USER}/store:${IMAGE_TAG} ./store
-                                docker push ${DOCKER_HUB_USER}/store:${IMAGE_TAG}
-                            """
-                        }
-                        if (env.BUILD_DELIVERY == 'true') {
-                            sh """
-                                docker build -t ${DOCKER_HUB_USER}/delivery:${IMAGE_TAG} ./delivery
-                                docker push ${DOCKER_HUB_USER}/delivery:${IMAGE_TAG}
-                            """
-                        }
-                        if (env.BUILD_MYPAGE == 'true') {
-                            sh """
-                                docker build -t ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG} ./customercenter
-                                docker push ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG}
-                            """
                         }
                     }
                 }
