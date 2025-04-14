@@ -91,7 +91,7 @@ pipeline {
                         sh '''
                             echo ■ ACR 인증서 자동 추출 및 시스템 등록 시작
                             # /tmp에 먼저 저장 (권한 문제 회피)
-                            echo | openssl s_client -showcerts -connect ${ACR_DOMAIN}:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/${CRT_NAME}
+                            echo | openssl s_client -showcerts -connect ${ACR_NAME}:443 </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/${CRT_NAME}
 
                             # 루트 권한으로 복사 및 등록
                             sudo cp /tmp/${CRT_NAME} /usr/local/share/ca-certificates/${CRT_NAME}
