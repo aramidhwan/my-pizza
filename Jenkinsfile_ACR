@@ -5,6 +5,7 @@ pipeline {
         PROJECT_NAME = 'my-pizza'
         ACR_NAME = 'mypizzaacr.azurecr.io'      // ACR 주소
         IMAGE_TAG = "latest"
+        CRT_NAME = "acr-chain.crt"
 
         RESOURCE_GROUP = "myPizzaRSG"
         CLUSTER_NAME = "myPizzaCluster"
@@ -88,6 +89,12 @@ pipeline {
             steps {
                 script {
                         sh '''
+                            echo ■ ACR 인증서 자동 추출 및 시스템 등록 시작
+                            echo | openssl s_client -showcerts -connect ${ACR_NAME}:443 </dev/null | \
+                            sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /usr/local/share/ca-certificates/${CRT_NAME}
+
+                            update-ca-certificates
+
                             echo ■ Azure 로그인
                             az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
                             az account set --subscription $AZURE_SUBSCRIPTION_ID
