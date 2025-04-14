@@ -11,10 +11,6 @@ spring:
       maximum-pool-size: 10 #최대 pool 크기
       minimum-idle: 10 #최소 pool 크기
 
-  jpa:
-    hibernate:
-      ddl-auto: create
-
   data:
     redis:
       host: redis-13136.c53.west-us.azure.redns.redis-cloud.com
