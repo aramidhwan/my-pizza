@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: common
-          image: mypizzaacr.azurecr.io/common:latest
+          image: aramidhwan/common:latest
           ports:
             - containerPort: 443
           env:
