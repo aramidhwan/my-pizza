@@ -50,7 +50,7 @@ pipeline {
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-customercenter.yml
 
                     echo ■ Waiting for ingress-nginx-controller-admission to be ready
-                    kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=90s
+                    kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=180s
 
                     echo ■ Creating TLS Secret
                     kubectl create secret tls my-pizza-tls --cert=$CERT_PATH --key=$KEY_PATH -n dev-ingress || true

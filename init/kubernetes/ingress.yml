@@ -27,6 +27,13 @@ spec:
 #            name: "dev-store"."my-pizza".svc.cluster.local
             port:
               number: 443
+      - path: /common-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-common-headless-svc
+            port:
+              number: 443
       - path: /order-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
         pathType: ImplementationSpecific
         backend:           # 연결될 서비스이름과 port
