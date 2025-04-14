@@ -4,7 +4,7 @@ metadata:
   name: dev-ingress
   namespace: dev-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2         # $2는 아래 path 값 중 2번째 그룹을 의미
+    nginx.ingress.kubernetes.io/rewrite-target: /$2         # $2는 아래 path 값 중 2번째 항목만 전달됨(즉, /common-service/html/auth/loginPage 요청은 → 백엔드로는 /html/auth/loginPage 로 전달됨)
     nginx.ingress.kubernetes.io/ssl-redirect: "true"               # HTTP → HTTPS 리디렉션 활성화
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"         # HTTPS 강제화 (추가 보안)
 spec:

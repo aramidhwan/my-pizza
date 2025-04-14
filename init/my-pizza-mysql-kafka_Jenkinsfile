@@ -33,7 +33,7 @@ pipeline {
             steps {
                 sh '''
                     echo Azure 로그인
-                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --output none
                     az account set --subscription $AZURE_SUBSCRIPTION_ID
 
                     echo ■ Getting AKS Credentials
@@ -47,7 +47,7 @@ pipeline {
                     kubectl wait --namespace $NAMESPACE --for=condition=ready pod -l app=mysql --timeout=120s
 
                     echo 🧩 Applying SQL from mypizza.sql...
-                    kubectl exec -n $NAMESPACE \$(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 < init/mypizza.sql
+                    kubectl exec -n $NAMESPACE -i $(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 < init/mypizza.sql
       
                     echo ■ Creating Zookeeper
                     kubectl apply -f $KUBE_INIT_DIR/deployment-zookeeper.yml
