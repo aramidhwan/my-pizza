@@ -14,13 +14,12 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE SCHEMA `my-pizza` DEFAULT CHARACTER SET utf8mb4 ;
-CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';
-GRANT ALL ON `my-pizza`.* TO admin@'%';
 
 -- my-pizza 데이터베이스 구조 내보내기
 CREATE DATABASE IF NOT EXISTS `my-pizza` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `my-pizza`;
+CREATE USER 'admin'@'%' IDENTIFIED BY 'admin';
+GRANT ALL ON `my-pizza`.* TO admin@'%';
 
 -- 테이블 my-pizza.t_authority 구조 내보내기
 CREATE TABLE IF NOT EXISTS `t_authority` (
