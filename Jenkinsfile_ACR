@@ -6,6 +6,9 @@ pipeline {
         ACR_NAME = 'mypizzaacr.azurecr.io'      // ACR 주소
         IMAGE_TAG = "latest"
 
+        RESOURCE_GROUP = "myPizzaRSG"
+        CLUSTER_NAME = "myPizzaCluster"
+
         // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
         // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
         // AZURE_CLIENT_ID					: "appId" 항목
@@ -84,7 +87,6 @@ pipeline {
         stage('Docker Build & Push to ACR') {
             steps {
                 script {
-                    //withCredentials([usernamePassword(credentialsId: 'azure-acr-credential', usernameVariable: 'AZURE_USER', passwordVariable: 'AZURE_PASS')]) {
                         sh '''
                             echo ■ Azure 로그인
                             az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
@@ -120,7 +122,7 @@ pipeline {
                         if (env.BUILD_MYPAGE == 'true') {
                             pushImage('customercenter', 'mypage')
                         }
-                    }
+
                 }
             }
         }
