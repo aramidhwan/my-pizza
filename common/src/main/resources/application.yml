@@ -11,13 +11,13 @@ spring:
   application:
     name: common
   datasource:
-    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
-    hikari:
+#    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+#    url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    hikari:
 #      driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
 #      jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/test?characterEncoding=utf-8
-      username: admin
-      password: admin
+#      username: admin
+#      password: admin
   jpa:
 # @Transactional  붙은 해당 메소드가 끝이 날 때
 # spring.jpa.open-in-view=true 면 영속성 컨텍스트가 데이터베이스 커넥션을 반납하지않고,
