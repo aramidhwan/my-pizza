@@ -37,39 +37,39 @@ pipeline {
                     echo ■ Azure 리소스그룹 생성
                     az group create --name $RESOURCE_GROUP --location koreacentral --output none
 
-                    echo "⏳ [WAIT] Resource Group : $RESOURCE_GROUP 생성 확인 중..."
+                    echo \"⏳ [WAIT] Resource Group : $RESOURCE_GROUP 생성 확인 중...\"
                     for i in $(seq 1 10); do
                         EXISTS=$(az group exists --name $RESOURCE_GROUP)
-                        if [ "$EXISTS" = "true" ]; then
-                            echo "✅ Resource Group $RESOURCE_GROUP is NOW available."
+                        if [ \"$EXISTS\" = \"true\" ]; then
+                            echo \"✅ Resource Group $RESOURCE_GROUP is NOW available.\"
                             break
                         fi
-                        echo "⌛ [WAIT] Still waiting for $RESOURCE_GROUP... retry $i"
+                        echo \"⌛ [WAIT] Still waiting for $RESOURCE_GROUP... retry $i\"
                         sleep 5
                     done
 
                     # 재시도 10번 이후에도 false면 실패 처리
-                    if [ "$EXISTS" != "true" ]; then
-                        echo "❌ Failed to confirm creation of resource group $RESOURCE_GROUP"
+                    if [ \"$EXISTS\" != \"true\" ]; then
+                        echo \"❌ Failed to confirm creation of resource group $RESOURCE_GROUP\"
                         exit 1
                     fi
             
                     echo ■ Azure Kubernetes (AKS) 생성
                     az aks create --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --node-vm-size Standard_B2s --node-count 1 --generate-ssh-keys --output none
 
-                    echo "⏳ [WAIT] Waiting for AKS cluster to be in 'Succeeded' state..."
+                    echo \"⏳ [WAIT] Waiting for AKS cluster to be in 'Succeeded' state...\"
                     for i in $(seq 1 20); do
-                        STATE=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query provisioningState -o tsv)
-                        echo "⏳ [WAIT] AKS 상태 확인 중... provisioningState = $STATE"
-                        if [ "$STATE" = "Succeeded" ]; then
-                            echo "✅ AKS cluster is ready!"
+                        STATE=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query provisioningState -o tsv 2>/dev/null || echo \"Creating\")
+                        echo \"⏳ [WAIT] AKS 상태 확인 중... provisioningState = $STATE\"
+                        if [ \"$STATE\" = \"Succeeded\" ]; then
+                            echo \"✅ AKS 클러스터 준비완료 !\"
                             break
                         fi
                         sleep 10
                     done
                     
-                    if [ "$STATE" != "Succeeded" ]; then
-                        echo "❌ AKS cluster did not reach 'Succeeded' state in time."
+                    if [ \"$STATE\" != \"Succeeded\" ]; then
+                        echo \"❌ AKS 클러스터가 준비되지 않았습니다.\"
                         exit 1
                     fi
                     
