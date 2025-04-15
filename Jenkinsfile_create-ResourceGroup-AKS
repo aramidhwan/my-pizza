@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+
+    environment {
+        RESOURCE_GROUP = "myPizzaRSG"
+        CLUSTER_NAME = "myPizzaCluster"
+
+        // Git 저장소 기준 상대경로 사용
+        KUBE_INIT_DIR = "init/kubernetes"
+
+        // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
+        // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
+        // AZURE_CLIENT_ID					: "appId" 항목
+        // AZURE_CLIENT_SECRET 		: "password" 항목
+        // AZURE_TENANT_ID 				: "tenant" 항목
+        AZURE_CLIENT_ID = "cdf1d46e-3f80-49c7-b414-f10d3c595b56"
+        AZURE_CLIENT_SECRET = "idV8Q~LDZtuJPSuqFuItUabGNLElOqSfMcxBRcz_"
+        AZURE_TENANT_ID = "a781af68-05e4-446a-92a7-d9a45d90d58c"
+        AZURE_SUBSCRIPTION_ID = "eee3d1d2-f4eb-444b-8dcf-2e731df0aac7"
+    }
+
+    stages {
+        stage('소스코드 체크아웃') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Kubernetes 환경구성') {
+            steps {
+                sh '''
+                    echo ■ Azure 로그인
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --output none
+                    az account set --subscription $AZURE_SUBSCRIPTION_ID
+                    
+                    echo ■ Azure 리소스그룹 생성
+                    az group create --name $RESOURCE_GROUP --location koreacentral --output none
+
+                    echo "⏳ Waiting for Azure Resource Group to be ready: $RESOURCE_GROUP"
+                    for i in {1..10}; do
+                        EXISTS=$(az group exists --name $RESOURCE_GROUP)
+                        if [ "$EXISTS" = "true" ]; then
+                            echo "✅ Resource Group $RESOURCE_GROUP is NOW available."
+                            break
+                        fi
+                        echo "⌛ Still waiting for $RESOURCE_GROUP... retry $i"
+                        sleep 5
+                    done
+
+                    # 재시도 10번 이후에도 false면 실패 처리
+                    if [ "$EXISTS" != "true" ]; then
+                        echo "❌ Failed to confirm creation of resource group $RESOURCE_GROUP"
+                        exit 1
+                    fi
+            
+                    echo ■ Azure Kubernetes (AKS) 생성
+                    az aks create --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --node-vm-size Standard_B2s --node-count 1 --generate-ssh-keys --output none
+
+                    echo "⏳ Waiting for AKS cluster to be in 'Succeeded' state..."
+                    
+                    for i in {1..20}; do
+                        STATE=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query provisioningState -o tsv)
+                        echo "🔍 Current provisioningState: $STATE"
+                        if [ "$STATE" = "Succeeded" ]; then
+                            echo "✅ AKS cluster is ready!"
+                            break
+                        fi
+                        sleep 10
+                    done
+                    
+                    if [ "$STATE" != "Succeeded" ]; then
+                        echo "❌ AKS cluster did not reach 'Succeeded' state in time."
+                        exit 1
+                    fi
+                    
+                    echo ■ Getting AKS Credentials
+                    az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
+
+                '''
+            }
+        }
+    }
+}

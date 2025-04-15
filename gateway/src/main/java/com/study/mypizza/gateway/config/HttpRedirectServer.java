@@ -23,7 +23,7 @@ public class HttpRedirectServer {
     @PostConstruct
     public void startRedirectServer() {
         if ( redirect ) {
-            log.info("🚀 HTTP 리디렉션 서버가 시작됩니다. 포트: " + httpPort);
+            log.info("🚀 HTTP 리디렉션 서버가 시작됩니다.x 포트: " + httpPort);
             HttpServer.create()
                     .port(httpPort)
                     .bindAddress(() -> new java.net.InetSocketAddress("0.0.0.0", httpPort))
