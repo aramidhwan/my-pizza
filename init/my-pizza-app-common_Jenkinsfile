@@ -40,7 +40,7 @@ pipeline {
                     echo ■ Deleting Application-Common
                     kubectl delete deploy $APP_NAME -n dev-app
                     kubectl delete service $APP_NAME -n dev-app
-                    kubectl delete service $APP_NAME-headless-svc -n dev-app
+                    kubectl delete service $APP_NAME-headless-svc -n dev-ingress
                     
                     echo ■ Creating Application-Common
                     echo Creating Application
