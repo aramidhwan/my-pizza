@@ -4,10 +4,11 @@ pipeline {
     environment {
         RESOURCE_GROUP = "myPizzaRSG"
         CLUSTER_NAME = "myPizzaCluster"
-        APP_NAME = "dev-common"
+        APP_NAME = "common"
+        NAME_SPACE = "dev-app"
 
         // Git 저장소 기준 상대경로 사용
-        KUBE_INIT_DIR = "common/kubernetes"
+        KUBE_INIT_DIR = "$APP_NAME/kubernetes"
 
         // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
         // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
@@ -38,15 +39,15 @@ pipeline {
                     az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
                     echo ■ Deleting Application-Common
-                    kubectl delete deploy $APP_NAME -n dev-app --ignore-not-found
-                    kubectl delete service $APP_NAME -n dev-app --ignore-not-found
-                    kubectl delete service $APP_NAME-headless-svc -n dev-ingress --ignore-not-found
+                    kubectl delete deploy dev-$APP_NAME -n $NAME_SPACE --ignore-not-found
+                    kubectl delete service dev-$APP_NAME -n $NAME_SPACE --ignore-not-found
+                    kubectl delete service dev-$APP_NAME-headless-svc -n dev-ingress --ignore-not-found
                     
                     echo ■ Creating Application-Common
                     echo Creating Application
-                    kubectl apply -f $KUBE_INIT_DIR/deployment-common.yml
-                    kubectl apply -f $KUBE_INIT_DIR/service-common-8080.yml
-                    kubectl apply -f $KUBE_INIT_DIR/service-headless-common.yml
+                    kubectl apply -f $KUBE_INIT_DIR/deployment-$APP_NAME.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-$APP_NAME-8080.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-$APP_NAME.yml
                 '''
             }
         }

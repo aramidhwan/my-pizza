@@ -4,7 +4,7 @@ pipeline {
     environment {
         RESOURCE_GROUP = "myPizzaRSG"
         CLUSTER_NAME = "myPizzaCluster"
-        APP_NAME = "order"
+        APP_NAME = "delivery"
         NAME_SPACE = "dev-app"
 
         // Git 저장소 기준 상대경로 사용
