@@ -92,7 +92,7 @@ public class LoginController {
 
         model.addAttribute("redirectUrl", redirectUrl);
 
-        return "/html/auth/loginPage" ;
+        return "html/auth/loginPage" ;
     }
 
     // 회원가입
