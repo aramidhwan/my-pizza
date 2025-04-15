@@ -47,7 +47,7 @@ pipeline {
                     kubectl apply -f $KUBE_INIT_DIR/deployment-dev-app-configmap.yml
 
                     echo ■ Waiting for ingress-nginx-controller-admission to be ready
-                    kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=180s
+                    kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=300s
 
                     echo ■ Creating TLS Secret
                     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mypizza-tls.key -out mypizza-tls.crt -subj "/CN=my-pizza.io/O=MyPizza"
