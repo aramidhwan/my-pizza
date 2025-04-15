@@ -56,7 +56,7 @@ pipeline {
                     kubectl apply -f $KUBE_INIT_DIR/deployment-kafka.yml
 
                     echo 🧩 Applying SQL from mypizza.sql...
-                    kubectl exec -n $NAMESPACE -i $(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 < init/mypizza.sql
+                    kubectl exec -n $NAMESPACE -i $(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 -h 127.0.0.1 < init/mypizza.sql
                 '''
             }
         }
