@@ -46,9 +46,6 @@ pipeline {
                     echo ⏳ Waiting for MySQL pod to be ready...
                     kubectl wait --namespace $NAMESPACE --for=condition=ready pod -l app=mysql --timeout=120s
 
-                    echo 🧩 Applying SQL from mypizza.sql...
-                    kubectl exec -n $NAMESPACE -i $(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 < init/mypizza.sql
-      
                     echo ■ Creating Zookeeper
                     kubectl apply -f $KUBE_INIT_DIR/deployment-zookeeper.yml
 
@@ -57,6 +54,9 @@ pipeline {
 
                     echo ■ Creating Kafka
                     kubectl apply -f $KUBE_INIT_DIR/deployment-kafka.yml
+
+                    echo 🧩 Applying SQL from mypizza.sql...
+                    kubectl exec -n $NAMESPACE -i $(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 < init/mypizza.sql
                 '''
             }
         }
