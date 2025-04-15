@@ -43,6 +43,7 @@ pipeline {
 
                     echo ■ Creating Ingress Controller, Headless Services
                     kubectl apply -f $KUBE_INIT_DIR/ingress-controller.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-gateway.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-common.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-store.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-headless-order.yml
@@ -53,7 +54,8 @@ pipeline {
                     kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=180s
 
                     echo ■ Creating TLS Secret
-                    kubectl create secret tls my-pizza-tls --cert=$CERT_PATH --key=$KEY_PATH -n dev-ingress || true
+                    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mypizza-tls.key -out mypizza-tls.crt -subj "/CN=my-pizza.io/O=MyPizza"
+                    kubectl create secret tls mypizza-tls-secret --cert=mypizza-tls.crt --key=mypizza-tls.key -n dev-ingress || true
                     
                     echo ■ Creating Ingress Resource
                     kubectl apply -f $KUBE_INIT_DIR/ingress.yml

@@ -1,0 +1,66 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-ingress
+  namespace: dev-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2         # $2는 아래 path 값 중 2번째 항목만 전달됨(즉, /common-service/html/auth/loginPage 요청은 → 백엔드로는 /html/auth/loginPage 로 전달됨)
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"               # HTTP → HTTPS 리디렉션 활성화
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"         # HTTPS 강제화 (추가 보안)
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"		# NGINX Ingress 컨트롤러에서 작동하지 않는다 함. https://blog.pages.kr/2847
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - my-pizza.io
+      secretName: mypizza-tls-secret      # 🔑 TLS 인증서가 담긴 Secret 이름 (아래 설명 참고)
+  rules:
+  - host: my-pizza.io    # host 설정시 바로 밑에 http의 - 은 삭제해야 함
+    http:
+#  - http:              # 위 host 설정 삭제 시 - 을 붙여주어야 함
+      paths:               # 각 path는 백엔드와 연결됨
+      - path: /store-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-store-headless-svc
+#            name: dev-store.my-pizza.svc.cluster.local
+#            name: "dev-store"."my-pizza".svc.cluster.local
+            port:
+              number: 443
+      - path: /common-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-common-headless-svc
+            port:
+              number: 443
+      - path: /order-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-order-headless-svc
+            port:
+              number: 443
+      - path: /delivery-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-delivery-headless-svc
+            port:
+              number: 443
+      - path: /mypage-service(/|$)(.*)                       # (/|$) : /로끝나거나 something으로 끝나거나
+        pathType: ImplementationSpecific
+        backend:           # 연결될 서비스이름과 port
+          service:
+            name: dev-mypage-headless-svc
+            port:
+              number: 443
+      - path: /						# path: / + pathType: Prefix는 /로 시작하는 모든 요청을 포함, 최하단에 위치해야 우선순위가 낮아짐
+        pathType: Prefix
+        backend:
+          service:
+            name: dev-common-headless-svc
+            port:
+              number: 443
