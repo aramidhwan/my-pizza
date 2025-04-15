@@ -1,5 +1,12 @@
 server:
   port: 8445
+  ssl:
+    enabled: true
+    key-store: src/main/resources/mypizza.p12
+    #    key-store: classpath:mypizza.p12     # classpath: 가 src/main/resources 와 동일한 의미임
+    key-store-password: shin22
+    key-store-type: PKCS12
+    key-alias: mypizza
 
 spring:
   datasource:
