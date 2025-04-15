@@ -5,10 +5,6 @@ spring:
   application:
     name: gateway
 
-  #  config:
-  #    active:
-  #      on-profile: local
-
   cloud:
     gateway:
       httpclient:
@@ -16,64 +12,51 @@ spring:
           useInsecureTrustManager: true
 
       routes:
-        - id: store
-          uri: http://dev-store.dev-app.svc.cluster.local:8080
-          # Service 개체가 ClusterIP 일때는 동일 네임스페이스 내에서는 단순히 http://dev-store:8080 만으로도 호출 가능
-          # uri: http://dev-store:8080 ← 단, gateway가 같은 dev-app 네임스페이스에 있을 때만 가능
-          predicates:
-            - Path=/store-service/**
-          filters:
-            - RewritePath=/store-service/(?<segment>.*), /$\{segment}
-        #            - name: JwtAuthentication # 적용할 필터 팩토리이름
-        - id: order
-          uri: http://dev-order.dev-app.svc.cluster.local:8080
-          #          uri: lb://ORDER       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
-          predicates:
-            - Path=/order-service/**
-          filters:
-            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
-        #            - name: JwtAuthentication # 적용할 필터 팩토리이름
-        - id: delivery
-          uri: http://dev-delivery.dev-app.svc.cluster.local:8080
-          #          uri: lb://BOARD       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
-          predicates:
-            - Path=/delivery-service/**
-          filters:
-            - RewritePath=/delivery-service/(?<segment>.*), /$\{segment}
-        #            - name: JwtAuthentication # 적용할 필터 팩토리이름
-        - id: mypage
-          uri: http://dev-mypage.dev-app.svc.cluster.local:8080
-          #          uri: lb://BOARD       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
-          predicates:
-            - Path=/mypage-service/**
-          filters:
-            - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
-        #            - name: JwtAuthentication # 적용할 필터 팩토리이름
-        - id: root
-          uri: http://dev-common.dev-app.svc.cluster.local:8080
-          predicates:
-            #            - Path=/**   # --> 요거는 '/'를 포함하지 않음
-            - Path=/
-        - id: ignore-favicon
-          uri: http://localhost  # 아무거나, 실제 요청 안 함
-          predicates:
-            - Path=/favicon.ico
-          filters:
-            - SetStatus=204
         - id: common
           uri: http://dev-common.dev-app.svc.cluster.local:8080
-          #          uri: http://localhost:85   # 단일 포트
-          #          uri: lb://COMMON       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          # Service 개체가 ClusterIP 일때는 동일 네임스페이스 내에서는 단순히 http://dev-store:8080 만으로도 호출 가능
+          # uri: http://dev-store:8080 ← 단, gateway가 같은 dev-app 네임스페이스에 있을 때만 가능
           predicates:
             - Path=/common-service/**
           #            - Path=/**   # --> 요거는 '/'를 포함하지 않음
           #            - Path=/
           filters:
             - RewritePath=/common-service/(?<segment>.*), /$\{segment}
-        #            - RewritePath=/(?<segment>.*), /$\{segment}
-        #            - name: JwtAuthentication # 적용할 필터 팩토리이름
-        #              args: # Config 클래스에 사용할 멤버변수 정의
-        #                granted: Bearer
+        - id: store
+          uri: http://dev-store.dev-app.svc.cluster.local:8080
+          predicates:
+            - Path=/store-service/**
+          filters:
+            - RewritePath=/store-service/(?<segment>.*), /$\{segment}
+        - id: order
+          uri: http://dev-order.dev-app.svc.cluster.local:8080
+          predicates:
+            - Path=/order-service/**
+          filters:
+            - RewritePath=/order-service/(?<segment>.*), /$\{segment}
+        - id: delivery
+          uri: http://dev-delivery.dev-app.svc.cluster.local:8080
+          predicates:
+            - Path=/delivery-service/**
+          filters:
+            - RewritePath=/delivery-service/(?<segment>.*), /$\{segment}
+        - id: mypage
+          uri: http://dev-mypage.dev-app.svc.cluster.local:8080
+          predicates:
+            - Path=/mypage-service/**
+          filters:
+            - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
+        - id: ignore-favicon
+          uri: http://localhost  # 아무거나, 실제 요청 안 함
+          predicates:
+            - Path=/favicon.ico
+          filters:
+            - SetStatus=204
+        - id: root
+          uri: http://dev-common.dev-app.svc.cluster.local:8080
+          predicates:
+            #            - Path=/**   # --> 요거는 '/'를 포함하지 않음
+            - Path=/
 
   data:
     redis:
