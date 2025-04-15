@@ -36,6 +36,7 @@ spring:
     prefix: classpath:/templates/   # Optional
     suffix: .html                     # Optional
     cache: false                    # Optional (default: true)
+    check-template-location: true
 
   mvc:
     view:
