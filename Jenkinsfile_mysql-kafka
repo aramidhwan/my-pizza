@@ -59,7 +59,7 @@ MYSQL_POD=$(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].m
 
 # ✅ TCP 포트 열릴 때까지 대기 (netcat 기반)
 for i in $(seq 1 10); do
-  kubectl exec -n $NAMESPACE $MYSQL_POD -- bash -c "nc -z localhost 3306" && break
+  kubectl exec -n $NAMESPACE $MYSQL_POD -- mysql -u root -pshin22 -e "SELECT 1" && break
   echo "⌛ MySQL TCP 포트 대기 중... ($i/10)"
   sleep 5
 done
