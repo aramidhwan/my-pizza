@@ -31,7 +31,7 @@ public class MyPageController {
     @GetMapping("/html/myPageMain")
     public String getMyPageHtml(@RequestParam(required = false, defaultValue="onlyToday", name = "viewType") String viewType, Model model) {
         model.addAttribute("viewType", viewType);
-        return "/html/myPageMain" ;
+        return "html/myPageMain" ;
     }
     @GetMapping("/api/getMyOrders")
     @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_VIP_CUSTOMER')") // 여러개 권한 주기

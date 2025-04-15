@@ -1,5 +1,5 @@
 server:
-  port: 443
+  port: 8080
 
 spring:
   datasource:
@@ -21,7 +21,7 @@ spring:
       client:
         config:
           ORDER:        # @FeignClient(name="ORDER")에 해당하는 부분 기술
-            url: https://my-pizza.io:90/order-service
+            url: ${FEIGN-URL-ORDER-SERVICE}
 
 eureka:
   client:

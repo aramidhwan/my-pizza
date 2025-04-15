@@ -28,7 +28,7 @@ public class CustomerController {
 
     @GetMapping("/")
     public String redirectToIndex() {
-        return "/html/index";
+        return "html/index";
     }
 
 //    @GetMapping("/")
@@ -39,12 +39,12 @@ public class CustomerController {
 
     @GetMapping("/html/index")
     public String mainPage() {
-        return "/html/index";
+        return "html/index";
     }
 
     @GetMapping("/common/layout")
     public String layout() {
-        return "/common/layout" ;
+        return "common/layout" ;
     }
 
 //    @GetMapping("/mainPage")

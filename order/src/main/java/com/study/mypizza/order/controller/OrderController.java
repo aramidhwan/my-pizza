@@ -35,7 +35,7 @@ public class OrderController {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        return "/html/orderMain";
+        return "html/orderMain";
     }
 
     @PostMapping("/api/createOrder")

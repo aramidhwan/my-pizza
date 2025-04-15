@@ -25,7 +25,7 @@ public class AdminController {
     @GetMapping("/html/roleMain")
     public String roleMain() throws MyPizzaException {
         log.debug("### [roleMain] is called. ###");
-        return "/html/manageRole";
+        return "html/manageRole";
     }
 
     @GetMapping("/api/getCustomers")

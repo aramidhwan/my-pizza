@@ -33,7 +33,7 @@ public class DeliveryController {
     @GetMapping("/html/deliveryAdminMain")
     public String getDeliveryAdminHtml() {
         log.trace("### [/html/deliveryAdminMain] is called.");
-        return "/html/deliveryAdminMain" ;
+        return "html/deliveryAdminMain" ;
     }
 
     // StoreAdmin 메인화면 (내 상점에 할당된 주문내역 가져오기)

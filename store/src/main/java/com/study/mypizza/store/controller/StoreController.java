@@ -80,12 +80,12 @@ public class StoreController {
 
     @GetMapping("/html/storeMain")
     public String getStoreMainHtml() {
-        return "/html/storeMain" ;
+        return "html/storeMain" ;
     }
 
     @GetMapping("/html/storeAdminMain")
     public String getStoreAdminMainHtml() {
-        return "/html/storeAdminMain" ;
+        return "html/storeAdminMain" ;
     }
 
     // Store 메인화면 (등록 상점 리스트 가져오기)
