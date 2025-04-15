@@ -29,7 +29,6 @@ pipeline {
         stage('Kubernetes 환경구성') {
             steps {
                 sh '''
-                    #!/bin/bash
                     echo ■ Azure 로그인
                     az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --output none
                     az account set --subscription $AZURE_SUBSCRIPTION_ID
@@ -38,7 +37,7 @@ pipeline {
                     az group create --name $RESOURCE_GROUP --location koreacentral --output none
 
                     echo "⏳ [WAIT] Resource Group : $RESOURCE_GROUP 생성 확인 중..."
-                    for i in {1..10}; do
+                    for i in $(seq 1 10); do
                         EXISTS=$(az group exists --name $RESOURCE_GROUP)
                         if [ "$EXISTS" = "true" ]; then
                             echo "✅ Resource Group $RESOURCE_GROUP is NOW available."
@@ -58,7 +57,7 @@ pipeline {
                     az aks create --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --node-vm-size Standard_B2s --node-count 1 --generate-ssh-keys --output none
 
                     echo "⏳ [WAIT] Waiting for AKS cluster to be in 'Succeeded' state..."
-                    for i in {1..20}; do
+                    for i in $(seq 1 20); do
                         STATE=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query provisioningState -o tsv)
                         echo "⏳ [WAIT] AKS 상태 확인 중... provisioningState = $STATE"
                         if [ "$STATE" = "Succeeded" ]; then
