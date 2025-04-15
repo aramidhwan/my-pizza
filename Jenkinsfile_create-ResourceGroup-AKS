@@ -29,6 +29,7 @@ pipeline {
         stage('Kubernetes 환경구성') {
             steps {
                 sh '''
+                    bash -c "
                     echo ■ Azure 로그인
                     az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --output none
                     az account set --subscription $AZURE_SUBSCRIPTION_ID
@@ -74,7 +75,7 @@ pipeline {
                     
                     echo ■ Getting AKS Credentials
                     az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
-
+                    "
                 '''
             }
         }
