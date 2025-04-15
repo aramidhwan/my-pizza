@@ -55,6 +55,15 @@ pipeline {
                     echo ■ Creating Kafka
                     kubectl apply -f $KUBE_INIT_DIR/deployment-kafka.yml
 
+MYSQL_POD=$(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}')
+
+# ✅ MySQL 포트가 열릴 때까지 최대 10번 대기
+for i in $(seq 1 10); do
+  kubectl exec -n $NAMESPACE $MYSQL_POD -- bash -c "mysqladmin ping -u root -pshin22" && break
+  echo "⌛ Waiting for MySQL to be ready... ($i/10)"
+  sleep 5
+done
+
                     echo 🧩 Applying SQL from mypizza.sql...
                     kubectl exec -n $NAMESPACE -i $(kubectl get pod -n $NAMESPACE -l app=mysql -o jsonpath='{.items[0].metadata.name}') -- mysql -u root -pshin22 -h 127.0.0.1 < init/mypizza.sql
                 '''
