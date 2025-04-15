@@ -19,7 +19,7 @@ spec:
         - name: delivery
           image: aramidhwan/delivery:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           env:
             - name: DB_URL
               valueFrom:

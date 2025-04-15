@@ -17,8 +17,9 @@ spring:
 
       routes:
         - id: store
-          uri: https://store:80   # 단일 포트
-          #          uri: lb://STORE       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
+          uri: http://dev-store.dev-app.svc.cluster.local:8080
+          # Service 개체가 ClusterIP 일때는 동일 네임스페이스 내에서는 단순히 http://dev-store:8080 만으로도 호출 가능
+          # uri: http://dev-store:8080 ← 단, gateway가 같은 dev-app 네임스페이스에 있을 때만 가능
           predicates:
             - Path=/store-service/**
           filters:
@@ -33,7 +34,7 @@ spring:
             - RewritePath=/order-service/(?<segment>.*), /$\{segment}
         #            - name: JwtAuthentication # 적용할 필터 팩토리이름
         - id: delivery
-          uri: https://delivery:80   # 단일 포트
+          uri: http://dev-delivery.:80   # 단일 포트
           #          uri: lb://BOARD       # 멀티 포트, EUREKA 서버 모니터링 페이지에 표시된 Application 명칭
           predicates:
             - Path=/delivery-service/**

@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dev-order
+  name: dev-mypage
   namespace: dev-app
   labels:
-    app: order
+    app: mypage
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: order
+      app: mypage
   template:
     metadata:
       labels:
-        app: order
+        app: mypage
     spec:
       containers:
-        - name: order
-          image: aramidhwan/order:latest
+        - name: mypage
+          image: aramidhwan/mypage:latest
           ports:
             - containerPort: 8080
           env:

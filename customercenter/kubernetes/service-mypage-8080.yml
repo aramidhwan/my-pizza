@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-mypage
+  namespace: dev-app
+  labels:
+    app: mypage
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: mypage
+#  type: ClusterIP
+#  type: LoadBalancer

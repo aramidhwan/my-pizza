@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dev-customercenter
+  name: dev-store
   namespace: dev-app
   labels:
-    app: customercenter
+    app: store
+    environment : dev
 spec:
   ports:
-    - port: 80
-      targetPort: 80
+    - port: 443
+      targetPort: 443
   selector:
-    app: customercenter
+    app: store
 #  type: ClusterIP
 #  type: LoadBalancer

@@ -6,9 +6,7 @@ pipeline {
         CLUSTER_NAME = "myPizzaCluster"
 
         // Git 저장소 기준 상대경로 사용
-        KUBE_INIT_DIR = "init/kubernetes"
-        CERT_PATH = "gateway/src/main/resources/mypizza.crt"
-        KEY_PATH = "gateway/src/main/resources/mypizza-decrypted.key"
+        KUBE_INIT_DIR = "common/kubernetes"
 
         // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
         // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
@@ -38,23 +36,11 @@ pipeline {
                     echo ■ Getting AKS Credentials
                     az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
-                    echo ■ Creating Namespace
-                    kubectl apply -f $KUBE_INIT_DIR/namespace.yml
-
-                    echo ■ Creating Ingress Controller, Secret, ConfigMap
-                    kubectl apply -f $KUBE_INIT_DIR/ingress-controller.yml
-                    kubectl apply -f $KUBE_INIT_DIR/deployment-dev-app-secret.yml
-                    kubectl apply -f $KUBE_INIT_DIR/deployment-dev-app-configmap.yml
-
-                    echo ■ Waiting for ingress-nginx-controller-admission to be ready
-                    kubectl -n dev-ingress wait --for=condition=ready pod -l app.kubernetes.io/name=ingress-nginx --timeout=180s
-
-                    echo ■ Creating TLS Secret
-                    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mypizza-tls.key -out mypizza-tls.crt -subj "/CN=my-pizza.io/O=MyPizza"
-                    kubectl create secret tls mypizza-tls-secret --cert=mypizza-tls.crt --key=mypizza-tls.key -n dev-ingress || true
-                    
-                    echo ■ Creating Ingress Resource
-                    kubectl apply -f $KUBE_INIT_DIR/ingress.yml
+                    echo ■ Creating Application-Common
+                    echo Creating Application
+                    kubectl apply -f $KUBE_INIT_DIR/deployment-common.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-common-8080.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-common.yml
                 '''
             }
         }

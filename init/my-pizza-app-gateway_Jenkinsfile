@@ -6,9 +6,7 @@ pipeline {
         CLUSTER_NAME = "myPizzaCluster"
 
         // Git 저장소 기준 상대경로 사용
-        KUBE_INIT_DIR = "init/kubernetes"
-        CERT_PATH = "gateway/src/main/resources/mypizza.crt"
-        KEY_PATH = "gateway/src/main/resources/mypizza-decrypted.key"
+        KUBE_INIT_DIR = "gateway/kubernetes"
 
         // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
         // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
@@ -40,10 +38,9 @@ pipeline {
 
                     echo ■ Creating Application-Common
                     echo Creating Application
-                    kubectl apply -f $KUBE_INIT_DIR/deployment-dev-app-secret.yml
-                    kubectl apply -f $KUBE_INIT_DIR/deployment-dev-app-configmap.yml
-                    kubectl apply -f common/kubernetes/deployment-common.yml
-                    kubectl apply -f common/kubernetes/service-common.yml
+                    kubectl apply -f $KUBE_INIT_DIR/deployment-gateway.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-gateway-8080.yml
+                    kubectl apply -f $KUBE_INIT_DIR/service-headless-gateway.yml
                 '''
             }
         }

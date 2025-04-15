@@ -20,7 +20,7 @@ spec:
         - name: store
           image: aramidhwan/store:latest
           ports:
-            - containerPort: 443
+            - containerPort: 8080
           env:
             - name: DB_URL
               valueFrom:
@@ -42,33 +42,3 @@ spec:
                 configMapKeyRef:
                   name: dev-app-configmap
                   key: kafka_binder_brokers
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: dev-store
-  namespace: dev-app
-  labels:
-    app: store
-    environment : dev
-spec:
-  ports:
-    - port: 443
-      targetPort: 443
-  selector:
-    app: store
-#  type: ClusterIP
-#  type: LoadBalancer
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-  name: dev-store-headless-svc
-  namespace: dev-ingress
-spec:
-  # {Service Name}.{Namespace}.svc.cluster.local 형식으로 작성
-  externalName: dev-store.dev-app.svc.cluster.local
-  selector:
-    app: store
-  type: ExternalName

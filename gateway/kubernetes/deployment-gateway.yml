@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dev-customercenter
+  name: dev-gateway
   namespace: dev-app
   labels:
-    app: customercenter
+    app: gateway
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: customercenter
+      app: gateway
   template:
     metadata:
       labels:
-        app: customercenter
+        app: gateway
     spec:
       containers:
-        - name: customercenter
-          image: aramidhwan/customercenter:latest
+        - name: gateway
+          image: aramidhwan/gateway:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           env:
             - name: DB_URL
               valueFrom:
