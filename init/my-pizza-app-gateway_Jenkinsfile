@@ -4,6 +4,7 @@ pipeline {
     environment {
         RESOURCE_GROUP = "myPizzaRSG"
         CLUSTER_NAME = "myPizzaCluster"
+        APP_NAME = "dev-gateway"
 
         // Git 저장소 기준 상대경로 사용
         KUBE_INIT_DIR = "gateway/kubernetes"
@@ -35,7 +36,12 @@ pipeline {
 
                     echo ■ Getting AKS Credentials
                     az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
-
+                    
+                    echo ■ Deleting Application-Common
+                    kubectl delete deploy $APP_NAME -n dev-app --ignore-not-found
+                    kubectl delete service $APP_NAME -n dev-app --ignore-not-found
+                    kubectl delete service $APP_NAME-headless-svc -n dev-ingress --ignore-not-found
+                    
                     echo ■ Creating Application-Common
                     echo Creating Application
                     kubectl apply -f $KUBE_INIT_DIR/deployment-gateway.yml
