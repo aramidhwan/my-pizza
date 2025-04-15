@@ -29,8 +29,7 @@ management:                 # Spring Actuator
     web:
       exposure:
 #        /actuator/gateway/routes 경로를 통하여 정보 확인 가능
-        include: gateway,env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
-#        include: gateway,health    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정
+        include: gateway,env,health    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
 #        exclude: metrics
 
 logging:
@@ -41,8 +40,3 @@ logging:
 #    reactor.netty: DEBUG
 #    org.springframework.http.server.reactive: DEBUG
 #      springframework.cloud.gateway.filter: debug
-
-mypizza:
-  domain:
-    http-port: 80
-    https-port: 90

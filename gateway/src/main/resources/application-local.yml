@@ -145,3 +145,10 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://admin:admin@localhost:7761/eureka
+
+mypizza:
+  domain:
+    redirect:
+      enabled: true
+      http-port: 80
+      https-port: 90
