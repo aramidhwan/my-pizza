@@ -28,6 +28,7 @@ pipeline {
                         echo "✅ 변경 감지됨!"
                     }
 
+                    env.BUILD_GATEWAY   = changedFiles.any { it.startsWith("gateway/") }.toString()
                     env.BUILD_COMMON   = changedFiles.any { it.startsWith("common/") }.toString()
                     env.BUILD_ORDER    = changedFiles.any { it.startsWith("order/") }.toString()
                     env.BUILD_STORE    = changedFiles.any { it.startsWith("store/") }.toString()
@@ -41,12 +42,17 @@ pipeline {
             steps {
                 script {
 			            sh '''
+			                chmod +x ./gateway/gradlew || true
 			                chmod +x ./common/gradlew || true
 			                chmod +x ./order/gradlew || true
 			                chmod +x ./store/gradlew || true
 			                chmod +x ./delivery/gradlew || true
 			                chmod +x ./customercenter/gradlew || true
 			            '''
+                    if (env.BUILD_GATEWAY == 'true') {
+                        echo '🚧 gateway 빌드'
+                        sh 'cd gateway && ./gradlew build --no-daemon'
+                    }
                     if (env.BUILD_COMMON == 'true') {
                         echo '🚧 common 빌드'
                         sh 'cd common && ./gradlew build --no-daemon'
@@ -79,6 +85,12 @@ pipeline {
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         '''
 
+                        if (env.BUILD_GATEWAY == 'true') {
+                            sh """
+                                docker build -t ${DOCKER_HUB_USER}/gateway:${IMAGE_TAG} ./gateway
+                                docker push ${DOCKER_HUB_USER}/gateway:${IMAGE_TAG}
+                            """
+                        }
                         if (env.BUILD_COMMON == 'true') {
                             sh """
                                 docker build -t ${DOCKER_HUB_USER}/common:${IMAGE_TAG} ./common
