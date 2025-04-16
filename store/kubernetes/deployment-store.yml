@@ -42,3 +42,8 @@ spec:
                 configMapKeyRef:
                   name: dev-app-configmap
                   key: kafka_binder_brokers
+            - name: FEIGN-URL-GATEWAY-SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-app-configmap
+                  key: feign-url-gateway-service

@@ -24,14 +24,14 @@ public interface InternalGateway {
     String getItemNm(@RequestParam("itemId") Long itemId) ;
 
     default String retryFallback(Exception cause) {
-        System.out.println("[OrderGateway] retryFallback : " + cause.getMessage());
+        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
 //        return cause.getMessage();
         return "[아이템명칭]일시장애(Retry)" ;
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
     default String circuitBreakerFallback(Exception cause) {
-        System.out.println("[OrderGateway] " + cause.getMessage());
+        System.out.println("[InternalGateway] " + cause.getMessage());
 //        return cause.getMessage();
         return "[아이템명칭]일시장애(Circuit)" ;
     }
