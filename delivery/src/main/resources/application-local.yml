@@ -45,7 +45,3 @@ eureka:
     enabled: false
     service-url:
       defaultZone: http://admin:admin@localhost:7761/eureka    #??? ?? ?? http://???:????@???:8761/eureka
-
-mypizza:
-  cors:
-    allowedOrigins: https://my-pizza.io:90, https://my-pizza.io:9090, https://39.118.150.37:9090

@@ -145,3 +145,7 @@ consumer-worker:
   threads:
     order-accept:
       count: 1            # kafka consumer를 처리하는 worker 쓰레드 갯수 지정, Executors.newFixedThreadPool(count)로 사용됨
+
+mypizza:
+  cors:
+    allowedOrigins: https://my-pizza.io

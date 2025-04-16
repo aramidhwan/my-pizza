@@ -1,5 +1,5 @@
 server:
-  port: 90
+  port: 443
   ssl:
     enabled: true
     #    key-store: src/main/resources/mypizza.p12
@@ -145,6 +145,12 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://admin:admin@localhost:7761/eureka
+
+logging:
+  level:
+    root: info
+    com.study.mypizza: trace
+    org.springframework.cloud.gateway: trace
 
 mypizza:
   domain:

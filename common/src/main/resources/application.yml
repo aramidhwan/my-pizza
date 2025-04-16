@@ -54,10 +54,7 @@ jwt:
 aes:
   secret-key: aeskey1234567898  # AES-128는 128비트(16바이트)의 키
 
-logging:
-  level:
-    root: info
-    com.study.mypizza: debug
-#    org.springframework.security: trace
-
+mypizza:
+  cors:
+    allowedOrigins: https://my-pizza.io
 

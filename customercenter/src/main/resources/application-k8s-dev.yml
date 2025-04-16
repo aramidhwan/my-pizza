@@ -28,7 +28,3 @@ spring:
 eureka:
   client:
     enabled: false
-
-mypizza:
-  cors:
-    allowedOrigins: https://my-pizza.io
