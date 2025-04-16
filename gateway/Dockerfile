@@ -1,7 +1,7 @@
 FROM wodby/openjdk:17-alpine
 
 COPY build/libs/*SNAPSHOT.jar app.jar
-EXPOSE 8080
+EXPOSE 80
 
 # 만약 alpine 버전을 베이스로 한 docker image를 빌드 중이라면,
 # 아주 가벼운 친구이기 때문에 timezone 파일들 또한 존재하지 않는다.
