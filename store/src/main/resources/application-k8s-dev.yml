@@ -20,7 +20,7 @@ spring:
     openfeign:
       client:
         config:
-          ORDER:        # @FeignClient(name="ORDER")에 해당하는 부분 기술
+          GATEWAY:        # @FeignClient(name="ORDER")에 해당하는 부분 기술
             url: ${FEIGN-URL-GATEWAY-SERVICE}
 
 eureka:
