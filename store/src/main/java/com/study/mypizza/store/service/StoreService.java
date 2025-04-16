@@ -7,7 +7,7 @@ import com.study.mypizza.store.entity.Store;
 import com.study.mypizza.store.entity.StoreOrder;
 import com.study.mypizza.store.enums.OrderStatus;
 import com.study.mypizza.store.exception.MyPizzaException;
-import com.study.mypizza.store.external.OrderGateway;
+import com.study.mypizza.store.external.InternalGateway;
 import com.study.mypizza.store.repository.StoreOrderDetailRepository;
 import com.study.mypizza.store.repository.StoreOrderRepository;
 import com.study.mypizza.store.repository.StoreRepository;
@@ -35,7 +35,7 @@ public class StoreService {
     private final StoreRepository storeRepository ;
     private final StoreOrderRepository storeOrderRepository ;
     private final StoreOrderDetailRepository storeOrderDetailRepository ;
-    private final OrderGateway orderGateway ;
+    private final InternalGateway internalGateway;
 
     public String getStoreNm(Long storeId) {
         String storeNm = storeRepository.findById(storeId)
@@ -206,7 +206,7 @@ public class StoreService {
         List<StoreOrderDetailDto> allDetails = storeOrderDetailRepository.findByOrderIdIn(orderIds)
                 .stream()
                 .map(StoreOrderDetailDto::of)
-                .peek(dto -> dto.setItemNm(orderGateway.getItemNm(dto.getItemId())))
+                .peek(dto -> dto.setItemNm(internalGateway.getItemNm(dto.getItemId())))
                 .toList();
 
         // 주문 상세를 주문 ID 기준으로 그룹핑

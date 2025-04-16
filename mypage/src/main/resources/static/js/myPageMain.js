@@ -41,7 +41,7 @@ function displayMyOrder(json) {
 
     // 내역이 없을 경우
     if ( json.data.myPageDtos.length == 0 ) {
-        createMyOrderTable("0", "") ;
+        createMyOrderTable("0", "" ,"") ;
         var tblMyOrders = document.getElementById("tblMyOrders" + "0");
         var tbody = tblMyOrders.querySelector("tbody"); // tbody 요소를 선택
         tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
@@ -59,7 +59,7 @@ function displayMyOrder(json) {
         const rowSpan = myPageDto.myPageOrderDetailDtos.length ;
 
         if ( myPageDto.storeId != prevStoreId ) {
-            createMyOrderTable(myPageDto.storeId, myPageDto.storeNm) ;
+            createMyOrderTable(myPageDto.storeId, myPageDto.storeNm, myPageDto.status) ;
         }
 
         var tblMyOrders = document.getElementById("tblMyOrders" + myPageDto.storeId);
@@ -108,7 +108,7 @@ function displayMyOrder(json) {
     }
 }
 
-function createMyOrderTable(storeId, storeNm) {
+function createMyOrderTable(storeId, storeNm, status) {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
 //    container.innerHTML = ""; // 기존 테이블 제거 후 새로 생성
@@ -122,7 +122,7 @@ function createMyOrderTable(storeId, storeNm) {
     // <span> 요소 생성
     let span = document.createElement("span");
     span.id = "divTblMyOrderTitle" + storeId; // 동적 ID 설정
-    span.innerText = (storeNm!="")? `[${storeNm}]`:''; // 텍스트 설정
+    span.innerText = (storeNm!="")? `[${storeNm}]`:(status=="ORDER_REJECTED")? '['+OrderStatus[status]+']':''; // 텍스트 설정
 
     // <div>에 <span> 추가
     container.appendChild(span);

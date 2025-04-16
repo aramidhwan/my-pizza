@@ -21,7 +21,7 @@ spring:
       client:
         config:
           ORDER:        # @FeignClient(name="ORDER")에 해당하는 부분 기술
-            url: ${FEIGN-URL-ORDER-SERVICE}
+            url: ${FEIGN-URL-GATEWAY-SERVICE}
 
 eureka:
   client:

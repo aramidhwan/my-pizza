@@ -4,7 +4,7 @@ import com.study.mypizza.mypage.dto.MyPageDto;
 import com.study.mypizza.mypage.dto.MyPageOrderDetailDto;
 import com.study.mypizza.mypage.exception.MyPizzaException;
 import com.study.mypizza.mypage.external.OrderGateway;
-import com.study.mypizza.mypage.external.StoreGateway;
+import com.study.mypizza.mypage.external.InternalGateway;
 import com.study.mypizza.mypage.repository.MyPageOrderDetailRepository;
 import com.study.mypizza.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,7 @@ import java.util.*;
 public class MyPageService {
     private final MyPageRepository mypageRepository;
     private final MyPageOrderDetailRepository myPageOrderDetailRepository;
-    private final StoreGateway storeGateway;
-    private final OrderGateway orderGateway;
+    private final InternalGateway internalGateway;
 
     public List<MyPageDto> getMyPageContent(int customerNo, String viewType) {
         List<MyPageDto> myPageDtos = null ;
@@ -61,7 +60,7 @@ public class MyPageService {
 
     private MyPageOrderDetailDto setItemNm(MyPageOrderDetailDto myPageOrderDetailDto) {
         if ( myPageOrderDetailDto.getItemId() != null ) {
-            myPageOrderDetailDto.setItemNm(orderGateway.getItemNm(myPageOrderDetailDto.getItemId()));
+            myPageOrderDetailDto.setItemNm(internalGateway.getItemNm(myPageOrderDetailDto.getItemId()));
         } else {
             myPageOrderDetailDto.setItemNm("");
         }
@@ -70,7 +69,7 @@ public class MyPageService {
 
     private MyPageDto setStoreNm(MyPageDto myPageDto) {
         if ( myPageDto.getStoreId() != null ) {
-            myPageDto.setStoreNm(storeGateway.getStoreNm(myPageDto.getStoreId()));
+            myPageDto.setStoreNm(internalGateway.getStoreNm(myPageDto.getStoreId()));
         } else {
             myPageDto.setStoreNm("");
         }

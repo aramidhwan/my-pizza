@@ -8,7 +8,7 @@ import com.study.mypizza.order.entity.Item;
 import com.study.mypizza.order.entity.Order;
 import com.study.mypizza.order.entity.OrderDetail;
 import com.study.mypizza.order.exception.MyPizzaException;
-import com.study.mypizza.order.external.StoreService;
+import com.study.mypizza.order.external.InternalGateway;
 import com.study.mypizza.order.repository.ItemRepository;
 import com.study.mypizza.order.repository.OrderDetailRepository;
 import com.study.mypizza.order.repository.OrderRepository;
@@ -31,7 +31,7 @@ public class OrderService {
     private final OrderRepository orderRepository ;
     private final ItemRepository itemRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final StoreService storeService ;
+    private final InternalGateway internalGateway ;
 
     @Transactional(rollbackFor = MyPizzaException.class)
     public void orderCancel(Long orderId) throws MyPizzaException {
@@ -42,7 +42,7 @@ public class OrderService {
         // 주문 접수 이전 단계에서만 취소가능
         if ( order.getStatus() == OrderStatus.ORDERED ) {
             // 취소 전에 주문받은 Store가 있는지 Store MSA에서 다시 한 번 체크
-            if (storeService.checkOrderCancel(orderId)) {
+            if (internalGateway.checkOrderCancel(orderId)) {
                 order.statusUpdate(OrderStatus.ORDER_CANCELLED);
                 orderRepository.save(order) ;
                 // 취소 불가능
@@ -62,7 +62,7 @@ public class OrderService {
 
         // Req/Res Calling
         // 주문 요청된 지역에 오픈중인 Store가 있는지 체크
-        String openYN = storeService.checkOpenYn(orderRequestDto.getRegionNm()) ;
+        String openYN = internalGateway.checkOpenYn(orderRequestDto.getRegionNm()) ;
 
         Order newOrder = Order.builder()
                 .customerNo(orderRequestDto.getCustomerNo())

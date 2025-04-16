@@ -85,7 +85,7 @@ resilience4j:
       default:
         timeoutDuration: 2s             # 기본값 : 1000 [ms]
     instances:
-      StoreServicecheckOpenYnString:
+      InternalGatewaycheckOpenYnString:
         timeoutDuration: 4s             # 기본값 : 1000 [ms]
   retry:
     retryAspectOrder: 2

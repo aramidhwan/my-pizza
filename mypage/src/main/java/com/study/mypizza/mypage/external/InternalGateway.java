@@ -15,24 +15,43 @@ import org.springframework.web.bind.annotation.RequestParam;
 // 해당 이름을 가진 Eureka 클라이언트에게 API 요청을 수행한다.
 // 이렇게 Eureka 클라이언트 이름을 사용하면 "별도의 URL 정보가 필요 없다".
 //@FeignClient(name="STORE", fallbackFactory = StoreServiceFallbackFactory.class)
-@FeignClient(name="STORE", configuration = FeignClientConfiguration.class)
-public interface StoreGateway {
+@FeignClient(name="GATEWAY", configuration = FeignClientConfiguration.class)
+public interface InternalGateway {
     @GetMapping("/store-service/stores/getStoreNm")
-    @Retry(name = "RETRY-getStoreNm", fallbackMethod = "retryFallback")
-    @CircuitBreaker(name = "CIRCUIT-getStoreNm", fallbackMethod = "circuitBreakerFallback")
+    @Retry(name = "RETRY-getStoreNm", fallbackMethod = "retryGetStoreNm")
+    @CircuitBreaker(name = "CIRCUIT-getStoreNm", fallbackMethod = "circuitFallbackGetStoreNm")
     @Cacheable(value = "storeNm", key="#storeId")
     String getStoreNm(@RequestParam("storeId") Long storeId) ;
 
-    default String retryFallback(Exception cause) {
-        System.out.println("[StoreGateway] retryFallback : " + cause.getMessage());
+    default String retryGetStoreNm(Exception cause) {
+        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
 //        return cause.getMessage();
         return "[상점명]일시장애(Retry)" ;
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
-    default String circuitBreakerFallback(Exception cause) {
-        System.out.println("[StoreGateway] " + cause.getMessage());
+    default String circuitFallbackGetStoreNm(Exception cause) {
+        System.out.println("[InternalGateway] " + cause.getMessage());
 //        return cause.getMessage();
         return "[상점명]일시장애(Circuit)" ;
+    }
+
+    @GetMapping("/order-service/items/getItemNm")
+    @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryGetItemNm")
+    @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitFallbackGetItemNm")
+    @Cacheable(value = "itemNm", key="#itemId")
+    String getItemNm(@RequestParam("itemId") Long itemId) ;
+
+    default String retryGetItemNm(Exception cause) {
+        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
+//        return cause.getMessage();
+        return "[메뉴명]일시장애(Retry)" ;
+    }
+
+    // io.github.resilience4j.circuitbreaker.CallNotPermittedException
+    default String circuitFallbackGetItemNm(Exception cause) {
+        System.out.println("[InternalGateway] " + cause.getMessage());
+//        return cause.getMessage();
+        return "[메뉴명]일시장애(Circuit)" ;
     }
 }

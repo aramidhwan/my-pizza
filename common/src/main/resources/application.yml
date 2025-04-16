@@ -57,4 +57,3 @@ aes:
 mypizza:
   cors:
     allowedOrigins: https://my-pizza.io
-

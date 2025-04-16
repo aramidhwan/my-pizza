@@ -89,9 +89,9 @@ resilience4j:
       default:
         timeoutDuration: 2s             # 기본값 : 1000 [ms]
     instances:
-      StoreGatewaygetStoreNmString:
+      InternalGatewaygetStoreNmString:
         timeoutDuration: 4s             # 기본값 : 1000 [ms]
-      OrderGatewaygetItemNmString:
+      InternalGatewaygetItemNmString:
         timeoutDuration: 4s             # 기본값 : 1000 [ms]
   retry:
     retryAspectOrder: 2

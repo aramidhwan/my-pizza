@@ -1,6 +1,6 @@
-package com.study.mypizza.mypage.external;
+package com.study.mypizza.store.external;
 
-import com.study.mypizza.mypage.config.FeignClientConfiguration;
+import com.study.mypizza.store.config.FeignClientConfiguration;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 // 해당 이름을 가진 Eureka 클라이언트에게 API 요청을 수행한다.
 // 이렇게 Eureka 클라이언트 이름을 사용하면 "별도의 URL 정보가 필요 없다".
 //@FeignClient(name="STORE", fallbackFactory = StoreServiceFallbackFactory.class)
-@FeignClient(name="ORDER", configuration = FeignClientConfiguration.class)
-public interface OrderGateway {
+@FeignClient(name="GATEWAY", configuration = FeignClientConfiguration.class)
+public interface InternalGateway {
     @GetMapping("/order-service/items/getItemNm")
     @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryFallback")
     @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitBreakerFallback")
@@ -26,13 +26,13 @@ public interface OrderGateway {
     default String retryFallback(Exception cause) {
         System.out.println("[OrderGateway] retryFallback : " + cause.getMessage());
 //        return cause.getMessage();
-        return "[메뉴명]일시장애(Retry)" ;
+        return "[아이템명칭]일시장애(Retry)" ;
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
     default String circuitBreakerFallback(Exception cause) {
         System.out.println("[OrderGateway] " + cause.getMessage());
 //        return cause.getMessage();
-        return "[메뉴명]일시장애(Circuit)" ;
+        return "[아이템명칭]일시장애(Circuit)" ;
     }
 }
