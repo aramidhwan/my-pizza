@@ -3,7 +3,6 @@ package com.study.mypizza.mypage.service;
 import com.study.mypizza.mypage.dto.MyPageDto;
 import com.study.mypizza.mypage.dto.MyPageOrderDetailDto;
 import com.study.mypizza.mypage.exception.MyPizzaException;
-import com.study.mypizza.mypage.external.OrderGateway;
 import com.study.mypizza.mypage.external.InternalGateway;
 import com.study.mypizza.mypage.repository.MyPageOrderDetailRepository;
 import com.study.mypizza.mypage.repository.MyPageRepository;
