@@ -25,4 +25,4 @@ spec:
 #            name: dev-store.my-pizza.svc.cluster.local
 #            name: "dev-store"."my-pizza".svc.cluster.local
             port:
-              number: 8080
+              number: 80

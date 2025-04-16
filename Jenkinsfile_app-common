@@ -38,12 +38,12 @@ pipeline {
                     echo ■ Getting AKS Credentials
                     az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
 
-                    echo ■ Deleting Application-Common
+                    echo ■ Deleting Application-$APP_NAME
                     kubectl delete deploy dev-$APP_NAME -n $NAME_SPACE --ignore-not-found
                     kubectl delete service dev-$APP_NAME -n $NAME_SPACE --ignore-not-found
                     kubectl delete service dev-$APP_NAME-headless-svc -n dev-ingress --ignore-not-found
                     
-                    echo ■ Creating Application-Common
+                    echo ■ Creating Application-$APP_NAME
                     echo Creating Application
                     kubectl apply -f $KUBE_INIT_DIR/deployment-$APP_NAME.yml
                     kubectl apply -f $KUBE_INIT_DIR/service-$APP_NAME-8080.yml
