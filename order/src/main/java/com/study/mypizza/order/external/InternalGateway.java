@@ -26,13 +26,13 @@ public interface InternalGateway {
     boolean checkOrderCancel(@PathVariable("orderId") Long orderId) ;
 
     default String retryFallback(Exception cause) {
-        System.out.println("[StoreService] retryFallback : " + cause.getMessage());
+        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
         return cause.getMessage();
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
     default String circuitBreakerFallback(Exception cause) {
-        System.out.println("[StoreService] " + cause.getMessage());
+        System.out.println("[InternalGateway] " + cause.getMessage());
         return cause.getMessage();
     }
 }
