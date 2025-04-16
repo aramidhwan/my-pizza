@@ -41,36 +41,34 @@ pipeline {
         stage('Build Services') {
             steps {
                 script {
-			            sh '''
-			                chmod +x ./gateway/gradlew || true
-			                chmod +x ./common/gradlew || true
-			                chmod +x ./order/gradlew || true
-			                chmod +x ./store/gradlew || true
-			                chmod +x ./delivery/gradlew || true
-			                chmod +x ./customercenter/gradlew || true
-			            '''
                     if (env.BUILD_GATEWAY == 'true') {
                         echo '🚧 gateway 빌드'
+			               sh 'chmod +x ./gateway/gradlew || true'
                         sh 'cd gateway && ./gradlew build --no-daemon'
                     }
                     if (env.BUILD_COMMON == 'true') {
                         echo '🚧 common 빌드'
+			               sh 'chmod +x ./common/gradlew || true'
                         sh 'cd common && ./gradlew build --no-daemon'
                     }
                     if (env.BUILD_ORDER == 'true') {
                         echo '🚧 order 빌드'
+			               sh 'chmod +x ./order/gradlew || true'
                         sh 'cd order && ./gradlew build --no-daemon'
                     }
                     if (env.BUILD_STORE == 'true') {
                         echo '🚧 store 빌드'
+			               sh 'chmod +x ./store/gradlew || true'
                         sh 'cd store && ./gradlew build --no-daemon'
                     }
                     if (env.BUILD_DELIVERY == 'true') {
                         echo '🚧 delivery 빌드'
+			               sh 'chmod +x ./delivery/gradlew || true'
                         sh 'cd delivery && ./gradlew build --no-daemon'
                     }
                     if (env.BUILD_MYPAGE == 'true') {
                         echo '🚧 mypage 빌드'
+			               sh 'chmod +x ./customercenter/gradlew || true'
                         sh 'cd customercenter && ./gradlew build --no-daemon'
                     }
                 }
