@@ -37,7 +37,13 @@ spring:
     suffix: .html                     # Optional
     cache: false                    # Optional (default: true)
 
+  web:
+    resources:
+      add-mappings: true      # 404가 NoHandlerFoundException 으로 들어오게 하려면 필요. 이 설정이 없으면 Spring은 기본적으로 404 요청을 그냥 자체 처리하고 ExceptionController로 전달하지 않습니다.
+      static-locations: classpath:/static/
+
   mvc:
+    throw-exception-if-no-handler-found: true # 404가 NoHandlerFoundException 으로 들어오게 하려면 필요. 이 설정이 없으면 Spring은 기본적으로 404 요청을 그냥 자체 처리하고 ExceptionController로 전달하지 않습니다.
     view:
       prefix: /html/
       suffix: .html

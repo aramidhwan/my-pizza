@@ -15,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.security.SignatureException;
 import java.util.Arrays;
@@ -40,6 +41,16 @@ public class ExceptionController {
                 .msg(ex.getMessage()+"\n아이디 또는 패스워드를 확인하세요.")
                 .build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto) ;
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ResponseDto> handle404(Exception ex) {
+        log.error("### 리소스를 찾을 수 없음 : {} - {}", ex.getClass().getSimpleName(), ex.getMessage());
+        ResponseDto responseDto = ResponseDto.builder()
+                .BIZ_SUCCESS(2)
+                .msg(ex.getMessage()+"\n리소스를 찾을 수 없습니다. 관리자에게 문의하세요.")
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto) ;
     }
 
     // 401 Unauthorized JWT 토큰이 만료 or 잘못되었을 경우, ROLE이 맞지 않을 경우
