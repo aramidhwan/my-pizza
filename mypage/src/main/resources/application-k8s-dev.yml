@@ -20,7 +20,7 @@ spring:
     openfeign:
       client:
         config:
-          GATEWAY:        # @FeignClient(name="STORE")에 해당하는 부분 기술x
+          GATEWAY:        # @FeignClient(name="STORE")에 해당하는 부분 기술xx
             url: ${FEIGN-URL-GATEWAY-SERVICE}
 
 eureka:
