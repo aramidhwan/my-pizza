@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@FeignClient(name="STORE", fallbackFactory = StoreServiceFallbackFactory.class)
 @FeignClient(name="ORDER", configuration = FeignClientConfiguration.class)
 public interface OrderGateway {
-    @GetMapping("/items/getItemNm")
+    @GetMapping("/order-service/items/getItemNm")
     @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryFallback")
     @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitBreakerFallback")
     @Cacheable(value = "itemNm", key="#itemId")

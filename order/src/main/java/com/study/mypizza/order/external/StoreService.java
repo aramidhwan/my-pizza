@@ -22,7 +22,7 @@ public interface StoreService {
     @CircuitBreaker(name = "CIRCUIT-checkOpenYn", fallbackMethod = "circuitBreakerFallback")
     String checkOpenYn(@RequestParam("regionNm") String regionNm) ;
 
-    @GetMapping("/stores/checkOrderCancel/{orderId}")
+    @GetMapping("/store-service/stores/checkOrderCancel/{orderId}")
     boolean checkOrderCancel(@PathVariable("orderId") Long orderId) ;
 
     default String retryFallback(Exception cause) {
