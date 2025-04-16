@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS `t_store` (
 
 -- 테이블 데이터 my-pizza.t_store:~11 rows (대략적) 내보내기
 INSERT INTO `t_store` (`store_id`, `store_nm`, `region_nm`, `addr`, `openyn`, `create_dt`, `update_dt`, `owner_no`) VALUES
-	(1, '강남1호점', '강남구', '강남구 테헤란로 178-21', b'0', NULL, '2025-03-19 22:39:00', 0),
+	(1, '강남1호점', '강남구', '강남구 테헤란로 178-21', b'1', NULL, '2025-03-19 22:39:00', 0),
 	(2, '강남2호점', '강남구', '강남구 삼성로 382', b'1', NULL, NULL, 7),
 	(3, '강남3호점', '강남구', '강남구 개포동 42-3', b'1', NULL, NULL, 7),
 	(4, '서초1호점', '서초구', '강남구 서초로 178-1', b'0', NULL, NULL, 0),
