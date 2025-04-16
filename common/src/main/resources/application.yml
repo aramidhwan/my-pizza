@@ -23,7 +23,18 @@ spring:
       hibernate:
         show_sql: false
         format_sql: true
+        highlight_sql: true
+        # dialect: org.hibernate.dialect.MySQL57Dialect
     hibernate:
+      # create, create-drop, update, validate, none
+      # create : SessionFactory 시작시 스키마를 삭제하고 다시 생성
+      # create-drop : SessionFactory 종료 시 스키마를 삭제
+      # update : 변경된 스키마 적용(운영DB에서는 사용하면 안됨), SessionFactory 연결된 DB와 비교하여 추가된 항목(컬럼)은 추가 만약 같은 변수명이면 오류발생
+      #          update 옵션에서 컬럼(변수) 삭제는 엄청난 문제를 발생시킬 수 있기 때문에 컬럼 추가만 반영된다.
+      # validate : 엔티티 변수들과 테이블 컬럼들이 정상 매핑되었는지만 확인, SessionFactory 시작시 객체구성과 스키마가 다르다면 예외 발생
+      # none: 아무것도 안함
+      # 운영환경에서는 절대 create, create-drop, update를 사용하면 안됨
+      #      ddl-auto: update
       ddl-auto: validate
       #      ddl-auto: create, validate
       generate-ddl: true      # generate-ddl ? ?? ddl-auto ??? ???? ??? ???? ????.(??? false)
