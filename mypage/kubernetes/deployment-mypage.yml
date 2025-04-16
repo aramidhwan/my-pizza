@@ -46,3 +46,8 @@ spec:
                 configMapKeyRef:
                   name: dev-app-configmap
                   key: feign-url-store-service
+            - name: FEIGN-URL-ORDER-SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: dev-app-configmap
+                  key: feign-url-order-service

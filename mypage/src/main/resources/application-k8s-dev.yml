@@ -21,9 +21,9 @@ spring:
       client:
         config:
           STORE:        # @FeignClient(name="STORE")에 해당하는 부분 기술x
-            url: ${feign-url-store-service}
+            url: ${FEIGN-URL-STORE-SERVICE}
           ORDER:        # @FeignClient(name="ORDER")에 해당하는 부분 기술
-            url: ${feign-url-order-service}
+            url: ${FEIGN-URL-ORDER-SERVICE}
 
 eureka:
   client:
