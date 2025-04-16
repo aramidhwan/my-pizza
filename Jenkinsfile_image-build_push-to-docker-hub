@@ -33,7 +33,7 @@ pipeline {
                     env.BUILD_ORDER    = changedFiles.any { it.startsWith("order/") }.toString()
                     env.BUILD_STORE    = changedFiles.any { it.startsWith("store/") }.toString()
                     env.BUILD_DELIVERY = changedFiles.any { it.startsWith("delivery/") }.toString()
-                    env.BUILD_MYPAGE   = changedFiles.any { it.startsWith("customercenter/") }.toString()
+                    env.BUILD_MYPAGE   = changedFiles.any { it.startsWith("mypage/") }.toString()
                 }
             }
         }
@@ -68,8 +68,8 @@ pipeline {
                     }
                     if (env.BUILD_MYPAGE == 'true') {
                         echo '🚧 mypage 빌드'
-			               sh 'chmod +x ./customercenter/gradlew || true'
-                        sh 'cd customercenter && ./gradlew build --no-daemon'
+			               sh 'chmod +x ./mypage/gradlew || true'
+                        sh 'cd mypage && ./gradlew build --no-daemon'
                     }
                 }
             }
@@ -115,7 +115,7 @@ pipeline {
                         }
                         if (env.BUILD_MYPAGE == 'true') {
                             sh """
-                                docker build -t ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG} ./customercenter
+                                docker build -t ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG} ./mypage
                                 docker push ${DOCKER_HUB_USER}/mypage:${IMAGE_TAG}
                             """
                         }
