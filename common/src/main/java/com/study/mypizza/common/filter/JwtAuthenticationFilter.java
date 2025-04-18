@@ -27,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             List.of(
 //                    "/css/**", "/js/**", "/images/**"   // static content
                     "/"  // 로그인 페이지의 URL을 추가합니다.
+                    ,"/favicon.ico"
                     ,"/html/index"  // 메인 페이지의 URL을 추가합니다.
                     ,"/auth/loginPage"  // 로그인 페이지의 URL을 추가합니다.
                     ,"/auth/loginPage.html"  // 로그인 페이지의 URL을 추가합니다.

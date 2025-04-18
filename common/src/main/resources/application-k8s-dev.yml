@@ -32,3 +32,9 @@ eureka:
     enabled: false
     service-url:
       defaultZone: http://admin:admin@localhost:7761/eureka    #유레카 서버 주소 http://아이디:비밀번호@아이피:8761/eureka
+
+logging:
+  level:
+    root: info
+    com.study.mypizza: debug
+#    org.springframework.security: trace

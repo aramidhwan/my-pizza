@@ -95,17 +95,17 @@ spring:
           filters:
             - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
 #            - name: JwtAuthentication # 적용할 필터 팩토리이름
+        - id: favicon
+          uri: https://localhost:8441  # 아무거나, 실제 요청 안 함
+          predicates:
+            - Path=/favicon.ico
+          filters:
+            - RewritePath=/favicon.ico, /favicon.ico
         - id: root
           uri: https://localhost:8441
           predicates:
 #            - Path=/**   # --> 요거는 '/'를 포함하지 않음
             - Path=/
-        - id: ignore-favicon
-          uri: http://localhost  # 아무거나, 실제 요청 안 함
-          predicates:
-            - Path=/favicon.ico
-          filters:
-            - SetStatus=204
         - id: common
           uri: https://localhost:8441   # 단일 포트
           #          uri: http://localhost:85   # 단일 포트
@@ -151,6 +151,9 @@ logging:
     root: info
     com.study.mypizza: trace
     org.springframework.cloud.gateway: trace
+#    reactor.netty: DEBUG
+#    org.springframework.http.server.reactive: DEBUG
+#      springframework.cloud.gateway.filter: debug
 
 mypizza:
   domain:

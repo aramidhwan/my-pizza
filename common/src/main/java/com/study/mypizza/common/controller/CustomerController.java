@@ -61,9 +61,4 @@ public class CustomerController {
         return ResponseEntity.ok().body("This is Vip-Order Page only for [ROLE_VIP] Role Customer.") ;
     }
 
-    @GetMapping("/order")
-    @Secured("ROLE_CUSTOMER")
-    public ResponseEntity<String> order() {
-        return ResponseEntity.ok().body("This is Order Page only for [ROLE_CUSTOMER] Role Customer.") ;
-    }
 }

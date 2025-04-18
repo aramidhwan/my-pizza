@@ -53,11 +53,11 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
         ObjectMapper objectMapper = new ObjectMapper();
         ResponseDto responseDto = null ;
 
-        if ("/favicon.ico".equals(requestPath)) {
-            log.info("🔍 /favicon.ico 요청 감지됨. 응답 코드 204 반환");
-            exchange.getResponse().setStatusCode(HttpStatus.NO_CONTENT);
-            return exchange.getResponse().setComplete();
-        }
+//        if ("/favicon.ico".equals(requestPath)) {
+//            log.info("🔍 /favicon.ico 요청 감지됨. 응답 코드 204 반환");
+//            exchange.getResponse().setStatusCode(HttpStatus.NO_CONTENT);
+//            return exchange.getResponse().setComplete();
+//        }
 
         // 2-1. 토큰이 필요하지 않은 API URL의 경우 -> 검증 처리없이 다음 필터로 이동한다.
         boolean skipURI = EXCLUDE_URL.stream().anyMatch(exclude -> exclude.equalsIgnoreCase(requestPath));
@@ -203,6 +203,7 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> EXCLUDE_URL =
             List.of(
                     "/", "/**/css/**", "/**/js/**", "/**/images/**"   // static content
+                    ,"/favicon.ico"                         // favicon.ico
                     ,"/common-service/auth/loginPage"       // 로그인 페이지의 URL을 추가합니다.
                     ,"/common-service/auth/loginPage.html"  // 로그인 페이지의 URL을 추가합니다.
                     ,"/common-service/api/auth/logout"          // 로그아웃 URL을 추가합니다.

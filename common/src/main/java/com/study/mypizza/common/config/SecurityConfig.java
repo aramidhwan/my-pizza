@@ -133,7 +133,7 @@ public class SecurityConfig {
                 // FilterSecurityInterceptor 혹은 MethodSecurityInterceptor 이며 각각 필터, 메서드에서 검사한다.
                 .authorizeHttpRequests(authorize  -> authorize
                     .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                    .requestMatchers("/","/html/index","/common/layout").permitAll()
+                    .requestMatchers("/","/favicon.ico","/html/index","/common/layout").permitAll()
                     .requestMatchers("/html/auth/loginPage", "/html/auth/loginPage.html").permitAll()
                     .requestMatchers("/api/auth/logout", "/api/auth/sign-up", "/api/auth/sign-in", "/api/auth/refresh-token").permitAll()
                     .requestMatchers("/html/**").permitAll()

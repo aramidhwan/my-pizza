@@ -46,12 +46,12 @@ spring:
             - Path=/mypage-service/**
           filters:
             - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
-        - id: ignore-favicon
-          uri: http://localhost  # 아무거나, 실제 요청 안 함
+        - id: favicon
+          uri: http://dev-common.dev-app.svc.cluster.local:8080  # 아무거나, 실제 요청 안 함
           predicates:
             - Path=/favicon.ico
           filters:
-            - SetStatus=204
+            - RewritePath=/favicon.ico, /favicon.ico
         - id: root
           uri: http://dev-common.dev-app.svc.cluster.local:8080
           predicates:
@@ -82,6 +82,15 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://admin:admin@localhost:7761/eureka
+
+logging:
+  level:
+    root: info
+    com.study.mypizza: debug
+#    org.springframework.cloud.gateway: DEBUG
+#    reactor.netty: DEBUG
+#    org.springframework.http.server.reactive: DEBUG
+#      springframework.cloud.gateway.filter: debug
 
 mypizza:
   domain:
