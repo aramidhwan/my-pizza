@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    environment {
+        RESOURCE_GROUP = "myPizzaRSG"
+        CLUSTER_NAME = "myPizzaCluster"
+        NAME_SPACE = "dev-app"
+
+        // 여러 앱 이름들 (쉼표 구분)
+        APP_NAMES = "gateway,common,order,store,delivery,mypage"
+        
+        // Git 저장소 기준 상대경로 사용
+        KUBE_INIT_DIR = "kubernetes"
+
+        // AZURE_SUBSCRIPTION_ID : az account show 해서 "id" 항목
+        // 나머지 항목들 : az ad sp create-for-rbac --name jenkins-sp --role contributor --scopes /subscriptions/<AZURE_SUBSCRIPTION_ID>
+        // AZURE_CLIENT_ID					: "appId" 항목
+        // AZURE_CLIENT_SECRET 		: "password" 항목
+        // AZURE_TENANT_ID 				: "tenant" 항목
+        AZURE_CLIENT_ID = "cdf1d46e-3f80-49c7-b414-f10d3c595b56"
+        AZURE_CLIENT_SECRET = "idV8Q~LDZtuJPSuqFuItUabGNLElOqSfMcxBRcz_"
+        AZURE_TENANT_ID = "a781af68-05e4-446a-92a7-d9a45d90d58c"
+        AZURE_SUBSCRIPTION_ID = "eee3d1d2-f4eb-444b-8dcf-2e731df0aac7"
+    }
+
+    stages {
+        stage('소스코드 체크아웃') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Azure 로그인 및 AKS 연결') {
+            steps {
+                sh '''
+                    echo ■ Azure 로그인
+                    az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID --output none
+                    az account set --subscription $AZURE_SUBSCRIPTION_ID
+
+                    echo ■ Getting AKS Credentials
+                    az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --overwrite-existing
+                '''
+            }
+        }
+        stage('Kubernetes My-Pizza 앱 생성') {
+            steps {
+                script {
+                    // 쉼표로 구분된 APP_NAMES를 배열로 변환
+                    def appList = APP_NAMES.split(',')
+
+                    for (app in appList) {
+                        app = app.trim()
+                        echo "▶▶▶ [$app] 애플리케이션 배포 시작 ◀◀◀"
+
+                        sh """
+                            echo ■ Deleting Application-$app
+                            kubectl delete deploy dev-$app -n $NAME_SPACE --ignore-not-found
+                            kubectl delete service dev-$app -n $NAME_SPACE --ignore-not-found
+                            kubectl delete service dev-$app-headless-svc -n dev-ingress --ignore-not-found
+                            
+                            echo ■ Creating Application-$app
+                            kubectl apply -f $app/$KUBE_INIT_DIR/deployment-$app.yml
+                            kubectl apply -f $app/$KUBE_INIT_DIR/service-$app-8080.yml
+                            kubectl apply -f $app/$KUBE_INIT_DIR/service-headless-$app.yml
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
