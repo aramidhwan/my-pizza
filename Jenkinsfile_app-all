@@ -57,10 +57,11 @@ pipeline {
                             kubectl delete service dev-$app -n $NAME_SPACE --ignore-not-found
                             kubectl delete service dev-$app-headless-svc -n dev-ingress --ignore-not-found
                             
-                            echo ■ Creating Application-$app
-                            kubectl apply -f $app/$KUBE_INIT_DIR/deployment-$app.yml
-                            kubectl apply -f $app/$KUBE_INIT_DIR/service-$app-8080.yml
-                            kubectl apply -f $app/$KUBE_INIT_DIR/service-headless-$app.yml
+                            echo ■ Creating Application-${app}
+                            kubectl apply -f "${app}/${KUBE_INIT_DIR}/deployment-${app}.yml"
+                            kubectl apply -f "${app}/${KUBE_INIT_DIR}/service-${app}-8080.yml"
+                            kubectl apply -f "${app}/${KUBE_INIT_DIR}/service-headless-${app}.yml"
+
                         """
                     }
                 }
