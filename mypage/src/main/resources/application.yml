@@ -1,6 +1,7 @@
 spring:
   application:
     name: mypage
+
   jpa:
     open-in-view: false
     properties:
