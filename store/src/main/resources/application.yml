@@ -129,17 +129,14 @@ management:                 # Spring Actuator
       exposure:
         include: env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
 
-logging:
   level:
     root: info
     com.study: debug
-    # 참고로
-    # logging.level.org.hibernate.type=TRACE나
-    # logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-    # 위 설정들은 스프링 부트 3버전에서는 적용되지 않는 것 같습니다.
-    # org.hibernate.type: trace
-    org.hibernate.orm.jdbc.bind: info
-    org.hibernate.type.BasicTypeRegistry: WARN
+    #    org.springframework.security: trace
+    org.hibernate: info
+    # Logs the JDBC parameters passed to a query
+    # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
+    #    org.hibernate.orm.jdbc.bind: trace
     org.springframework.cloud: info
     org.apache.kafka.common.utils.AppInfoParser: WARN
     org.apache.kafka.clients.Metadata: WARN

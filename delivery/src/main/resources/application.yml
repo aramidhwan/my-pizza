@@ -110,12 +110,10 @@ management:                 # Spring Actuator
       exposure:
         include: env
 
-logging:
   level:
     root: info
     com.study: debug
-#    org.springframework.security: trace
-    # basic log level for all messages
+    #    org.springframework.security: trace
     org.hibernate: info
     # Logs the JDBC parameters passed to a query
     # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.

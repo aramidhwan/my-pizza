@@ -65,6 +65,25 @@ jwt:
 aes:
   secret-key: aeskey1234567898  # AES-128는 128비트(16바이트)의 키
 
+logging:
+  level:
+    root: info
+    com.study: debug
+    # Logs the JDBC parameters passed to a query
+    # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
+    #    org.hibernate.orm.jdbc.bind: trace
+#    org.hibernate.orm.jdbc.bind: info
+#    org.hibernate.type.BasicTypeRegistry: WARN
+#    org.springframework.cloud: info
+#    org.apache.kafka.common.utils.AppInfoParser: WARN
+#    org.apache.kafka.clients.Metadata: WARN
+#    org.apache.kafka.clients.admin.AdminClientConfig: WARN
+#    org.apache.kafka.clients.consumer.ConsumerConfig: WARN
+#    org.apache.kafka.clients.producer.ProducerConfig: WARN
+#    org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+#    org.apache.kafka.common.metrics.Metrics: WARN
+#    org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN
+
 mypizza:
   cors:
     allowedOrigins: https://my-pizza.io
