@@ -64,7 +64,7 @@ function displayMyOrder(json) {
 
         var tblMyOrders = document.getElementById("tblMyOrders" + myPageDto.storeId);
         var tbody = tblMyOrders.querySelector("tbody"); // tbody 요소를 선택
-//        tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
+        tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
 
         myPageDto.myPageOrderDetailDtos.forEach((myPageOrderDetailDto, inx) => {
             // 선택된 메뉴 내용 표시

@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   application:
     name: delivery
   jpa:
@@ -75,7 +77,7 @@ resilience4j:
       default:
         timeoutDuration: 2s             # 기본값 : 1000 [ms]
     instances:
-      StoreGatewaygetStoreNmString:
+      InternalGatewaygetStoreNmString:
         timeoutDuration: 4s             # 기본값 : 1000 [ms]
   retry:
     retryAspectOrder: 2
@@ -110,14 +112,11 @@ management:                 # Spring Actuator
       exposure:
         include: env
 
+logging:
   level:
     root: info
     com.study: debug
-    #    org.springframework.security: trace
     org.hibernate: info
-    # Logs the JDBC parameters passed to a query
-    # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
-    #    org.hibernate.orm.jdbc.bind: trace
     org.springframework.cloud: info
     org.apache.kafka.common.utils.AppInfoParser: WARN
     org.apache.kafka.clients.Metadata: WARN

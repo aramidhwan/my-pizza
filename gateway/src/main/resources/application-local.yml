@@ -96,7 +96,7 @@ spring:
             - RewritePath=/mypage-service/(?<segment>.*), /$\{segment}
 #            - name: JwtAuthentication # 적용할 필터 팩토리이름
         - id: favicon
-          uri: https://localhost:8441  # 아무거나, 실제 요청 안 함
+          uri: https://localhost:8441
           predicates:
             - Path=/favicon.ico
           filters:
@@ -149,8 +149,8 @@ eureka:
 logging:
   level:
     root: info
-    com.study.mypizza: trace
-    org.springframework.cloud.gateway: trace
+#    com.study.mypizza: trace
+#    org.springframework.cloud.gateway: trace
 #    reactor.netty: DEBUG
 #    org.springframework.http.server.reactive: DEBUG
 #      springframework.cloud.gateway.filter: debug

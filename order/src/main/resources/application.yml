@@ -170,7 +170,6 @@ logging:
     org.apache.kafka.common.metrics.Metrics: WARN
     org.hibernate.hql.internal.QueryTranslatorFactoryInitiator: WARN
 
-
 mypizza:
   cors:
     allowedOrigins: https://my-pizza.io
