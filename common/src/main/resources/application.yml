@@ -68,7 +68,7 @@ aes:
 logging:
   level:
     root: info
-    com.study: debug
+    com.study: info
     # Logs the JDBC parameters passed to a query
     # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
     #    org.hibernate.orm.jdbc.bind: trace

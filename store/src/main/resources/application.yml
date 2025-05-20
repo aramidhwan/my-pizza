@@ -129,6 +129,7 @@ management:                 # Spring Actuator
       exposure:
         include: env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
 
+logging:
   level:
     root: info
     com.study: debug

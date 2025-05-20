@@ -22,8 +22,8 @@ spring:
 #      jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
 #      username: admin
 #      password: admin
-      maximum-pool-size: 10 #최대 pool 크기
-      minimum-idle: 10 #최소 pool 크기
+      maximum-pool-size: 13 #최대 pool 크기
+      minimum-idle: 13 #최소 pool 크기
       connectionTimeout: 2000   # ms, 기본값(30000), 최소값(250ms)
 #      idle-timeout: 600000 #연결 위한 최대 유후 시간
 #      maxLifetime: 1800000 # Default: 1800000 (30 minutes), 반납된 커넥션의 최대 수명, 0이면 무한.

@@ -8,7 +8,6 @@ server:
     key-store-type: PKCS12
     key-alias: mypizza
 
-
 spring:
   application:
     name: gateway
@@ -149,7 +148,7 @@ eureka:
 logging:
   level:
     root: info
-#    com.study.mypizza: trace
+    com.study: info
 #    org.springframework.cloud.gateway: trace
 #    reactor.netty: DEBUG
 #    org.springframework.http.server.reactive: DEBUG
@@ -160,4 +159,4 @@ mypizza:
     redirect:
       enabled: true
       http-port: 80
-      https-port: 90
+      https-port: 443
