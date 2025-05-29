@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,29 +22,16 @@ public class MyPageService {
     private final MyPageOrderDetailRepository myPageOrderDetailRepository;
     private final InternalGateway internalGateway;
 
-    public List<MyPageDto> getMyPageContent(int customerNo, String viewType) {
-        List<MyPageDto> myPageDtos = null ;
+    public List<MyPageDto> getMyPageContent(int customerNo, String startDate, String endDate) {
+        // 변환: 하루의 시작부터 끝까지 포함되도록
+        LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);
 
-        if ("onlyToday".equals(viewType)) {
-            LocalDateTime now = LocalDateTime.now() ;
-            LocalDateTime today = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0, 0, 0) ;
-
-            myPageDtos = mypageRepository.findByCustomerNoAndCreateDtAfterOrderByStoreIdAscCreateDtDesc(customerNo, today)
-                    .stream()
-                    .map(MyPageDto::of)
-                    .map(this::setStoreNm)
-                    .toList() ;
-
-        } else if ("all".equals(viewType)) {
-            myPageDtos = mypageRepository.findByCustomerNoOrderByStoreIdAscCreateDtDesc(customerNo)
-                    .stream()
-                    .map(MyPageDto::of)
-                    .map(this::setStoreNm)
-                    .toList() ;
-
-        } else {
-            throw new MyPizzaException("알 수 없는 viewType=["+viewType+"]") ;
-        }
+        List<MyPageDto> myPageDtos = mypageRepository.findByCustomerNoAndCreateDtBetweenOrderByStoreIdAscCreateDtDesc(customerNo, startDateTime, endDateTime)
+                .stream()
+                .map(MyPageDto::of)
+                .map(this::setStoreNm)
+                .toList() ;
 
         for (MyPageDto myPageDto:myPageDtos) {
             myPageDto.setMyPageOrderDetailDtos(myPageOrderDetailRepository.findByOrderIdOrderByItemIdAsc(myPageDto.getOrderId())

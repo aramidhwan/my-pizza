@@ -1,13 +1,32 @@
 (() => {
+    // 오늘 날짜 계산
+    const today = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(today.getMonth() - 1);
+
+    // 한국어 로케일을 flatpickr에 등록
+    flatpickr.localize(flatpickr.l10ns.ko);
+    flatpickr("#startDate", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: [today, today],  // ✅ 기본 선택값 설정
+        locale: "ko", // 한국어 설정
+        plugins: [new rangePlugin({ input: "#endDate" })]
+    });
+
     // "OrderReject" 상태일 시 팝업 설명
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
 
-    loadMyOrder(/*[[${viewType}]]*/ "onlyToday") ;
+    loadMyOrder() ;
 })()
+// layout.html의 일부 영역에 동적으로 삽입되기 때문에, DOMContentLoaded 이벤트는 이미 발생한 후입니다.
+// 따라서 document.addEventListener("DOMContentLoaded", ...)는 절대 호출되지 않아요.
+// document.addEventListener("DOMContentLoaded", function () {
+// });
 
 // 함수 노출: 전역에서 호출 가능하도록 window 객체에 할당
-function loadMyOrder(viewType) {
+function loadMyOrder() {
     const url = '/mypage-service/api/getMyOrders' ;
     const params = {
       method: 'GET',
@@ -15,7 +34,8 @@ function loadMyOrder(viewType) {
       redirect: "follow" // follow, error, or manual
     };
     const requestParams = {
-        viewType: viewType
+        startDate: document.getElementById("startDate").value,
+        endDate: document.getElementById("endDate").value
     };
     // URLSearchParams를 사용해 파라미터를 쿼리 스트링 형식으로 변환
     const queryString = new URLSearchParams(requestParams).toString();
@@ -26,18 +46,9 @@ function loadMyOrder(viewType) {
 function displayMyOrder(json) {
     let cellIndex = 0 ;
     let prevStoreId = "" ;
-    const imgViewType   = document.getElementById("imgViewType");
-    const aViewType     = document.getElementById("aViewType");
 
-    if (json.data.viewType == "onlyToday") {
-        imgViewType.src = '/mypage-service/images/myPageMain2.jpg';
-        aViewType.setAttribute('onClick', 'loadMyOrder("all");') ;
-    } else if (json.data.viewType == "all") {
-        imgViewType.src = '/mypage-service/images/myPageMain1.jpg';
-        aViewType.setAttribute('onClick', 'loadMyOrder("onlyToday");') ;
-    } else {
-        alert("도데체 뭐야? json.data.viewType : "+json.data.viewType) ;
-    }
+    // 기존 내역 삭제
+    clearTableContainer() ;
 
     // 내역이 없을 경우
     if ( json.data.myPageDtos.length == 0 ) {
@@ -64,23 +75,18 @@ function displayMyOrder(json) {
 
         var tblMyOrders = document.getElementById("tblMyOrders" + myPageDto.storeId);
         var tbody = tblMyOrders.querySelector("tbody"); // tbody 요소를 선택
-        tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
+//        tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
 
-        myPageDto.myPageOrderDetailDtos.forEach((myPageOrderDetailDto, inx) => {
+        myPageDto.myPageOrderDetailDtos.forEach((myPageOrderDetailDto, iny) => {
             // 선택된 메뉴 내용 표시
             var newRow = tbody.insertRow();
             cellIndex = 0 ;
 
-            if ( inx == 0 ) {
+            if ( iny == 0 ) {
                 var newCell1 = newRow.insertCell(cellIndex++);    // 주문번호
                 newCell1.classList.add("cssAlignCenter") ;
                 newCell1.rowSpan = rowSpan ;
                 newCell1.innerText = myPageDto.orderId ;
-
-//                var newCell2 = newRow.insertCell(cellIndex++);    // 배정상점
-//                newCell2.classList.add("cssAlignCenter") ;
-//                newCell2.rowSpan = rowSpan ;
-//                newCell2.innerText = myPageDto.storeNm ;
             }
 
             var newCell3 = newRow.insertCell(cellIndex++);    // 주문메뉴
@@ -91,7 +97,7 @@ function displayMyOrder(json) {
             newCell4.classList.add("cssAlignCenter") ;
             newCell4.innerText = myPageOrderDetailDto.qty ;
 
-            if ( inx == 0 ) {
+            if ( iny == 0 ) {
                 var newCell5 = newRow.insertCell(cellIndex++);    // 처리상태
                 newCell5.classList.add("cssAlignCenter") ;
                 newCell5.rowSpan = rowSpan ;
@@ -108,6 +114,12 @@ function displayMyOrder(json) {
     }
 }
 
+function clearTableContainer() {
+    // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
+    let container = document.getElementById("tableContainer");
+    container.innerHTML = ""; // 기존 테이블 제거 후 새로 생성
+}
+
 function createMyOrderTable(storeId, storeNm, status) {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
@@ -122,7 +134,8 @@ function createMyOrderTable(storeId, storeNm, status) {
     // <span> 요소 생성
     let span = document.createElement("span");
     span.id = "divTblMyOrderTitle" + storeId; // 동적 ID 설정
-    span.innerText = (storeNm!="")? `[${storeNm}]`:(status=="ORDER_REJECTED")? '['+OrderStatus[status]+']':''; // 텍스트 설정
+    const storeNmStr = (storeNm!="")? `[${storeNm}]`:(status=="ORDER_REJECTED")? '['+OrderStatus[status]+']':'' ;
+    span.innerHTML = `<strong>${storeNmStr}</strong>` ;
 
     // <div>에 <span> 추가
     container.appendChild(span);

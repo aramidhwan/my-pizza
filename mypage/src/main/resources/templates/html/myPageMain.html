@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--bootstrap 용 css-->
     <link rel="stylesheet" href="/mypage-service/css/bootstrap.min.css">
-    <script src="/mypage-service/js/myPageMain.js"></script>
     <style>
         table th {
             white-space: nowrap;
@@ -20,9 +19,6 @@
         .cssAlignCenter {
             text-align: center;
             vertical-align: middle;
-        }
-        .no-line {
-            text-decoration: none;
         }
         .custom-popover {
           --bs-popover-max-width: 200px;
@@ -44,19 +40,20 @@
 </head>
 <body>
 <div class="container-sm">
-
     <div class="row">
-        <div class="col">
-            <h4 style="white-space:nowrap;">주문 내역을 확인해 보세요.</h4>
-        </div>
-        <div class="col colcss1" th:switch="${viewType}">
-            <a id="aViewType" th:case="onlyToday" href="javascript:void(0);" onclick="loadMyOrder('all');">
-                <img class="css1" id="imgViewType" src="/mypage-service/images/myPageMain2.jpg" alt="이전내역도보기">
-            </a>
-            <a id="aViewType" th:case="all" href="javascript:void(0);" onclick="loadMyOrder('onlyToday');">
-                <img class="css1" id="imgViewType" src="/mypage-service/images/myPageMain1.jpg" alt="오늘내역만보기">
-            </a>
-            <a th:case="*" href='javascript:void(0);' onclick="loadMyPageMain();">알 수 없는 viewType : [[${viewType}]]</a>
+        <div style="display: flex; align-items: center;">
+            <!-- 왼쪽 h4 -->
+            <h4 style="margin: 0; white-space: nowrap;">주문 내역을 확인해 보세요.</h4>
+            <!-- 오른쪽 입력 그룹 -->
+            <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                <label for="startDate" style="margin: 0;">기간 선택</label>
+                <input id="startDate" class="form-control"
+                       placeholder="시작일" style="width: 120px; flex: 0 0 auto;" />
+                <span class="input-group-text" style="font-weight: bold;">~</span>
+                <input id="endDate" class="form-control"
+                       placeholder="종료일" style="width: 120px; flex: 0 0 auto;" />
+                <button type="button" class="btn btn-primary" id="btnSearch" onclick="loadMyOrder('')">검색</button>
+            </div>
         </div>
     </div>
 
@@ -67,23 +64,10 @@
     </div>
 
     <div class="row">
-        <div id="tableContainer" class="col">   <!--  style="overflow-y: scroll;" -->
-<!--            <table class="table table-striped" id="tableMyOrders">-->
-<!--                <thead>-->
-<!--                <tr class="table-warning">-->
-<!--                    <th class="cssAlignCenter" style="width: 40px">#</th>-->
-<!--                    <th class="cssAlignCenter" style="width: 180px">배정상점</th>-->
-<!--                    <th class="cssAlignCenter" style="width: 150px">주문메뉴</th>-->
-<!--                    <th class="cssAlignCenter" style="width: 60px">수량</th>-->
-<!--                    <th class="cssAlignCenter" style="width: 250px">처리상태</th>-->
-<!--                    <th class="cssAlignCenter">주문시간</th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody>-->
-<!--                </tbody>-->
-<!--            </table>-->
+        <div id="tableContainer" class="col">
         </div>
     </div>
-</div>      <!-- div class="container-sm" -->
+</div>
+<script src="/mypage-service/js/myPageMain.js" defer></script>
 </body>
 </html>

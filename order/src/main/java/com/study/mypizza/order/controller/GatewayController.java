@@ -16,7 +16,8 @@ public class GatewayController {
     // Store/MyPage MSA에서 호출되는 메소드 (아이템 이름 가져오기)
     @GetMapping("/items/getItemNm")
     public String getItemNm(@RequestParam Long itemId) {
-        log.debug("### [/items/getItemNm] is called. itemId = {}", itemId);
-        return itemService.getItem(itemId).getItemNm();
+        String itemNm = itemService.getItem(itemId).getItemNm();
+        log.debug("### [/items/getItemNm] is called. itemId = {}, {}", itemId, itemNm);
+        return itemNm ;
     }
 }

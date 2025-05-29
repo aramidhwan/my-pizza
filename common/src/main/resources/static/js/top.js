@@ -1,3 +1,6 @@
+// 전역에 저장
+window.calendarInstance = null;
+
 $(
     function() {
         checkSignIn() ;
@@ -63,30 +66,86 @@ function logout(event) {
     ;
 }
 function loadStoreAdminMain() {
-    $("#content").load("/store-service/html/storeAdminMain");    // Spring Boot 호출
+    safeLoadContent("/store-service/html/storeAdminMain");
 }
 function loadDeliveryAdminMain() {
-    $("#content").load("/delivery-service/html/deliveryAdminMain");    // Spring Boot 호출
+    safeLoadContent("/delivery-service/html/deliveryAdminMain");
 }
 function loadStoreMain() {
-    // modal 창으로 인해 어두워진 뒷배경(backdrop) 제거
-    document.body.classList.remove("modal-open"); // 모달 열림 상태 해제
-    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove()); // 모든 backdrop 제거
-    $("#content").load("/store-service/html/storeMain");    // Spring Boot 호출
+    safeLoadContent("/store-service/html/storeMain");
 }
 function loadOrderMain() {
     // 이벤트 중복 등록 방지
     window.menuEventAdded = false ;
 //    window.btnDeleteMenuEventAdded = false ;
     window.btnOrder = false ;
-    $("#content").load("/order-service/html/orderMain");    // Spring Boot 호출
+    safeLoadContent("/order-service/html/orderMain");
 }
+
 function loadMyPageMain() {
-    $("#content").load("/mypage-service/html/myPageMain");    // Spring Boot 호출
+    // 기존 달력 제거
+    safeLoadContent("/mypage-service/html/myPageMain", function () {
+        if (typeof initMyPageMain === 'function') {
+            initMyPageMain();
+        }
+    });
 }
+
 function loadRoleMain() {
-    $("#content").load("/common-service/html/roleMain");    // Spring Boot 호출
+    safeLoadContent("/common-service/html/roleMain");
 }
+
+function safeLoadContent(url, callback) {
+    cleanupAllBeforeLoad();
+    $("#content").load(url, callback);
+}
+
+function cleanupAllBeforeLoad() {
+    // [myPageMain] flatpickr 달력 인스턴스가 있으면 정리
+    if (window.calendarInstance) {
+        try {
+            window.calendarInstance.destroy();
+        } catch (e) {
+            console.warn("flatpickr destroy 실패", e);
+        }
+        window.calendarInstance = null;
+    }
+
+    // 혹시 DOM에 남은 달력 DOM도 제거 (확실하게)
+    document.querySelectorAll(".flatpickr-calendar").forEach(el => el.remove());
+
+    // [storeMain 등] 모달 백드롭 제거
+    document.body.classList.remove("modal-open");
+    document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+}
+
+// myPageMain 로딩 시 호출되는 함수 내부
+function initMyPageMain() {
+//    const today = new Date();
+//    flatpickr.localize(flatpickr.l10ns.ko);
+//
+//    // 달력 제거
+//    if (window.calendarInstance && typeof window.calendarInstance.destroy === "function") {
+//        window.calendarInstance.destroy();
+//        document.querySelectorAll(".flatpickr-calendar").forEach(el => el.remove());
+//        window.calendarInstance = null;
+//    }
+//
+//    // DOM에 요소가 있는 경우에만 초기화
+//    const startInput = document.getElementById("startDate");
+//    if (startInput) {
+//        window.calendarInstance = flatpickr("#startDate", {
+//            mode: "range",
+//            dateFormat: "Y-m-d",
+//            defaultDate: [today, today],
+//            locale: "ko",
+//            plugins: [new rangePlugin({ input: "#endDate" })]
+//        });
+//    }
+//
+//    loadMyOrder();
+}
+
 /*
     top 우측상단의 "로그인"/"로그아웃" 결정하기 위한 자동호출
 */

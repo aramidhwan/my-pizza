@@ -30,16 +30,18 @@ public class MyPageController {
     }
     @GetMapping("/api/getMyOrders")
     @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_VIP_CUSTOMER')") // 여러개 권한 주기
-    public ResponseEntity<ResponseDto> getMyPageContent(Authentication authentication, @RequestParam(required = false, defaultValue="onlyToday", name = "viewType") String viewType) {
+    public ResponseEntity<ResponseDto> getMyPageContent(
+            Authentication authentication
+            ,@RequestParam(required = true, defaultValue="1000-01-01", name = "startDate") String startDate
+            ,@RequestParam(required = true, defaultValue="9999-12-31", name = "endDate") String endDate
+    ) {
         log.trace("### [getMyPageContent] is called. ###");
         // Authentication 에서 customerNo 가져오기
         Integer customerNo = (Integer) authentication.getDetails();
-
-        List<MyPageDto> myPageDtos = myPageService.getMyPageContent(customerNo, viewType) ;
+        List<MyPageDto> myPageDtos = myPageService.getMyPageContent(customerNo, startDate, endDate) ;
         // DTO를 Map으로 묶어서 반환
         Map<String, Object> response = new ConcurrentHashMap<>();
         response.put("myPageDtos", myPageDtos);
-        response.put("viewType", viewType);
 
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)

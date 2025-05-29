@@ -28,12 +28,6 @@ spring:
 #      idle-timeout: 600000 #연결 위한 최대 유후 시간
 #      maxLifetime: 1800000 # Default: 1800000 (30 minutes), 반납된 커넥션의 최대 수명, 0이면 무한.
 
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: localhost:9092   #, localhost:9093, localhost:9094
-
   data:
     redis:
       host: redis-13136.c53.west-us.azure.redns.redis-cloud.com
