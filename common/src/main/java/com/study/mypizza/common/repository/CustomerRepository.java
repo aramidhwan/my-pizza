@@ -14,6 +14,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     Optional<Customer> findOneByEmail(String email);
 
+    // Customer 엔티티가 가지고 있는 연관관계 필드(authorities)를 조인(fetch join)해서 같이 가져옴
+    // JOIN FETCH는 일반 JOIN과 달리:
+    //      1. 연관된 엔티티(authorities)를 즉시 로딩(eager loading) 해서 한 번의 쿼리로 가져옴.
+    //      2. N+1 문제를 방지할 수 있음.
     @Query("SELECT c FROM Customer c JOIN FETCH c.authorities")
     List<Customer> findAllCustomers();
 
