@@ -30,11 +30,7 @@ public class OrderController {
         List<ItemDto> itemDtos = itemService.getItems() ;
         model.addAttribute("itemDtos", itemDtos);
         model.addAttribute("regionNm", "강남구");
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
+
         return "html/orderMain";
     }
 
@@ -46,6 +42,8 @@ public class OrderController {
         // Authentication 에서 customerNo 가져오기
         Integer customerNo = (Integer) authentication.getDetails();
         orderRequestDto.setCustomerNo(customerNo);
+        
+        // 주문 생성
         OrderDto newOrderDto = orderService.createOrder(orderRequestDto) ;
 
         ResponseDto responseDto = ResponseDto.builder()
@@ -53,6 +51,7 @@ public class OrderController {
                 .msg("✅ 주문이 완료되었습니다!")
                 .data(newOrderDto)
                 .build();
+
         return ResponseEntity.ok(responseDto) ;
     }
 

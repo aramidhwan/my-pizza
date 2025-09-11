@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -28,6 +29,7 @@ public class Store extends BaseEntity {
     private String regionNm;
     @NotNull
     private Boolean openYN;
+    @Builder.Default
     private int ownerNo = 0;
 
 //    @OneToMany(mappedBy = "store")

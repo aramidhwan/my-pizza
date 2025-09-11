@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+// readOnly = true는 JPA에서 dirty checking을 비활성화해서 불필요한 변경 감지를 하지 않습니다.
+// 모든 Public 메소드에만 적용됨. 단, 내부 메소드끼리 호출에서는 적용안됨
+@Transactional(readOnly = true)
 public class CustomerService {         // 회원 서비스
     private final CustomerRepository customerRepository;
     private final AuthorityRepository authorityRepository ;
 
-    @Transactional(readOnly = true)
     public CustomerDto getCustomer(String email) {
         CustomerDto customerDto = customerRepository.findOneByEmail(email)
                 .map(CustomerDto::of)
@@ -32,7 +34,6 @@ public class CustomerService {         // 회원 서비스
         return customerDto ;
     }
 
-    @Transactional(readOnly = true)
     public List<AuthorityDto> getRoles() {
         return authorityRepository.findAll()
                 .stream()
@@ -41,7 +42,6 @@ public class CustomerService {         // 회원 서비스
     }
 
     // 회원 리스트
-    @Transactional(readOnly = true)
     public List<CustomerDto> getCustomers() throws MyPizzaException {
 //        List<CustomerDto> customerDtos = customerRepository.findAll(Sort.by(Sort.Direction.ASC, "customerId"))
 //                .stream()

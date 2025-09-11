@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true)     // 모든 public 메서드에 readOnly=true 적용
 public class OrderService {
 
     private final OrderRepository orderRepository ;
@@ -70,7 +70,6 @@ public class OrderService {
                 .statusInfo("Y".equals(openYN)? "Ordered":"N".equals(openYN)? "OrderRejected::[" + orderRequestDto.getRegionNm() + "] 지역에 영업중인 Store가 없습니다.":"OrderRejected::"+openYN)
                 .regionNm(orderRequestDto.getRegionNm())
                 .totalPrice(orderRequestDto.getTotalPrice())
-//                .orderDt(LocalDateTime.now())
                 .build();
         newOrder = orderRepository.save(newOrder);
 
@@ -92,7 +91,6 @@ public class OrderService {
                     .itemDto(itemDto)
                     .qty(itemDto.getQty())
                     .pricePerOne(item.getPricePerOne())
-//                    .registDt(LocalDateTime.now())
                     .build()
             );
         }

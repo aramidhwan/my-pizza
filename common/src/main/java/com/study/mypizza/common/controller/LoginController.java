@@ -47,11 +47,6 @@ public class LoginController {
             throw new RuntimeException("### 이런 경우가 있어???") ;
         }
 
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));

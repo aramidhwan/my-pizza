@@ -2,20 +2,21 @@ package com.study.mypizza.mypage.service;
 
 import com.study.mypizza.mypage.dto.MyPageDto;
 import com.study.mypizza.mypage.dto.MyPageOrderDetailDto;
-import com.study.mypizza.mypage.exception.MyPizzaException;
 import com.study.mypizza.mypage.external.InternalGateway;
 import com.study.mypizza.mypage.repository.MyPageOrderDetailRepository;
 import com.study.mypizza.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Slf4j
 public class MyPageService {
     private final MyPageRepository mypageRepository;
@@ -45,6 +46,7 @@ public class MyPageService {
         return myPageDtos ;
     }
 
+    @Transactional(readOnly = true) // Public 메소드가 아니므로 readOnly=true 붙여줌
     private MyPageOrderDetailDto setItemNm(MyPageOrderDetailDto myPageOrderDetailDto) {
         if ( myPageOrderDetailDto.getItemId() != null ) {
             myPageOrderDetailDto.setItemNm(internalGateway.getItemNm(myPageOrderDetailDto.getItemId()));
@@ -54,6 +56,7 @@ public class MyPageService {
         return myPageOrderDetailDto;
     }
 
+    @Transactional(readOnly = true) // Public 메소드가 아니므로 readOnly=true 붙여줌
     private MyPageDto setStoreNm(MyPageDto myPageDto) {
         if ( myPageDto.getStoreId() != null ) {
             myPageDto.setStoreNm(internalGateway.getStoreNm(myPageDto.getStoreId()));
