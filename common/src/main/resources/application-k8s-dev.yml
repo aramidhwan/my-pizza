@@ -13,10 +13,13 @@ spring:
 
   data:
     redis:
-      host: redis-13136.c53.west-us.azure.redns.redis-cloud.com
-      port: 13136
-#      username: default
-      password: 5ZpXqxXLhYmcNfwPElUUAypbIvyecML6
+      # https://redis.io/ 접속
+      # Log in > 구글 로그인 aramidhwan@gmail.com
+      # Try Free 선택하고 "Create Database" 한 후 "Connect" 클릭, id는 default, password는 Jedis 선택한 후 눈표시 아이콘 클릭하면 보임
+      host: redis-18633.c302.asia-northeast1-1.gce.redns.redis-cloud.com
+      port: 18633
+      username: default
+      password: rJC5pixeEYMF7W3pGYsnMVEg8Hk3Fkuo
 #      ssl:
 #        enabled: true
 #      lettuce:
