@@ -28,15 +28,21 @@ spring:
 #      idle-timeout: 600000 #연결 위한 최대 유후 시간
 #      maxLifetime: 1800000 # Default: 1800000 (30 minutes), 반납된 커넥션의 최대 수명, 0이면 무한.
 
+      # 1. 커넥션 유효성 검증 쿼리 설정 (DB 종류에 맞게 설정)
+      connection-test-query: SELECT 1   # mySQL
+      # 2. 유휴(Idle) 커넥션을 점검할 주기 설정 (ms, DB 타임아웃보다 짧게)
+      keepalive-time: 30000
+      # 3. 검증 쿼리의 최대 타임아웃 설정 (기본값 5초)
+      validation-timeout: 1000
   data:
     redis:
       # https://redis.io/ 접속
       # Log in > 구글 로그인 aramidhwan@gmail.com
       # Try Free 선택하고 "Create Database" 한 후 "Connect" 클릭, id는 default, password는 Jedis 선택한 후 눈표시 아이콘 클릭하면 보임
-      host: redis-18633.c302.asia-northeast1-1.gce.redns.redis-cloud.com
-      port: 18633
+      host: redis-15347.c53.west-us.azure.cloud.redislabs.com
+      port: 15347
       username: default
-      password: rJC5pixeEYMF7W3pGYsnMVEg8Hk3Fkuo
+      password: pXl9nElgxkcsx4gAiLRLBRttxZVsYkZb
 #      ssl:
 #        enabled: true
 #      lettuce:
