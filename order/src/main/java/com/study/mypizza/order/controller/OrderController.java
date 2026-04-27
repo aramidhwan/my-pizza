@@ -57,6 +57,7 @@ public class OrderController {
 
     @PatchMapping("/orders/orderCancel/{orderId}")
     public String orderCancel(@PathVariable("orderId") Long orderId) throws MyPizzaException {
+        // 취소가능 여부 조회, 취소불가 시 MyPizzaException 발생됨
         orderService.orderCancel(orderId);
         return "취소되었습니다." ;
     }
