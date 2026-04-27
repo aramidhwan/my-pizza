@@ -20,7 +20,12 @@ spring:
     hikari:
       maximum-pool-size: 10 #최대 pool 크기
       minimum-idle: 10 #최소 pool 크기
-
+      # 1. 커넥션 유효성 검증 쿼리 설정 (DB 종류에 맞게 설정)
+      connection-test-query: SELECT 1   # mySQL
+      # 2. 유휴(Idle) 커넥션을 점검할 주기 설정 (ms, DB 타임아웃보다 짧게, 최소가 30초??)
+      keepalive-time: 10000
+      # 3. 검증 쿼리의 최대 타임아웃 설정 (기본값 5초)
+      validation-timeout: 1000
   cloud:
     stream:
       kafka:
