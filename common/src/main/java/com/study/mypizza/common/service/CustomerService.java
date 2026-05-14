@@ -43,15 +43,6 @@ public class CustomerService {         // 회원 서비스
 
     // 회원 리스트
     public List<CustomerDto> getCustomers() throws MyPizzaException {
-//        List<CustomerDto> customerDtos = customerRepository.findAll(Sort.by(Sort.Direction.ASC, "customerId"))
-//                .stream()
-//                .map(CustomerDto::of)
-//                .toList()
-//                ;
-//        for (CustomerDto customerDto:customerDtos) {
-//            Hibernate.initialize(customerDto.getAuthorities());
-//        }
-
         return customerRepository.findAllCustomers()
                 .stream()
                 .map(CustomerDto::of)
