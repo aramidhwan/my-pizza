@@ -22,7 +22,9 @@ public class StoreDto {
     private String regionNm;
     private Boolean openYN;
     private int ownerNo ;
+    @Setter
     private Long orderCnt;
+    @Setter
     private List<StoreOrderDto> storeOrderDtos;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -30,14 +32,6 @@ public class StoreDto {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime updateDt ;
-
-    public void setOrderCnt(Long orderCnt) {
-        this.orderCnt = orderCnt ;
-    }
-
-    public void setStoreOrderDtos(List<StoreOrderDto> storeOrderDtos) {
-        this.storeOrderDtos = storeOrderDtos ;
-    }
 
     public Store toEntity() {
         return Store.builder()
