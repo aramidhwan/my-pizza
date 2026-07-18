@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RepositoryRestResource(path="myPages", collectionResourceRel = "myPages")
+/* @RepositoryRestResource : Repository를 REST API로 자동 노출. 예: /myPages */
+//@RepositoryRestResource(path="myPages", collectionResourceRel = "myPages")
 public interface MyPageRepository extends JpaRepository<MyPage, Long> {
     Optional<MyPage> findByOrderId(Long orderId) ;
     List<MyPage> findByCustomerNoOrderByStoreIdAscCreateDtDesc(int customerNo);
     List<MyPage> findByCustomerNoAndCreateDtAfterOrderByStoreIdAscCreateDtDesc(int customerNo, LocalDateTime today);
     List<MyPage> findByCustomerNoAndCreateDtBetweenOrderByStoreIdAscCreateDtDesc(int customerNo, LocalDateTime startDate, LocalDateTime endDate);
-
 }
