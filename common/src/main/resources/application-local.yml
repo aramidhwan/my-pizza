@@ -39,10 +39,11 @@ spring:
       # https://redis.io/ 접속
       # Log in > 구글 로그인 aramidhwan@gmail.com
       # Try Free 선택하고 "Create Database" 한 후 "Connect" 클릭, id는 default, password는 Jedis 선택한 후 눈표시 아이콘 클릭하면 보임
-      host: redis-15347.c53.west-us.azure.cloud.redislabs.com
-      port: 15347
+      # Redis SDK clients 선택 > Java(Jedis) 선택
+      host: redis-10658.crce284.ap-neast-2-1.ec2.cloud.redislabs.com
+      port: 10658
       username: default
-      password: pXl9nElgxkcsx4gAiLRLBRttxZVsYkZb
+      password: ulhKn4vIwW3otDs1Tp8XSHnk8iAgmCtN
 #      ssl:
 #        enabled: true
 #      lettuce:

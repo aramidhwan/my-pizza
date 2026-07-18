@@ -4,6 +4,7 @@ import com.study.mypizza.common.dto.AuthorityDto;
 import com.study.mypizza.common.dto.CustomerDto;
 import com.study.mypizza.common.entity.Customer;
 import com.study.mypizza.common.exception.MyPizzaException;
+import com.study.mypizza.common.mapper.CustomerMapper;
 import com.study.mypizza.common.repository.AuthorityRepository;
 import com.study.mypizza.common.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,16 @@ import java.util.stream.Collectors;
 public class CustomerService {         // 회원 서비스
     private final CustomerRepository customerRepository;
     private final AuthorityRepository authorityRepository ;
+    private final CustomerMapper customerMapper;
+
+    public CustomerDto getCustomerByMyBatis(String email) {
+        CustomerDto customerDto = customerMapper.selectCustomer(email)
+                .map(CustomerDto::of)
+                .orElseThrow(RuntimeException::new)
+                ;
+        Hibernate.initialize(customerDto.getAuthorities());
+        return customerDto ;
+    }
 
     public CustomerDto getCustomer(String email) {
         CustomerDto customerDto = customerRepository.findOneByEmail(email)
@@ -43,7 +54,7 @@ public class CustomerService {         // 회원 서비스
 
     // 회원 리스트
     public List<CustomerDto> getCustomers() throws MyPizzaException {
-        return customerRepository.findAllCustomers()
+        return customerRepository.findAll()
                 .stream()
                 .map(CustomerDto::of)
                 .toList();

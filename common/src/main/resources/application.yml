@@ -53,6 +53,15 @@ spring:
       prefix: /html/
       suffix: .html
 
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+    default-statement-timeout: 30
+    map-underscore-to-camel-case: true    # 데이터베이스 칼럼 이름을 언더스코어(_) → 카멜케이스로 자동 변환.
+    jdbc-type-for-null: varchar           # varchar 로 설장하면, NULL 값을 빈문자열(””)로 처리함.
+    call-setters-on-nulls: true           # true로 함으로써 db의 데이터 중 null인 값을 가져올 수 있도록 함.
+    auto-mapping-unknown-column-behavior: none
+
 jwt:
   header: Authorization
   # HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
