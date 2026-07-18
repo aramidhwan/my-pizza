@@ -3,6 +3,7 @@ package com.study.mypizza.mypage.service;
 import com.study.mypizza.mypage.dto.MyPageDto;
 import com.study.mypizza.mypage.dto.MyPageOrderDetailDto;
 import com.study.mypizza.mypage.external.InternalGateway;
+import com.study.mypizza.mypage.mapper.MyPageMapper;
 import com.study.mypizza.mypage.repository.MyPageOrderDetailRepository;
 import com.study.mypizza.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,32 @@ import java.util.List;
 public class MyPageService {
     private final MyPageRepository mypageRepository;
     private final MyPageOrderDetailRepository myPageOrderDetailRepository;
-    private final InternalGateway internalGateway;
+    private final CacheService cacheService;
+    private final MyPageMapper myPageMapper;
+
+    public List<MyPageDto> getMyPageContentByMyBatis(int customerNo, String startDate, String endDate) {
+        // 변환: 하루의 시작부터 끝까지 포함되도록
+        LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);
+
+        List<MyPageDto> myPageDtos = myPageMapper.selectMyPage(customerNo, startDateTime, endDateTime)
+                .stream()
+//                .map(MyPageDto::of)
+                .map(this::setStoreNm)
+                .toList() ;
+
+        for (MyPageDto myPageDto:myPageDtos) {
+            myPageDto.setMyPageOrderDetailDtos(myPageMapper.selectMyPageOrderDetail(myPageDto.getOrderId())
+                    .stream()
+//                    .map(MyPageOrderDetailDto::of)
+                    .map(this::setItemNm)
+                    .toList()
+            ) ;
+        }
+
+        return myPageDtos ;
+    }
+
 
     public List<MyPageDto> getMyPageContent(int customerNo, String startDate, String endDate) {
         // 변환: 하루의 시작부터 끝까지 포함되도록
@@ -49,7 +75,7 @@ public class MyPageService {
     @Transactional(readOnly = true) // Public 메소드가 아니므로 readOnly=true 붙여줌
     private MyPageOrderDetailDto setItemNm(MyPageOrderDetailDto myPageOrderDetailDto) {
         if ( myPageOrderDetailDto.getItemId() != null ) {
-            myPageOrderDetailDto.setItemNm(internalGateway.getItemNm(myPageOrderDetailDto.getItemId()));
+            myPageOrderDetailDto.setItemNm(cacheService.getItemNm(myPageOrderDetailDto.getItemId()));
         } else {
             myPageOrderDetailDto.setItemNm("");
         }
@@ -59,7 +85,7 @@ public class MyPageService {
     @Transactional(readOnly = true) // Public 메소드가 아니므로 readOnly=true 붙여줌
     private MyPageDto setStoreNm(MyPageDto myPageDto) {
         if ( myPageDto.getStoreId() != null ) {
-            myPageDto.setStoreNm(internalGateway.getStoreNm(myPageDto.getStoreId()));
+            myPageDto.setStoreNm(cacheService.getStoreNm(myPageDto.getStoreId()));
         } else {
             myPageDto.setStoreNm("");
         }

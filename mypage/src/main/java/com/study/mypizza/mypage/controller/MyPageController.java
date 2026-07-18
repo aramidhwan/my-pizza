@@ -38,7 +38,8 @@ public class MyPageController {
         log.trace("### [getMyPageContent] is called. ###");
         // Authentication 에서 customerNo 가져오기
         Integer customerNo = (Integer) authentication.getDetails();
-        List<MyPageDto> myPageDtos = myPageService.getMyPageContent(customerNo, startDate, endDate) ;
+//        List<MyPageDto> myPageDtos = myPageService.getMyPageContent(customerNo, startDate, endDate) ;
+        List<MyPageDto> myPageDtos = myPageService.getMyPageContentByMyBatis(customerNo, startDate, endDate) ;
         // DTO를 Map으로 묶어서 반환
         Map<String, Object> response = new ConcurrentHashMap<>();
         response.put("myPageDtos", myPageDtos);

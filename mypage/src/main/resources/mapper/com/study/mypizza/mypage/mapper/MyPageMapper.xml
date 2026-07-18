@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.mypizza.mypage.mapper.MyPageMapper">
+    <resultMap id="myPageResultMap"
+               type="com.study.mypizza.mypage.dto.MyPageDto">
+
+        <!--        private List<MyPageOrderDetailDto> myPageOrderDetailDtos;-->
+        <!-- 일반 컬럼 -->
+        <id column="MYPAGE_ID" property="mypageId"/>
+        <result column="ORDER_ID" property="orderId"/>
+        <result column="CUSTOMER_NO" property="customerNo"/>
+        <result column="STORE_ID" property="storeId"/>
+        <result column="REGION_NM" property="regionNm"/>
+        <result column="STATUS_INFO" property="statusInfo"/>
+        <result column="TOTAL_PRICE" property="totalPrice"/>
+        <result column="CREATE_DT" property="createDt"/>
+
+        <!-- enum 컬럼 -->
+        <result column="STATUS" property="status"
+                typeHandler="com.study.mypizza.mypage.handler.OrderStatusTypeHandler"/>
+    </resultMap>
+
+    <!--  MyPage select 쿼리-->
+    <select id="selectMyPage" resultMap="myPageResultMap">
+        SELECT  my_page_id,
+                create_dt,
+                customer_no,
+                order_id,
+                region_nm,
+                status,
+                status_info,
+                store_id,
+                total_price
+         FROM t_mypage
+        WHERE 1=1
+          AND customer_no = #{customerNo}
+          AND create_dt BETWEEN #{startDateTime} AND #{endDateTime}
+        ORDER BY store_id , create_dt DESC
+    </select>
+
+    <!--  MyPage select 쿼리-->
+    <select id="selectMyPageOrderDetail" resultType="com.study.mypizza.mypage.dto.MyPageOrderDetailDto">
+        SELECT order_detail_id,
+               item_id,
+               order_id,
+               price_per_one,
+               qty
+          FROM t_mypage_order_detail
+         WHERE 1=1
+           AND order_id = #{orderId}
+        ORDER BY item_id
+    </select>
+
+    <!--  MyPage select 쿼리-->
+    <select id="selectSample1" resultType="com.study.mypizza.mypage.dto.MyPageOrderDetailDto">
+        SELECT order_detail_id,
+               item_id,
+               order_id,
+               price_per_one,
+               qty
+          FROM t_mypage_order_detail
+         WHERE 1=1
+        <if test="orderId != null and orderId != ''">
+            AND order_id = #{orderId}
+        </if>
+        <if test="itemId != null and itemId != ''">
+            AND item_id IN
+            <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY item_id
+    </select>
+</mapper>

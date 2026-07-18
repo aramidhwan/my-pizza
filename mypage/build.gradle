@@ -33,6 +33,8 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-stream'
 	implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
 
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 	implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
 	implementation "io.github.resilience4j:resilience4j-circuitbreaker:${resilience4jVersion}"
@@ -40,7 +42,7 @@ dependencies {
 
 	implementation 'org.json:json:20231013'
 	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.16.1'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
 
 	implementation 'org.modelmapper:modelmapper:2.4.4'
