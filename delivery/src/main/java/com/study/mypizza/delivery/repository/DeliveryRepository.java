@@ -8,7 +8,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import java.util.List;
 import java.util.Optional;
 
-@RepositoryRestResource(path="deliveries")
+/* @RepositoryRestResource : Repository를 REST API로 자동 노출. 예: /myPages */
+//@RepositoryRestResource(path="deliveries")
 public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     List<Delivery> findByStatus(String status) ;
 
