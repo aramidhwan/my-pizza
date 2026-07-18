@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 public class StoreDto {
     private Long storeId;
+    @Setter
     private String storeNm;
     private String addr;
     private String regionNm;
