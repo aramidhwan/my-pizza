@@ -1,5 +1,7 @@
 package com.study.mypizza.store.controller;
 
+import com.study.mypizza.store.dto.GatewayDto;
+import com.study.mypizza.store.dto.StoreDto;
 import com.study.mypizza.store.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ public class GatewayController {
 
     // MyPage MSA에서 호출되는 메소드 (상점 명칭 가져오기)
     @GetMapping("/stores/getStoreNm")
-    public String getStoreNm(@RequestParam("storeId") Long storeId) {
+    public GatewayDto<StoreDto> getStoreNm(@RequestParam("storeId") Long storeId) {
         return storeService.getStoreNm(storeId);
     }
 

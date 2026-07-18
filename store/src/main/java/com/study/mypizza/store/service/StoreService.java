@@ -1,5 +1,6 @@
 package com.study.mypizza.store.service;
 
+import com.study.mypizza.store.dto.GatewayDto;
 import com.study.mypizza.store.dto.StoreDto;
 import com.study.mypizza.store.dto.StoreOrderDetailDto;
 import com.study.mypizza.store.dto.StoreOrderDto;
@@ -7,7 +8,6 @@ import com.study.mypizza.store.entity.Store;
 import com.study.mypizza.store.entity.StoreOrder;
 import com.study.mypizza.store.enums.OrderStatus;
 import com.study.mypizza.store.exception.MyPizzaException;
-import com.study.mypizza.store.external.InternalGateway;
 import com.study.mypizza.store.repository.StoreOrderDetailRepository;
 import com.study.mypizza.store.repository.StoreOrderRepository;
 import com.study.mypizza.store.repository.StoreRepository;
@@ -35,14 +35,17 @@ public class StoreService {
     private final StoreRepository storeRepository ;
     private final StoreOrderRepository storeOrderRepository ;
     private final StoreOrderDetailRepository storeOrderDetailRepository ;
-    private final InternalGateway internalGateway;
+    private final CacheService cacheService;
 
-    public String getStoreNm(Long storeId) {
-        String storeNm = storeRepository.findById(storeId)
+    public GatewayDto<StoreDto> getStoreNm(Long storeId) {
+        StoreDto storeDto = storeRepository.findById(storeId)
+                .map(StoreDto::of)
                 .orElseThrow(() -> new MyPizzaException("STORE_ID:["+storeId+"]에 해당하는 상점이 없습니다."))
-                .getStoreNm() ;
-        log.debug("##### /store/getStoreNm is called in [storeId = {}:{}]", storeId, storeNm) ;
-        return storeNm ;
+                ;
+        log.debug("##### /store/getStoreNm is called in [storeId = {}:{}]", storeId, storeDto.getStoreNm()) ;
+        return GatewayDto.<StoreDto>builder()
+                .dto(storeDto)
+                .build();
     }
 
     public String checkOpenYn(String regionNm) {
@@ -206,7 +209,7 @@ public class StoreService {
         List<StoreOrderDetailDto> allDetails = storeOrderDetailRepository.findByOrderIdIn(orderIds)
                 .stream()
                 .map(StoreOrderDetailDto::of)
-                .peek(dto -> dto.setItemNm(internalGateway.getItemNm(dto.getItemId())))
+                .peek(dto -> dto.setItemNm(cacheService.getItemNm(dto.getItemId())))
                 .toList();
 
         // 주문 상세를 주문 ID 기준으로 그룹핑

@@ -3,6 +3,8 @@ package com.study.mypizza.order.external;
 import com.study.mypizza.order.config.FeignClientConfiguration;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,23 +19,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@FeignClient(name="STORE", fallbackFactory = StoreServiceFallbackFactory.class)
 @FeignClient(name="GATEWAY", configuration = FeignClientConfiguration.class)
 public interface InternalGateway {
+    Logger log = LoggerFactory.getLogger(InternalGateway.class);
+
     @GetMapping("/store-service/stores/checkOpenYn")
-    @Retry(name = "RETRY-checkOpenYn", fallbackMethod = "retryFallback")
+    @Retry(name = "RETRY-checkOpenYn", fallbackMethod = "retryFallbackCheckOpenYn")
     @CircuitBreaker(name = "CIRCUIT-checkOpenYn", fallbackMethod = "circuitBreakerFallback")
     String checkOpenYn(@RequestParam("regionNm") String regionNm) ;
 
-    @GetMapping("/store-service/stores/checkOrderCancel/{orderId}")
-    boolean checkOrderCancel(@PathVariable("orderId") Long orderId) ;
-
-    default String retryFallback(Exception cause) {
-        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
+    default String retryFallbackCheckOpenYn(Long orderId, Throwable cause) {
+        log.warn("[InternalGateway] retryFallbackCheckOpenYn. orderId={}, cause={}", orderId, cause.getMessage());
         return cause.getMessage();
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
-    default String circuitBreakerFallback(Exception cause) {
-        System.out.println("[InternalGateway] " + cause.getMessage());
+    default String circuitBreakerFallback(Long orderId, Throwable cause) {
+        log.warn("[InternalGateway] circuitBreakerFallback. orderId={}, cause={}", orderId, cause.getMessage());
         return cause.getMessage();
+
     }
+    @GetMapping("/store-service/stores/checkOrderCancel/{orderId}")
+    boolean checkOrderCancel(@PathVariable("orderId") Long orderId) ;
 }
 

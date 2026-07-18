@@ -5,7 +5,6 @@ import com.study.mypizza.delivery.entity.Delivery;
 import com.study.mypizza.delivery.enums.OrderStatus;
 import com.study.mypizza.delivery.event.StatusUpdated;
 import com.study.mypizza.delivery.exception.MyPizzaException;
-import com.study.mypizza.delivery.external.InternalGateway;
 import com.study.mypizza.delivery.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class DeliveryService {
     private final DeliveryRepository deliveryRepository ;
-    private final InternalGateway internalGateway;
+    private final CacheService cacheService;
 
     // 주문 status 업데이트 (배달시작/배달완료 처리)
     @Transactional(rollbackFor = MyPizzaException.class)
@@ -63,7 +62,7 @@ public class DeliveryService {
 
     private DeliveryDto setStoreNm(DeliveryDto deliveryDto) {
         if ( deliveryDto.getStoreDto().getStoreId() != null ) {
-            deliveryDto.getStoreDto().setStoreNm(internalGateway.getStoreNm(deliveryDto.getStoreDto().getStoreId()));
+            deliveryDto.getStoreDto().setStoreNm(cacheService.getStoreNm(deliveryDto.getStoreDto().getStoreId()));
         } else {
             deliveryDto.getStoreDto().setStoreNm("");
         }

@@ -1,12 +1,18 @@
 package com.study.mypizza.mypage.external;
 
 import com.study.mypizza.mypage.config.FeignClientConfiguration;
+import com.study.mypizza.mypage.dto.GatewayDto;
+import com.study.mypizza.mypage.dto.ItemDto;
+import com.study.mypizza.mypage.dto.StoreDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // Spring Cloud OpenFeign 공식문서
 // https://docs.spring.io/spring-cloud-openfeign/docs/current/reference/html/#netflix-feign-starter
@@ -17,41 +23,50 @@ import org.springframework.web.bind.annotation.RequestParam;
 //@FeignClient(name="STORE", fallbackFactory = StoreServiceFallbackFactory.class)
 @FeignClient(name="GATEWAY", configuration = FeignClientConfiguration.class)
 public interface InternalGateway {
+    Logger log = LoggerFactory.getLogger(InternalGateway.class);
+
     @GetMapping("/store-service/stores/getStoreNm")
     @Retry(name = "RETRY-getStoreNm", fallbackMethod = "retryGetStoreNm")
     @CircuitBreaker(name = "CIRCUIT-getStoreNm", fallbackMethod = "circuitFallbackGetStoreNm")
-    @Cacheable(value = "storeNm", key="#storeId")
-    String getStoreNm(@RequestParam("storeId") Long storeId) ;
+    // [주의] @Cacheable 메소드는 같은 클래스 내부에서 호출하면 동작하지 않는다.
+    GatewayDto<StoreDto> getStoreNm(@RequestParam("storeId") Long storeId) ;
 
-    default String retryGetStoreNm(Exception cause) {
-        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
-//        return cause.getMessage();
-        return "[상점명]일시장애(Retry)" ;
+    default GatewayDto<StoreDto> retryGetStoreNm(Long storeId, Throwable cause) {
+        log.warn("[InternalGateway] retryGetStoreNm. storeId={}, cause={}", storeId, cause.getMessage());
+        return GatewayDto.<StoreDto>builder()
+                .bizSuccess(1)
+                .dto(StoreDto.builder().storeNm("[상점명]일시장애(Retry)").build())
+                .build() ;
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
-    default String circuitFallbackGetStoreNm(Exception cause) {
-        System.out.println("[InternalGateway] " + cause.getMessage());
-//        return cause.getMessage();
-        return "[상점명]일시장애(Circuit)" ;
+    default GatewayDto<StoreDto> circuitFallbackGetStoreNm(Long storeId, Throwable cause) {
+        log.warn("[InternalGateway] circuitFallbackGetStoreNm. storeId={}, cause={}", storeId, cause.getMessage());
+        return GatewayDto.<StoreDto>builder()
+                .bizSuccess(1)
+                .dto(StoreDto.builder().storeNm("[상점명]일시장애(Circuit)").build())
+                .build() ;
     }
 
     @GetMapping("/order-service/items/getItemNm")
     @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryGetItemNm")
     @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitFallbackGetItemNm")
-    @Cacheable(value = "itemNm", key="#itemId")
-    String getItemNm(@RequestParam("itemId") Long itemId) ;
+    GatewayDto<ItemDto> getItemNm(@RequestParam("itemId") Long itemId) ;
 
-    default String retryGetItemNm(Exception cause) {
-        System.out.println("[InternalGateway] retryFallback : " + cause.getMessage());
-//        return cause.getMessage();
-        return "[메뉴명]일시장애(Retry)" ;
+    default GatewayDto<ItemDto> retryGetItemNm(Long itemId, Throwable cause) {
+        log.warn("[InternalGateway] retryGetItemNm. itemId={}, cause={}", itemId, cause.getMessage());
+        return GatewayDto.<ItemDto>builder()
+                .bizSuccess(1)
+                .dto(ItemDto.builder().itemNm("[메뉴명]일시장애(Retry)").build())
+                .build() ;
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
-    default String circuitFallbackGetItemNm(Exception cause) {
-        System.out.println("[InternalGateway] " + cause.getMessage());
-//        return cause.getMessage();
-        return "[메뉴명]일시장애(Circuit)" ;
+    default GatewayDto<ItemDto> circuitFallbackGetItemNm(Long itemId, Throwable cause) {
+        log.warn("[InternalGateway] circuitFallbackGetItemNm. itemId={}, cause={}", itemId, cause.getMessage());
+        return GatewayDto.<ItemDto>builder()
+                .bizSuccess(1)
+                .dto(ItemDto.builder().itemNm("[메뉴명]일시장애(Circuit)").build())
+                .build() ;
     }
 }
