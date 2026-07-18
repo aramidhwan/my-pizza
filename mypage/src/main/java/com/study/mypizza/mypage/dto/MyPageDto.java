@@ -24,9 +24,11 @@ public class MyPageDto {
     private Long orderId;
     private int customerNo;
     private Long storeId;
+    @Setter
     private String storeNm;
     private String regionNm;
 //    private List<ItemDto> itemDtos;
+    @Setter
     private List<MyPageOrderDetailDto> myPageOrderDetailDtos;
     private OrderStatus status;
     private String statusInfo;
@@ -34,13 +36,6 @@ public class MyPageDto {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime createDt;
-
-    public void setStoreNm(String storeNm) {
-        this.storeNm = storeNm ;
-    }
-    public void setMyPageOrderDetailDtos(List<MyPageOrderDetailDto> myPageOrderDetailDtos) {
-        this.myPageOrderDetailDtos = myPageOrderDetailDtos ;
-    }
 
     public MyPage toEntity() {
         return MyPage.builder()
