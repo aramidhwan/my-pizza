@@ -8,7 +8,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-@RepositoryRestResource(path="orders", collectionResourceRel = "orders")
+/* @RepositoryRestResource : Repository를 REST API로 자동 노출. 예: /myPages */
+//@RepositoryRestResource(path="orders", collectionResourceRel = "orders")
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByStatusAndCreateDtAfter(String status, LocalDateTime createDt) ;
 }

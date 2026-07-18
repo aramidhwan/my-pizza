@@ -6,7 +6,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.List;
 
-@RepositoryRestResource(path="items", collectionResourceRel = "items")
+/* @RepositoryRestResource : Repository를 REST API로 자동 노출. 예: /myPages */
+//@RepositoryRestResource(path="items", collectionResourceRel = "items")
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByItemIdIn(List<Long> itemIds);
 }
