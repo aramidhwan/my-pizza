@@ -25,12 +25,12 @@ public interface InternalGateway {
 
     @GetMapping("/order-service/items/getItemNm")
     @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryGetItemNm")
-    @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitBreakerFallback")
+    @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitFallbackGetItemNm")
     @Cacheable(value = "itemNm", key="#itemId")
     GatewayDto<ItemDto> getItemNm(@RequestParam("itemId") Long itemId) ;
 
     default GatewayDto<ItemDto> retryGetItemNm(Long itemId, Throwable cause) {
-        log.warn("[InternalGateway] retryGetItemNm. itemId={}, cause={}", itemId, cause.getMessage());
+        log.warn("[InternalGateway] retryGetItemNm. itemId={}", itemId, cause);
         return GatewayDto.<ItemDto>builder()
                 .bizSuccess(1)
                 .dto(ItemDto.builder().itemNm("[메뉴명]일시장애(Retry)").build())
@@ -39,7 +39,7 @@ public interface InternalGateway {
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
     default GatewayDto<ItemDto> circuitFallbackGetItemNm(Long itemId, Throwable cause) {
-        log.warn("[InternalGateway] circuitFallbackGetItemNm. itemId={}, cause={}", itemId, cause.getMessage());
+        log.warn("[InternalGateway] circuitFallbackGetItemNm. itemId={}", itemId, cause);
         return GatewayDto.<ItemDto>builder()
                 .bizSuccess(1)
                 .dto(ItemDto.builder().itemNm("[메뉴명]일시장애(Circuit)").build())
