@@ -2,14 +2,10 @@ package com.study.mypizza.mypage.service;
 
 import com.study.mypizza.mypage.dto.*;
 import com.study.mypizza.mypage.external.InternalGateway;
-import com.study.mypizza.mypage.mapper.MyPageMapper;
-import com.study.mypizza.mypage.repository.MyPageOrderDetailRepository;
-import com.study.mypizza.mypage.repository.MyPageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
