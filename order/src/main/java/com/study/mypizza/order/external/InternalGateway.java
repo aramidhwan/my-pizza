@@ -26,14 +26,14 @@ public interface InternalGateway {
     @CircuitBreaker(name = "CIRCUIT-checkOpenYn", fallbackMethod = "circuitBreakerFallback")
     String checkOpenYn(@RequestParam("regionNm") String regionNm) ;
 
-    default String retryFallbackCheckOpenYn(Long orderId, Throwable cause) {
-        log.warn("[InternalGateway] retryFallbackCheckOpenYn. orderId={}, cause={}", orderId, cause.getMessage());
+    default String retryFallbackCheckOpenYn(String regionNm, Throwable cause) {
+        log.warn("[InternalGateway] retryFallbackCheckOpenYn. regionNm={}", regionNm, cause);
         return cause.getMessage();
     }
 
     // io.github.resilience4j.circuitbreaker.CallNotPermittedException
-    default String circuitBreakerFallback(Long orderId, Throwable cause) {
-        log.warn("[InternalGateway] circuitBreakerFallback. orderId={}, cause={}", orderId, cause.getMessage());
+    default String circuitBreakerFallback(String regionNm, Throwable cause) {
+        log.warn("[InternalGateway] circuitBreakerFallback. regionNm={}", regionNm, cause);
         return cause.getMessage();
 
     }
