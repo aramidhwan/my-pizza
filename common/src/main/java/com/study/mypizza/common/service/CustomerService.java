@@ -29,7 +29,6 @@ public class CustomerService {         // 회원 서비스
 
     public CustomerDto getCustomerByMyBatis(String email) {
         CustomerDto customerDto = customerMapper.selectCustomer(email)
-                .map(CustomerDto::of)
                 .orElseThrow(RuntimeException::new)
                 ;
         Hibernate.initialize(customerDto.getAuthorities());

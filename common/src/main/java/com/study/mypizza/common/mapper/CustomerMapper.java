@@ -1,5 +1,6 @@
 package com.study.mypizza.common.mapper;
 
+import com.study.mypizza.common.dto.CustomerDto;
 import com.study.mypizza.common.entity.Customer;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,5 +13,5 @@ public interface CustomerMapper {
     int insertMember(@Param("member") Customer customer);
 
     //Member 조회
-    Optional<Customer> selectCustomer(@Param("email") String email);
+    Optional<CustomerDto> selectCustomer(@Param("email") String email);
 }
