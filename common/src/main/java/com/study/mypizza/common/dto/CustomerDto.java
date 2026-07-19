@@ -33,9 +33,11 @@ public class CustomerDto implements UserDetails {
 
     private String extraRoles;
 
-    private Collection<? extends AuthorityDto> authorities;
+//    private Collection<? extends AuthorityDto> authorities;
+    @Builder.Default
+    private Collection<AuthorityDto> authorities = new ArrayList<>();
 
-    public CustomerDto(String email, String password, Collection<? extends AuthorityDto> authorities) {
+    public CustomerDto(String email, String password, Collection<AuthorityDto> authorities) {
         this.email = email;
         this.password = password ;
         this.authorities = authorities ;
