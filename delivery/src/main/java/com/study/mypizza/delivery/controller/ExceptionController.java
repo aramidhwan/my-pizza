@@ -15,7 +15,7 @@ public class ExceptionController {
     // 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAll(final Exception ex) {
-        log.error("### ExceptionController.handleAll : {}", ex.getMessage());
+        log.error("### ExceptionController.handleAll", ex);
         log.error("error", ex);
         return new ResponseEntity<>("{\"msg\": \"관리자에게 문의하십시요. \\n\\n"+ex.getMessage().replace('"','\'')+"\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -23,7 +23,7 @@ public class ExceptionController {
     // 400
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseDto> handleRuntimeException(final RuntimeException ex) {
-        log.error("### ExceptionController.handleRuntimeException : {}", ex.getMessage());
+        log.error("### ExceptionController.handleRuntimeException", ex);
         ex.printStackTrace();
         ResponseDto responseDto = ResponseDto.builder()
                 .httpStatus(HttpStatus.OK)
@@ -36,7 +36,7 @@ public class ExceptionController {
     // 500
     @ExceptionHandler(MyPizzaException.class)
     public ResponseEntity<ResponseDto> handleMyPizzaException(final MyPizzaException ex) throws JsonProcessingException {
-        log.debug("### ExceptionController.handleMyPizzaException : {}", ex.getMessage());
+        log.debug("### ExceptionController.handleMyPizzaException", ex);
         ResponseDto responseDto = ResponseDto.builder()
                 .httpStatus(HttpStatus.OK)
                 .BIZ_SUCCESS(2)     // 0: 성공, 1: JWT 토큰 관련

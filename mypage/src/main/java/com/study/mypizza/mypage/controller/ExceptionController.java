@@ -25,14 +25,14 @@ public class ExceptionController {
     // 500
     @ExceptionHandler(MyPizzaException.class)
     public ResponseEntity<Object> handleMyPizzaException(final MyPizzaException ex) {
-        log.debug("### ExceptionController.handleMyPizzaException : {}", ex.getMessage());
+        log.debug("### ExceptionController.handleMyPizzaException", ex);
         return ResponseEntity.ok("{\"msg\": \""+ex.getMessage().replace('"','\'')+"\"}");
     }
 
     // 400
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleRuntimeException(final RuntimeException ex) {
-        log.warn("### ExceptionController.handleRuntimeException : {}", ex.getMessage());
+        log.warn("### ExceptionController.handleRuntimeException", ex);
         log.error("error", ex);
         return ResponseEntity.badRequest().body("{\"msg\": \"관리자에게 문의하십시요. : "+ex.getMessage().replace('"','\'')+"\"}");
     }
@@ -40,7 +40,7 @@ public class ExceptionController {
     // 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAll(final Exception ex) {
-        log.error("### ExceptionController.handleAll : {}", ex.getMessage());
+        log.error("### ExceptionController.handleAll", ex);
         log.error("error", ex);
         return new ResponseEntity<>("{\"msg\": \"관리자에게 문의하십시요. : "+ex.getMessage().replace('"','\'')+"\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
