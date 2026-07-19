@@ -45,10 +45,9 @@ public class AdminController {
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> getRoles(@RequestParam String email) throws MyPizzaException {
         log.debug("### [getRoles] is called. ###");
-//        CustomerDto customerDto = customerService.getCustomer(email) ;
-        CustomerDto customerDto = customerService.getCustomerByMyBatis(email) ;
+        CustomerDto customerDto = customerService.getCustomer(email) ;
+//        CustomerDto customerDto = customerService.getCustomerByMyBatis(email) ;
         List<AuthorityDto> authorityDtos = customerService.getRoles() ;
-//        log.debug("### customerDto : " + customerDto);
 
         // DTO를 Map으로 묶어서 반환
         Map<String, Object> response = new ConcurrentHashMap<>();
