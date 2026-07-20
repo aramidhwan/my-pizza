@@ -92,7 +92,7 @@ public class StoreController {
     @GetMapping("/api/getStores")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> getStores() {
-        log.trace("### [getStores] is called. ###");
+        log.trace("### [/api/getStores] is called. ###");
         List<StoreDto> storeDtos = storeService.getStores() ;
 
         ResponseDto responseDto = ResponseDto.builder()
@@ -106,14 +106,18 @@ public class StoreController {
     // StoreAdmin 메인화면 (내 상점에 할당된 주문내역 가져오기)
     @GetMapping("/api/getStoreAdmin")
     @Secured("ROLE_STORE_ADMIN")
-    public ResponseEntity<ResponseDto> getStoreAdmin(Authentication authentication) {
-        log.trace("### [getStoreAdmin] is called. ###");
+    public ResponseEntity<ResponseDto> getStoreAdmin(
+            Authentication authentication
+            ,@RequestParam(required = true, defaultValue="1000-01-01", name = "startDate") String startDate
+            ,@RequestParam(required = true, defaultValue="9999-12-31", name = "endDate") String endDate
+    ) {
+        log.trace("### [/api/getStoreAdmin] is called. ###");
         // Authentication 에서 customerNo 가져오기
         int customerNo = (Integer) authentication.getDetails();
         if (customerNo == 0) {
             throw new RuntimeException("### 이런 경우가 있어???") ;
         }
-        List<StoreDto> storeDtos = storeService.getStoreAdmin(customerNo) ;
+        List<StoreDto> storeDtos = storeService.getStoreAdmin(customerNo, startDate, endDate) ;
 
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)
@@ -126,7 +130,7 @@ public class StoreController {
     // 주문 status 업데이트 (조리완료 처리)
     @PostMapping("/api/updateOrderStatus")
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody StoreOrderDto storeOrderDto) {
-        log.trace("### [updateOrderStatus] is called. ###");
+        log.trace("### [/api/updateOrderStatus] is called. ###");
         storeOrderDto = storeService.updateOrderStatus(storeOrderDto);
 
         ResponseDto responseDto = ResponseDto.builder()

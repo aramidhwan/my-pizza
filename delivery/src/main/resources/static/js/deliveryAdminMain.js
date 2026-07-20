@@ -1,4 +1,19 @@
 (() => {
+    // 오늘 날짜 계산
+    const today = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(today.getMonth() - 1);
+
+    // 한국어 로케일을 flatpickr에 등록
+    flatpickr.localize(flatpickr.l10ns.ko);
+    flatpickr("#startDate", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: [today, today],  // ✅ 기본 선택값 설정
+        locale: "ko", // 한국어 설정
+        plugins: [new rangePlugin({ input: "#endDate" })]
+    });
+
     loadDeliveryAdmin() ;
 })()
 
@@ -9,8 +24,14 @@ function loadDeliveryAdmin() {
       credentials: 'include',
       redirect: "follow" // follow, error, or manual
     };
+    const requestParams = {
+        startDate: document.getElementById("startDate").value,
+        endDate: document.getElementById("endDate").value
+    };
+    // URLSearchParams를 사용해 파라미터를 쿼리 스트링 형식으로 변환
+    const queryString = new URLSearchParams(requestParams).toString();
 
-    callFetchApi(url, null, params, "displayDeliveryAdmin") ;
+    callFetchApi(url, queryString, params, "displayDeliveryAdmin") ;
 }
 
 function displayDeliveryAdmin(json) {
@@ -33,7 +54,7 @@ function displayDeliveryAdmin(json) {
         var newCell1 = newRow.insertCell(0);    // 주문번호
         newCell1.classList.add("cssAlignCenter") ;
         newCell1.colSpan = 6 ;
-        newCell1.innerText = "오늘 배달 접수 내역이 없습니다." ;
+        newCell1.innerText = "배달 접수 내역이 없습니다." ;
         return ;
     }
 
@@ -175,7 +196,7 @@ function successfullyUpdated(json) {
 function createDeliveryAdminTable() {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
-//    container.innerHTML = ""; // 기존 테이블 제거 후 새로 생성
+    container.innerHTML = ""; // 기존 테이블 제거 후 새로 생성
 
     // 기존 span이 없다면 삭제 (중복 방지)
     let span = document.getElementById("divTblDeliveryAdminTitle");

@@ -1,4 +1,19 @@
 (() => {
+    // 오늘 날짜 계산
+    const today = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(today.getMonth() - 1);
+
+    // 한국어 로케일을 flatpickr에 등록
+    flatpickr.localize(flatpickr.l10ns.ko);
+    flatpickr("#startDate", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: [today, today],  // ✅ 기본 선택값 설정
+        locale: "ko", // 한국어 설정
+        plugins: [new rangePlugin({ input: "#endDate" })]
+    });
+
     loadStoreAdmin() ;
 })()
 
@@ -9,8 +24,14 @@ function loadStoreAdmin() {
       credentials: 'include',
       redirect: "follow" // follow, error, or manual
     };
+    const requestParams = {
+        startDate: document.getElementById("startDate").value,
+        endDate: document.getElementById("endDate").value
+    };
+    // URLSearchParams를 사용해 파라미터를 쿼리 스트링 형식으로 변환
+    const queryString = new URLSearchParams(requestParams).toString();
 
-    callFetchApi(url, null, params, "displayStoreAdmin") ;
+    callFetchApi(url, queryString, params, "displayStoreAdmin") ;
 }
 
 function displayStoreAdmin(json) {
@@ -31,13 +52,13 @@ function displayStoreAdmin(json) {
         tbody = tblStore.querySelector("tbody"); // tbody 요소를 선택
         //tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
 
-        // 오늘 주문 접수 내역이 없을 경우
+        // 주문 접수 내역이 없을 경우
         if ( storeDto.storeOrderDtos.length == 0 ) {
             var newRow   = tbody.insertRow(tbody.rows.length);
             var newCell1 = newRow.insertCell(0);    // 주문번호
             newCell1.classList.add("cssAlignCenter") ;
             newCell1.colSpan = tblStore.querySelectorAll("th").length; ; ;
-            newCell1.innerText = "오늘 주문 접수 내역이 없습니다." ;
+            newCell1.innerText = "주문 접수 내역이 없습니다." ;
             continue ; // 주문이 없는 경우 다음 반복문 실행
         }
 
@@ -134,7 +155,7 @@ function successfullyUpdated(json) {
 function createStoreAdminTable(storeId, storeNm) {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
-//    container.innerHTML = ""; // 기존 테이블 제거 후 새로 생성
+    container.innerHTML = ""; // 기존 테이블 내용 제거 후 새로 생성
 
     // 기존 span이 있다면 삭제 (중복 방지)
     const existingSpan = document.getElementById("divTblStoreAdminTitle" + storeId);

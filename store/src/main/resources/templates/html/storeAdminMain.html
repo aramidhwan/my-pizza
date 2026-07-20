@@ -55,10 +55,20 @@
 </head>
 <body>
 <div class="container-sm">
-
-    <div class="row align-items-center">
-        <div class="col">
-            <h4 style="white-space:nowrap;">최고의 수익 보장! MyPizza의 멤버가 되어 보세요!</h4>
+    <div class="row">
+        <div style="display: flex; align-items: center;">
+            <!-- 왼쪽 h4 -->
+            <h4 style="margin: 0; white-space: nowrap;">최고의 수익 보장! MyPizza의 멤버가 되어 보세요!</h4>
+            <!-- 오른쪽 입력 그룹 -->
+            <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                <label for="startDate" style="margin: 0;">기간 선택</label>
+                <input id="startDate" class="form-control"
+                       placeholder="시작일" style="width: 120px; flex: 0 0 auto;" />
+                <span class="input-group-text" style="font-weight: bold;">~</span>
+                <input id="endDate" class="form-control"
+                       placeholder="종료일" style="width: 120px; flex: 0 0 auto;" />
+                <button type="button" class="btn btn-primary" id="btnSearch" onclick="loadStoreAdmin('')">검색</button>
+            </div>
         </div>
     </div>
 

@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -51,8 +53,13 @@ public class DeliveryService {
 //        return delivery ;
 //    }
 
-    public List<DeliveryDto> getDeliveryAdmin(int customerNo) {
-        return deliveryRepository.findByOwnerNoOrderByStoreIdAscCreateDtDesc(customerNo)
+    public List<DeliveryDto> getDeliveryAdmin(int customerNo, String startDate, String endDate) {
+        // 변환: 하루의 시작부터 끝까지 포함되도록
+        LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);
+//        return deliveryRepository.findByOwnerNoOrderByStoreIdAscCreateDtDesc(customerNo)
+//        return deliveryRepository.findAllByOrderByStoreIdAscCreateDtDesc()
+        return deliveryRepository.findAllByCreateDtBetweenOrderByStoreIdAscCreateDtDesc(startDateTime, endDateTime)
                 .stream()
                 .map(DeliveryDto::of)
                 .map(this::setStoreNm)

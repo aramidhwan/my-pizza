@@ -20,4 +20,6 @@ public interface StoreOrderRepository extends JpaRepository<StoreOrder, Long> {
     List<StoreOrder> findByStoreStoreIdAndCreateDtAfterOrderByOrderIdAsc(Long storeId, LocalDateTime today);
 
     List<StoreOrder> findByStoreStoreIdInAndCreateDtAfter(List<Long> storeIds, LocalDateTime today);
+
+    List<StoreOrder> findByStoreStoreIdInAndCreateDtBetween(List<Long> storeIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

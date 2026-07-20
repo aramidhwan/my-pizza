@@ -39,14 +39,18 @@ public class DeliveryController {
     // StoreAdmin 메인화면 (내 상점에 할당된 주문내역 가져오기)
     @GetMapping("/api/getDeliveryAdmin")
     @Secured("ROLE_DELIVERY_ADMIN")
-    public ResponseEntity<ResponseDto> getDeliveryAdmin(Authentication authentication) {
-        log.trace("### [getDeliveryAdmin] is called.");
+    public ResponseEntity<ResponseDto> getDeliveryAdmin(
+            Authentication authentication
+            ,@RequestParam(required = true, defaultValue="1000-01-01", name = "startDate") String startDate
+            ,@RequestParam(required = true, defaultValue="9999-12-31", name = "endDate") String endDate
+    ) {
+        log.trace("### [/api/getDeliveryAdmin] is called.");
         // Authentication 에서 customerNo 가져오기
         int customerNo = (Integer) authentication.getDetails();
         if (customerNo == 0) {
             throw new RuntimeException("### 이런 경우가 있어???") ;
         }
-        List<DeliveryDto> deliveryDtos = deliveryService.getDeliveryAdmin(customerNo) ;
+        List<DeliveryDto> deliveryDtos = deliveryService.getDeliveryAdmin(customerNo, startDate, endDate) ;
 
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)

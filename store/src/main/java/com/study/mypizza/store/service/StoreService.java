@@ -171,9 +171,10 @@ public class StoreService {
         return storeDtos ;
     }
 
-    public List<StoreDto> getStoreAdmin(int customerNo) {
-//        LocalDateTime now = LocalDateTime.now() ;
-//        LocalDateTime today = LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0, 0, 0) ;
+    public List<StoreDto> getStoreAdmin(int customerNo, String startDate, String endDate) {
+        // 변환: 하루의 시작부터 끝까지 포함되도록
+        LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);
         LocalDateTime today = LocalDate.now().atStartOfDay();
 
         List<StoreOrderDetailDto> storeOrderDetailDtos = null ;
@@ -193,7 +194,8 @@ public class StoreService {
                 .toList();
 
         // 모든 상점별 주문(StoreOrder) 미리 조회
-        List<StoreOrder> allStoreOrders = storeOrderRepository.findByStoreStoreIdInAndCreateDtAfter(storeIds, today);
+//        List<StoreOrder> allStoreOrders = storeOrderRepository.findByStoreStoreIdInAndCreateDtAfter(storeIds, today);
+        List<StoreOrder> allStoreOrders = storeOrderRepository.findByStoreStoreIdInAndCreateDtBetween(storeIds, startDateTime, endDateTime);
 
         // orderId -> StoreOrderDto 매핑
         Map<Long, StoreOrderDto> orderDtoMap = allStoreOrders
