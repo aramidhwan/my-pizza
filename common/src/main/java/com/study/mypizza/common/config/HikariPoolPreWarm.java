@@ -20,7 +20,7 @@ public class HikariPoolPreWarm {
 
     @PostConstruct
     public void warmUp() {
-        System.out.print("🔧 HikariCP 커넥션 풀 Pre-warming 시작... ");
+        System.out.print("✅ HikariCP 커넥션 풀 Pre-warming 시작... ");
 
         for (int i = 0; i < WARMUP_CONNECTIONS; i++) {
             try (Connection conn = dataSource.getConnection()) {
@@ -30,6 +30,6 @@ public class HikariPoolPreWarm {
             }
         }
 
-        System.out.println("✅ 완료 (" + WARMUP_CONNECTIONS + "개)");
+        System.out.println("🔧 완료 (" + WARMUP_CONNECTIONS + "개)");
     }
 }
