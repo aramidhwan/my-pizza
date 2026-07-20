@@ -1,7 +1,5 @@
 package com.study.mypizza.common.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.mypizza.common.dto.CustomerDto;
 import com.study.mypizza.common.dto.ResponseDto;
 import com.study.mypizza.common.enums.JWTAuth;
@@ -187,5 +185,4 @@ public class LoginController {
 
         return ResponseEntity.ok(responseDto) ;
     }
-
 }

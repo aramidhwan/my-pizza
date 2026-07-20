@@ -35,12 +35,18 @@ public class CustomerService {         // 회원 서비스
         return customerDto ;
     }
 
+    /**
+     * LoginSuccessHandler에서도 호출되므로 함부로 이상한 테스트 로직 넣지 말 것!
+     * @param email
+     * @return
+     */
     public CustomerDto getCustomer(String email) {
         CustomerDto customerDto = customerRepository.findOneByEmail(email)
                 .map(CustomerDto::of)
                 .orElseThrow(RuntimeException::new)
                 ;
         Hibernate.initialize(customerDto.getAuthorities());
+
         return customerDto ;
     }
 
@@ -66,5 +72,4 @@ public class CustomerService {         // 회원 서비스
         customer.setAuthorities(customerDto.getAuthorities().stream().map(AuthorityDto::toEntity).collect(Collectors.toList()));
         return CustomerDto.of(customerRepository.save(customer));
     }
-
 }

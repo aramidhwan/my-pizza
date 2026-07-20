@@ -34,11 +34,11 @@ spring:
       # validate : 엔티티 변수들과 테이블 컬럼들이 정상 매핑되었는지만 확인, SessionFactory 시작시 객체구성과 스키마가 다르다면 예외 발생
       # none: 아무것도 안함
       # 운영환경에서는 절대 create, create-drop, update를 사용하면 안됨
-      #      ddl-auto: update
+#      ddl-auto: update
       ddl-auto: validate
-      #      ddl-auto: create, validate
+#      ddl-auto: create
       generate-ddl: true      # generate-ddl ? ?? ddl-auto ??? ???? ??? ???? ????.(??? false)
-    defer-datasource-initialization: true
+#    defer-datasource-initialization: true
   sql:
     init:
       mode: never  # never, always
@@ -80,8 +80,8 @@ logging:
     com.study: info
     # Logs the JDBC parameters passed to a query
     # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
-    #    org.hibernate.orm.jdbc.bind: trace
-#    org.hibernate.orm.jdbc.bind: info
+#    org.hibernate.SQL: debug
+#    org.hibernate.orm.jdbc.bind: trace
 #    org.hibernate.type.BasicTypeRegistry: WARN
 #    org.springframework.cloud: info
 #    org.apache.kafka.common.utils.AppInfoParser: WARN

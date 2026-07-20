@@ -22,6 +22,8 @@ spring:
 #      jdbc-url: jdbc:log4jdbc:mysql://localhost:3306/my-pizza?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
 #      username: admin
 #      password: admin
+      # 커넥션을 빌려간 지 2초(2000ms) 동안 안 반납하면 누수 경고 로그 출력
+#      leak-detection-threshold: 2000
       maximum-pool-size: 13 #최대 pool 크기
       minimum-idle: 13 #최소 pool 크기
       connectionTimeout: 2000   # ms, 기본값(30000), 최소값(250ms)

@@ -2,6 +2,7 @@ package com.study.mypizza.common.service;
 
 import com.study.mypizza.common.dto.AuthorityDto;
 import com.study.mypizza.common.dto.CustomerDto;
+import com.study.mypizza.common.dto.ResponseDto;
 import com.study.mypizza.common.entity.Authority;
 import com.study.mypizza.common.entity.Customer;
 import com.study.mypizza.common.exception.DuplicateMemberException;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.log.LogMessage;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,6 +32,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.*;
@@ -65,13 +69,13 @@ public class LoginService implements UserDetailsService {         // 회원가�
 
         Set<Authority> authorities = new HashSet<>();
         authorities.add(Authority.builder().authorityName("ROLE_CUSTOMER").build()) ;
-
+        String customerName = (customerDto.getCustomerName()!=null)? customerDto.getCustomerName() : customerDto.getCustomerId();
         Customer customer = Customer.builder()
                 .customerId(customerDto.getCustomerId())
-                .customerName(customerDto.getCustomerId())
+                .customerName(customerName)
                 .email(customerDto.getEmail())
                 .password(passwordEncoder.encode(customerDto.getPassword()))
-                .authorities(authorities)
+                .authorities(customerDto.getAuthorities()!=null? customerDto.getAuthorities().stream().map(AuthorityDto::toEntity).toList():authorities)
                 .activated(true)
                 .build();
 

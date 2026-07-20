@@ -2,7 +2,6 @@ package com.study.mypizza.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study.mypizza.common.entity.Authority;
-import com.study.mypizza.common.entity.Customer;
 import lombok.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.GrantedAuthority;

@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -60,7 +61,7 @@ public class CustomerDto implements UserDetails {
     }
 
     @Override
-    public Collection<? extends AuthorityDto> getAuthorities() {
+    public Collection<AuthorityDto> getAuthorities() {
         return authorities;
     }
 
@@ -74,6 +75,19 @@ public class CustomerDto implements UserDetails {
                 .activated(customer.isActivated())
                 .extraRoles(customer.getExtraRoles())
                 .authorities(customer.getAuthorities().stream().map(AuthorityDto::of).toList())
+                .build();
+    }
+
+    public Customer toEntity() {
+        return Customer.builder()
+                .customerNo(customerNo)
+                .customerId(customerId)
+                .customerName(customerName)
+                .email(email)
+                .password(password)
+                .activated(activated)
+                .extraRoles(extraRoles)
+                .authorities(authorities.stream().map(AuthorityDto::toEntity).toList())
                 .build();
     }
 
