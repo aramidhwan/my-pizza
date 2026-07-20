@@ -1,4 +1,4 @@
-package com.study.mypizza.common.role;
+package com.study.mypizza.common.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
