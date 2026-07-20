@@ -12,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,14 +25,14 @@ public class AdminController {
 
     @GetMapping("/html/roleMain")
     public String roleMain() throws MyPizzaException {
-        log.debug("### [roleMain] is called. ###");
+        log.debug("### [/api/roleMain] is called. ###");
         return "html/manageRole";
     }
 
     @GetMapping("/api/getCustomers")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> getCustomers() throws MyPizzaException {
-        log.debug("### [getCustomers] is called. ###");
+        log.debug("### [/api/getCustomers] is called. ###");
         List<CustomerDto> customerDtos = customerService.getCustomers() ;
 
         ResponseDto responseDto = ResponseDto.builder()
@@ -44,7 +45,7 @@ public class AdminController {
     @GetMapping("/api/getRoles")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> getRoles(@RequestParam String email) throws MyPizzaException {
-        log.debug("### [getRoles] is called. ###");
+        log.debug("### [/api/getRoles] is called. ###");
         CustomerDto customerDto = customerService.getCustomer(email) ;
 //        CustomerDto customerDto = customerService.getCustomerByMyBatis(email) ;
         List<AuthorityDto> authorityDtos = customerService.getRoles() ;
@@ -59,8 +60,22 @@ public class AdminController {
                 .data(response)
                 .build();
 
+//        // OOM 테스트용 리스트 (참조를 유지하여 GC가 못 가져가게 함)
+//        List<byte[]> memoryLeakList = new ArrayList<>();
+//        for (int inx = 0 ; inx < 99999999 ; inx++) {
+//            // 20MB 생성 후 리스트에 추가 (참조 유지)
+//            memoryLeakList.add(new byte[1024 * 1024 * 20]);
+//            log.info("Current accumulated memory: {} MB", (inx + 1) * 20);
+//            try {
+//                Thread.sleep(500);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+
         return ResponseEntity.ok(responseDto) ;
     }
+
     @PostMapping("/api/addModifyRole")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> addModifyRole(@RequestBody CustomerDto customerDto) throws MyPizzaException {
