@@ -182,7 +182,6 @@ function checkSignIn() {
             signYN.addEventListener("click", logout); // 신규 이벤트 등록
 
             const authorities = data.data ;
-            console.log("# authorities : " + authorities) ;
 
             // ROLE_CUSTOMER 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_CUSTOMER) ) {
