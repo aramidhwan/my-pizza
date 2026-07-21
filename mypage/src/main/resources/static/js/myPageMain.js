@@ -47,7 +47,7 @@ function displayMyOrder(json) {
     let cellIndex = 0 ;
     let prevStoreId = "" ;
 
-    // 기존 내역 삭제
+    // 기존 (테이블 컨테이너) 내용 삭제
     clearTableContainer() ;
 
     // 내역이 없을 경우
@@ -98,15 +98,20 @@ function displayMyOrder(json) {
             newCell4.innerText = myPageOrderDetailDto.qty ;
 
             if ( iny == 0 ) {
-                var newCell5 = newRow.insertCell(cellIndex++);    // 처리상태
+                var newCell5 = newRow.insertCell(cellIndex++);    // 주문자
                 newCell5.classList.add("cssAlignCenter") ;
                 newCell5.rowSpan = rowSpan ;
-                newCell5.innerText = OrderStatus[myPageDto.status] || "알 수 없음" ;
+                newCell5.innerText = myPageDto.customerName ;
 
-                var newCell6 = newRow.insertCell(cellIndex++);    // 주문시간
+                var newCell6 = newRow.insertCell(cellIndex++);    // 처리상태
                 newCell6.classList.add("cssAlignCenter") ;
                 newCell6.rowSpan = rowSpan ;
-                newCell6.innerText = dateTimeFormatter(myPageDto.createDt) ;
+                newCell6.innerText = OrderStatus[myPageDto.status] || "알 수 없음" ;
+
+                var newCell7 = newRow.insertCell(cellIndex++);    // 주문시간
+                newCell7.classList.add("cssAlignCenter") ;
+                newCell7.rowSpan = rowSpan ;
+                newCell7.innerText = dateTimeFormatter(myPageDto.createDt) ;
             }
         }) ;
 
@@ -114,6 +119,8 @@ function displayMyOrder(json) {
     }
 }
 
+// mypage 화면 그리기
+// 테이블 컨테이너 (tableContainer) 초기화
 function clearTableContainer() {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
@@ -123,7 +130,6 @@ function clearTableContainer() {
 function createMyOrderTable(storeId, storeNm, status) {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
-//    container.innerHTML = ""; // 기존 테이블 제거 후 새로 생성
 
     // 기존 span이 있다면 삭제 (중복 방지)
     const existingSpan = document.getElementById("divTblMyOrderTitle" + storeId);
@@ -158,6 +164,7 @@ function createMyOrderTable(storeId, storeNm, status) {
 //        { text: "배정상점", width: "180px" },
         { text: "주문메뉴", width: "200px" },
         { text: "수량", width: "70px" },
+        { text: "주문자", width: "150px" },
         { text: "처리상태", width: "300px" },
         { text: "주문시간" }
     ];

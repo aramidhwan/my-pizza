@@ -42,6 +42,8 @@ function displayStoreAdmin(json) {
     let prevOrderId = null ;
     let tbody = null; // 🔹 tbody 변수를 for 루프 밖에서 선언
 
+    // 기존 (테이블 컨테이너) 내용 삭제
+    clearTableContainer() ;
     // [강남1호점]
     for (let inx = 0; inx < json.data.length; inx++) {
         storeDto = json.data[inx] ;
@@ -52,6 +54,7 @@ function displayStoreAdmin(json) {
         tbody = tblStore.querySelector("tbody"); // tbody 요소를 선택
         //tbody.innerHTML = ""; // tbody 내 모든 내용을 삭제
 
+console.log("inx : " + inx + ", length : " + storeDto.storeOrderDtos.length) ;
         // 주문 접수 내역이 없을 경우
         if ( storeDto.storeOrderDtos.length == 0 ) {
             var newRow   = tbody.insertRow(tbody.rows.length);
@@ -151,11 +154,18 @@ function successfullyUpdated(json) {
     selectedCheckBox.checked = true ;
 }
 
+// 가맹점주 화면 그리기
+// 테이블 컨테이너 (tableContainer) 초기화
+function clearTableContainer() {
+    // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
+    let container = document.getElementById("tableContainer");
+    container.innerHTML = ""; // 기존 테이블 내용 제거 후 새로 생성
+}
+
 // 가맹점주 화면 ("Cooked" 처리) 그리기
 function createStoreAdminTable(storeId, storeNm) {
     // 테이블 컨테이너 (기존 테이블이 있을 경우 제거)
     let container = document.getElementById("tableContainer");
-    container.innerHTML = ""; // 기존 테이블 내용 제거 후 새로 생성
 
     // 기존 span이 있다면 삭제 (중복 방지)
     const existingSpan = document.getElementById("divTblStoreAdminTitle" + storeId);
