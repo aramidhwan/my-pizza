@@ -29,15 +29,27 @@ public class MyPageController {
         return "html/myPageMain" ;
     }
     @GetMapping("/api/getMyOrders")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_VIP_CUSTOMER')") // 여러개 권한 주기
+    @PreAuthorize(
+            "hasAuthority('ROLE_ADMIN')"
+                    + " or hasAuthority('ROLE_CUSTOMER')"
+                    + " or hasAuthority('ROLE_VIP_CUSTOMER')"
+    )
     public ResponseEntity<ResponseDto> getMyPageContent(
             Authentication authentication
             ,@RequestParam(required = true, defaultValue="1000-01-01", name = "startDate") String startDate
             ,@RequestParam(required = true, defaultValue="9999-12-31", name = "endDate") String endDate
     ) {
-        log.trace("### [getMyPageContent] is called. ###");
+        log.trace("### [/api/getMyPageContent] is called. ###");
         // Authentication 에서 customerNo 가져오기
         Integer customerNo = (Integer) authentication.getDetails();
+
+        // ROLE_ADMIN 사용자인지 확인 --> myPage 전체 조회
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+        if (isAdmin) {
+            customerNo = null ;
+        }
+
 //        List<MyPageDto> myPageDtos = myPageService.getMyPageContent(customerNo, startDate, endDate) ;
         List<MyPageDto> myPageDtos = myPageService.getMyPageContentByMyBatis(customerNo, startDate, endDate) ;
         // DTO를 Map으로 묶어서 반환
