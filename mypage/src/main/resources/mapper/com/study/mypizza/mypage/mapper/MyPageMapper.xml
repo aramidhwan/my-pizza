@@ -24,20 +24,24 @@
 
     <!--  MyPage select 쿼리-->
     <select id="selectMyPage" resultMap="myPageResultMap">
-        SELECT  my_page_id,
-                create_dt,
-                customer_no,
-                order_id,
-                region_nm,
-                status,
-                status_info,
-                store_id,
-                total_price
-         FROM t_mypage
+        SELECT  mypage.my_page_id,
+                mypage.create_dt,
+                mypage.customer_no,
+                customer.customer_name,
+                mypage.order_id,
+                mypage.region_nm,
+                mypage.status,
+                mypage.status_info,
+                mypage.store_id,
+                mypage.total_price
+         FROM t_mypage mypage
+        INNER JOIN t_customer customer ON customer.customer_no = mypage.customer_no
         WHERE 1=1
-          AND customer_no = #{customerNo}
-          AND create_dt BETWEEN #{startDateTime} AND #{endDateTime}
-        ORDER BY store_id , create_dt DESC
+        <if test="customerNo != null">
+          AND mypage.customer_no = #{customerNo}
+        </if>
+          AND mypage.create_dt BETWEEN #{startDateTime} AND #{endDateTime}
+        ORDER BY mypage.store_id , mypage.create_dt DESC
     </select>
 
     <!--  MyPage select 쿼리-->

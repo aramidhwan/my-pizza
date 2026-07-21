@@ -23,6 +23,7 @@ public class MyPageDto {
     private Long mypageId;
     private Long orderId;
     private int customerNo;
+    private String customerName;
     private Long storeId;
     @Setter
     private String storeNm;

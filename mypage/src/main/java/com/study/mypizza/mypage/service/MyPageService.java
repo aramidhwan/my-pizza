@@ -25,7 +25,7 @@ public class MyPageService {
     private final CacheService cacheService;
     private final MyPageMapper myPageMapper;
 
-    public List<MyPageDto> getMyPageContentByMyBatis(int customerNo, String startDate, String endDate) {
+    public List<MyPageDto> getMyPageContentByMyBatis(Integer customerNo, String startDate, String endDate) {
         // 변환: 하루의 시작부터 끝까지 포함되도록
         LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
         LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);

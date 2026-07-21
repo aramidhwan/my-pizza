@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface MyPageMapper {
-    List<MyPageDto> selectMyPage(@Param("customerNo") int customerNo, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime) ;
+    List<MyPageDto> selectMyPage(@Param("customerNo") Integer customerNo, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime) ;
 
     List<MyPageOrderDetailDto> selectMyPageOrderDetail(@Param("orderId") Long orderId) ;
 }
