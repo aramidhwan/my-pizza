@@ -35,7 +35,7 @@ public class OrderController {
     }
 
     @PostMapping("/api/createOrder")
-    @PreAuthorize("hasRole('ROLE_CUSTOMER') or hasRole('ROLE_ADMIN')") // 여러개 권한 주기
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')") // 여러개 권한 주기
     public ResponseEntity<ResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
         Assert.isTrue(!orderRequestDto.getItems().isEmpty(), "한개라도 주문하라고!!");
 
@@ -56,6 +56,7 @@ public class OrderController {
     }
 
     @PatchMapping("/orders/orderCancel/{orderId}")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')") // 여러개 권한 주기
     public String orderCancel(@PathVariable("orderId") Long orderId) throws MyPizzaException {
         // 취소가능 여부 조회, 취소불가 시 MyPizzaException 발생됨
         orderService.orderCancel(orderId);
