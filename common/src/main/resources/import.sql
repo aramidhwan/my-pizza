@@ -1,5 +1,5 @@
-insert into t_authority (authority_name) values ('ROLE_ADMIN'),
-('ROLE_CUSTOMER'),
-('ROLE_VIP_CUSTOMER'),
-('ROLE_STORE_ADMIN'),
-('ROLE_DELIVERY_ADMIN');
+insert into t_authority (authority_name) values ('ROLE_ADMIN');
+insert into t_authority (authority_name) values ('ROLE_CUSTOMER');
+insert into t_authority (authority_name) values ('ROLE_VIP_CUSTOMER');
+insert into t_authority (authority_name) values ('ROLE_STORE_ADMIN');
+insert into t_authority (authority_name) values ('ROLE_DELIVERY_ADMIN');
