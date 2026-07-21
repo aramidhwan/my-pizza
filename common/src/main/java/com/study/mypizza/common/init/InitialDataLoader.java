@@ -61,7 +61,7 @@ public class InitialDataLoader implements CommandLineRunner {
         for (int inx=1 ; inx <= 10 ; inx++) {
             customerDto = CustomerDto.builder()
                     .customerId("customerId_"+String.format("%02d", inx))
-                    .customerName("customer_name_"+String.format("%02d", inx))
+                    .customerName("홍길동"+String.format("%02d", inx))
                     .email("email_"+String.format("%02d", inx)+"@naver.com")
                     .password("shin22")
                     .activated(true)
