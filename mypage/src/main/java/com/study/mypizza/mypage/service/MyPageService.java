@@ -2,7 +2,6 @@ package com.study.mypizza.mypage.service;
 
 import com.study.mypizza.mypage.dto.MyPageDto;
 import com.study.mypizza.mypage.dto.MyPageOrderDetailDto;
-import com.study.mypizza.mypage.external.InternalGateway;
 import com.study.mypizza.mypage.mapper.MyPageMapper;
 import com.study.mypizza.mypage.repository.MyPageOrderDetailRepository;
 import com.study.mypizza.mypage.repository.MyPageRepository;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +25,29 @@ public class MyPageService {
     private final CacheService cacheService;
     private final MyPageMapper myPageMapper;
 
-    public List<MyPageDto> getMyPageContentByMyBatis(Integer customerNo, String startDate, String endDate) {
+    public List<MyPageDto> getMyPageByMyBatis(Integer customerNo, String startDate, String endDate) {
         // 변환: 하루의 시작부터 끝까지 포함되도록
         LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
         LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);
 
         List<MyPageDto> myPageDtos = myPageMapper.selectMyPage(customerNo, startDateTime, endDateTime)
                 .stream()
-//                .map(MyPageDto::of)
                 .map(this::setStoreNm)
                 .toList() ;
+        myPageDtos.forEach(myPageDto -> {
+            List<MyPageOrderDetailDto> detailDtos = myPageDto.getMyPageOrderDetailDtos() ;
+            if (detailDtos!=null) {
+                detailDtos.forEach(this::setItemNm);
+            }
+        });
 
-        for (MyPageDto myPageDto:myPageDtos) {
-            myPageDto.setMyPageOrderDetailDtos(myPageMapper.selectMyPageOrderDetail(myPageDto.getOrderId())
-                    .stream()
-//                    .map(MyPageOrderDetailDto::of)
-                    .map(this::setItemNm)
-                    .toList()
-            ) ;
-        }
+//        for (MyPageDto myPageDto:myPageDtos) {
+//            myPageDto.setMyPageOrderDetailDtos(myPageMapper.selectMyPageOrderDetail_old(myPageDto.getOrderId())
+//                    .stream()
+//                    .map(this::setItemNm)
+//                    .toList()
+//            ) ;
+//        }
 
         return myPageDtos ;
     }

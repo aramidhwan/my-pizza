@@ -3,27 +3,63 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.study.mypizza.mypage.mapper.MyPageMapper">
-    <resultMap id="myPageResultMap"
-               type="com.study.mypizza.mypage.dto.MyPageDto">
-
-        <!--        private List<MyPageOrderDetailDto> myPageOrderDetailDtos;-->
+    <resultMap id="myPageOrderDetailResultMap" type="com.study.mypizza.mypage.dto.MyPageOrderDetailDto">
+        <id column="DETAIL_ORDER_DETAIL_ID" property="orderDetailId"/>
+        <result column="DETAIL_ORDER_ID" property="orderId"/>
+        <result column="DETAIL_ITEM_ID" property="itemId"/>
+        <result column="DETAIL_PRICE_PER_ONE" property="pricePerOne"/>
+        <result column="DETAIL_QTY" property="qty"/>
+    </resultMap>
+    <resultMap id="myPageResultMap" type="com.study.mypizza.mypage.dto.MyPageDto">
         <!-- 일반 컬럼 -->
         <id column="MYPAGE_ID" property="mypageId"/>
         <result column="ORDER_ID" property="orderId"/>
         <result column="CUSTOMER_NO" property="customerNo"/>
+        <result column="CUSTOMER_NAME" property="customerName"/>
         <result column="STORE_ID" property="storeId"/>
         <result column="REGION_NM" property="regionNm"/>
         <result column="STATUS_INFO" property="statusInfo"/>
         <result column="TOTAL_PRICE" property="totalPrice"/>
         <result column="CREATE_DT" property="createDt"/>
-
         <!-- enum 컬럼 -->
         <result column="STATUS" property="status"
                 typeHandler="com.study.mypizza.mypage.handler.OrderStatusTypeHandler"/>
+        <!-- collection -->
+        <collection property="myPageOrderDetailDtos"
+                    resultMap="myPageOrderDetailResultMap"
+                    notNullColumn="DETAIL_ORDER_DETAIL_ID"/>
     </resultMap>
 
     <!--  MyPage select 쿼리-->
-    <select id="selectMyPage" resultMap="myPageResultMap">
+    <select id="selectMyPage" resultMap="myPageResultMap" resultOrdered="true">
+        SELECT  mypage.my_page_id          AS MYPAGE_ID,
+                mypage.create_dt           AS CREATE_DT,
+                mypage.customer_no         AS CUSTOMER_NO,
+                customer.customer_name     AS CUSTOMER_NAME,
+                mypage.order_id            AS ORDER_ID,
+                mypage.region_nm           AS REGION_NM,
+                mypage.status              AS STATUS,
+                mypage.status_info         AS STATUS_INFO,
+                mypage.store_id            AS STORE_ID,
+                mypage.total_price         AS TOTAL_PRICE,
+                detail.order_detail_id     AS DETAIL_ORDER_DETAIL_ID,
+                detail.item_id             AS DETAIL_ITEM_ID,
+                detail.order_id            AS DETAIL_ORDER_ID,
+                detail.price_per_one       AS DETAIL_PRICE_PER_ONE,
+                detail.qty                 AS DETAIL_QTY
+         FROM t_mypage mypage
+        INNER JOIN t_customer customer ON customer.customer_no = mypage.customer_no
+         LEFT JOIN t_mypage_order_detail detail ON detail.order_id = mypage.order_id
+        WHERE 1=1
+        <if test="customerNo != null">
+          AND mypage.customer_no = #{customerNo}
+        </if>
+          AND mypage.create_dt BETWEEN #{startDateTime} AND #{endDateTime}
+        ORDER BY mypage.store_id , mypage.order_id, detail.item_id
+    </select>
+
+    <!--  MyPage select 쿼리-->
+    <select id="selectMyPage_old" resultMap="myPageResultMap">
         SELECT  mypage.my_page_id,
                 mypage.create_dt,
                 mypage.customer_no,
@@ -34,18 +70,18 @@
                 mypage.status_info,
                 mypage.store_id,
                 mypage.total_price
-         FROM t_mypage mypage
+        FROM t_mypage mypage
         INNER JOIN t_customer customer ON customer.customer_no = mypage.customer_no
         WHERE 1=1
         <if test="customerNo != null">
-          AND mypage.customer_no = #{customerNo}
+            AND mypage.customer_no = #{customerNo}
         </if>
-          AND mypage.create_dt BETWEEN #{startDateTime} AND #{endDateTime}
+        AND mypage.create_dt BETWEEN #{startDateTime} AND #{endDateTime}
         ORDER BY mypage.store_id , mypage.create_dt DESC
     </select>
 
     <!--  MyPage select 쿼리-->
-    <select id="selectMyPageOrderDetail" resultType="com.study.mypizza.mypage.dto.MyPageOrderDetailDto">
+    <select id="selectMyPageOrderDetail_old" resultType="com.study.mypizza.mypage.dto.MyPageOrderDetailDto">
         SELECT order_detail_id,
                item_id,
                order_id,

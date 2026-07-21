@@ -7,10 +7,12 @@ import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MyPageMapper {
-    List<MyPageDto> selectMyPage(@Param("customerNo") Integer customerNo, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime) ;
+    List<MyPageDto>  selectMyPage(@Param("customerNo") Integer customerNo, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime) ;
+    List<MyPageDto> selectMyPage_old(@Param("customerNo") Integer customerNo, @Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime) ;
 
-    List<MyPageOrderDetailDto> selectMyPageOrderDetail(@Param("orderId") Long orderId) ;
+    List<MyPageOrderDetailDto> selectMyPageOrderDetail_old(@Param("orderId") Long orderId) ;
 }
