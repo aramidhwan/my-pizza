@@ -51,7 +51,7 @@ public class MyPageController {
         }
 
 //        List<MyPageDto> myPageDtos = myPageService.getMyPageContent(customerNo, startDate, endDate) ;
-        List<MyPageDto> myPageDtos = myPageService.getMyPageContentByMyBatis(customerNo, startDate, endDate) ;
+        List<MyPageDto> myPageDtos = myPageService.getMyPageByMyBatis(customerNo, startDate, endDate) ;
         // DTO를 Map으로 묶어서 반환
         Map<String, Object> response = new ConcurrentHashMap<>();
         response.put("myPageDtos", myPageDtos);
