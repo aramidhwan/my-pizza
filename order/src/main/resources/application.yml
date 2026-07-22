@@ -35,9 +35,19 @@ spring:
         whenever_storeEvent_updateStatus-in-0:
           group: whenever_storeEvent_updateStatus
           destination: myPizza-store
+#          주의) kafka 토픽 partition 수가 (Pod 수 * concurrency) 보다 많아야 효과가 있음
+#          주의) kafka 토픽 partition 수 ≥ Pod 수 × concurrency
+#          해당 binding 안에서 Kafka consumer 스레드(consumer container)를 최대 3개 실행하겠다는 의미입니다.
+#          Consumer thread 1 → partition 0
+#          Consumer thread 2 → partition 1
+#          Consumer thread 3 → partition 2
+#          consumer:
+#            concurrency: 3
         whenever_deliveryEvent_updateStatus-in-0:
           group: whenever_deliveryEvent_updateStatus
           destination: myPizza-delivery
+#          consumer:
+#            concurrency: 3
         orderEvent-out-0:
           destination: myPizza-order
 
