@@ -116,7 +116,7 @@ management:                 # Spring Actuator
 logging:
   level:
     root: info
-    com.study: trace
+    com.study: info
     org.hibernate: info
 #    org.hibernate.SQL: debug
 #    org.hibernate.orm.jdbc.bind: trace
