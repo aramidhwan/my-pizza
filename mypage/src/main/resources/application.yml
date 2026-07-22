@@ -132,9 +132,9 @@ logging:
     org.hibernate: info
     # Logs the JDBC parameters passed to a query
     # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
-    com.study.mypizza.mypage.mapper: TRACE
+#    org.hibernate.SQL: debug
+#    org.hibernate.orm.jdbc.bind: trace
+#    com.study.mypizza.mypage.mapper: TRACE
     org.springframework.cloud: info
     org.apache.kafka.common.utils.AppInfoParser: WARN
     org.apache.kafka.clients.Metadata: WARN
