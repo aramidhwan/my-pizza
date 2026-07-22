@@ -16,7 +16,7 @@ public class CacheService {
     // [주의] @Cacheable 메소드는 같은 클래스 내부에서 호출하면 동작하지 않는다.
     @Cacheable(value = "storeNm", key="#storeId", unless = "#result == null || #result.startsWith('[ERROR]')")
     public String getStoreNm(Long storeId) {
-        log.debug("### storeNm 캐시 호출 !! : storeId = {}", storeId);
+        log.warn("### storeNm 캐시 Miss !! : storeId = {}", storeId);
         GatewayDto<StoreDto> gatewayDto = internalGateway.getStoreNm(storeId) ;
         if (gatewayDto.getBizSuccess() != 0) {
             if ( gatewayDto.getDto() != null ) {
