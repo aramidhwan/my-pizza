@@ -37,7 +37,7 @@ public class OrderController {
     @PostMapping("/api/createOrder")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')") // 여러개 권한 주기
     public ResponseEntity<ResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
-        Assert.isTrue(!orderRequestDto.getItems().isEmpty(), "한개라도 주문하라고!!");
+        Assert.notEmpty(orderRequestDto.getItems(), "주문 메뉴가 비었습니다.");
 
         // Authentication 에서 customerNo 가져오기
         Integer customerNo = (Integer) authentication.getDetails();
