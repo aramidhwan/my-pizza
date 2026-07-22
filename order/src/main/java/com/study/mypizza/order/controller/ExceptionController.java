@@ -43,7 +43,6 @@ public class ExceptionController {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ResponseDto> handleRuntimeException(final RuntimeException ex) {
         log.warn("### ExceptionController.handleRuntimeException", ex);
-        ex.printStackTrace();
         ResponseDto responseDto = ResponseDto.builder()
                 .httpStatus(HttpStatus.OK)
                 .BIZ_SUCCESS(2)     // 0: 성공, 1: JWT 토큰 관련
@@ -56,7 +55,6 @@ public class ExceptionController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAll(final Exception ex) {
         log.error("### ExceptionController.handleAll", ex);
-        log.error("error", ex);
         return new ResponseEntity<>("{\"msg\": \"관리자에게 문의하십시요. : "+ex.getMessage().replace('"','\'')+"\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
