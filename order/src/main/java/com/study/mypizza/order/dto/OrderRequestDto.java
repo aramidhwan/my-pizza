@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 public class OrderRequestDto {
     @Setter
-    @Positive(message = "고객번호(customerNo)가 없습니다. 관리자에게 문의해 주세요.")
+//    @Positive(message = "고객번호(customerNo)가 없습니다. 관리자에게 문의해 주세요.")
     private int customerNo;
     @NotEmpty(message = "지역구(regionNm)가 없습니다. 관리자에게 문의해 주세요.")
     private String regionNm;
