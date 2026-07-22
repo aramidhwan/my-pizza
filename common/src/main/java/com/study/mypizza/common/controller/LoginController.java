@@ -77,11 +77,11 @@ public class LoginController {
     // 로그인페이지
     @GetMapping("/html/auth/loginPage")
     public String loginPage(@RequestParam(name="redirectUrl", required = false) String redirectUrl, Model model) {
-        log.trace("### [loginPage] is called. redirectUrl = {}",redirectUrl);
+        log.warn("### [loginPage] is called. redirectUrl = {}",redirectUrl);
         // 여기 타면 top.html에서 "로그아웃"/"로그인"을 구별해 줄 수 있다.
-        log.trace("###################### 여기 안탄다. #############################");
-        log.trace("###################### 여기 안탄다. #############################");
-        log.trace("###################### 여기 안탄다. #############################");
+        log.warn("###################### 여기 안탄다. #############################");
+        log.warn("###################### 여기 안탄다. #############################");
+        log.warn("###################### 여기 안탄다. #############################");
 
         model.addAttribute("redirectUrl", redirectUrl);
 
