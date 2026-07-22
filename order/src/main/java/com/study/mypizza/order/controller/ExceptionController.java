@@ -6,19 +6,45 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.security.SignatureException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
 public class ExceptionController {
+    // Argument Not Valid
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseDto> handleMethodArgumentNotValidException(final MethodArgumentNotValidException ex) {
+        log.warn("### ExceptionController.handleMethodArgumentNotValidException", ex);
+        Map<String, String> errors = new HashMap<>();
+
+        // 실패한 필드와 설정한 message 추출
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage(); // "@NotBlank(message = ...)" 에 적은 메시지
+
+            errors.put(fieldName, errorMessage);
+        });
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .httpStatus(HttpStatus.OK)
+                .BIZ_SUCCESS(2)     // 0: 성공, 1: JWT 토큰 관련
+                .msg("⚠️ "+errors.values())
+                .build() ;
+        return ResponseEntity.ok(responseDto) ;
+    }
+
     // 401 Unauthorized JWT 토큰이 만료 or 잘못되었을 경우, ROLE이 맞지 않을 경우
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ResponseDto> handleAccessDeniedException(final AccessDeniedException ex) {
-        log.warn("### handleAccessDeniedException", ex);
+        log.warn("### ExceptionController.handleAccessDeniedException", ex);
         ResponseDto responseDto = ResponseDto.builder()
                 .httpStatus(HttpStatus.UNAUTHORIZED)
                 .BIZ_SUCCESS(2)     // 0: 성공, 1: JWT 토큰 관련

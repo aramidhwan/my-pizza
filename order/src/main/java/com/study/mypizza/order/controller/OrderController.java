@@ -4,6 +4,7 @@ import com.study.mypizza.order.dto.*;
 import com.study.mypizza.order.exception.MyPizzaException;
 import com.study.mypizza.order.service.ItemService;
 import com.study.mypizza.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,8 @@ public class OrderController {
 
     @PostMapping("/api/createOrder")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')") // 여러개 권한 주기
-    public ResponseEntity<ResponseDto> createOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
+    public ResponseEntity<ResponseDto> createOrder(@Valid @RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
+        // 이미 OrderRequestDto 에서 @NotNull로 검증완료되었지만 Assert 활용 예시로 남겨둠
         Assert.notEmpty(orderRequestDto.getItems(), "주문 메뉴가 비었습니다.");
 
         // Authentication 에서 customerNo 가져오기
