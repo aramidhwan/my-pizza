@@ -7,18 +7,19 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.study.mypizza.mypage.entity.MyPage;
 import com.study.mypizza.mypage.enums.OrderStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
+@SuperBuilder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Slf4j
-public class MyPageDto {
+public class MyPageDto extends BaseDto {
 
     private Long mypageId;
     private Long orderId;
@@ -47,7 +48,6 @@ public class MyPageDto {
                 .statusInfo(statusInfo)
                 .regionNm(regionNm)
                 .totalPrice(totalPrice)
-                .createDt(createDt)
                 .build();
     }
 
@@ -61,6 +61,7 @@ public class MyPageDto {
                 .regionNm(myPage.getRegionNm())
                 .totalPrice(myPage.getTotalPrice())
                 .createDt(myPage.getCreateDt())
+                .updateDt(myPage.getUpdateDt())
                 .build();
     }
 }
