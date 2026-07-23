@@ -1,38 +1,25 @@
 package com.study.mypizza.store.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.study.mypizza.store.entity.StoreOrder;
 import com.study.mypizza.store.enums.OrderStatus;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
+@SuperBuilder
 @Getter
 @ToString
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class StoreOrderDto {
+public class StoreOrderDto extends BaseDto {
     private Long storeOrderId;
     @Builder.Default
     private StoreDto storeDto = StoreDto.builder().build();
     private Long orderId;
     private OrderStatus status;
+    @Setter
     private List<StoreOrderDetailDto> storeOrderDetailDtos ;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createDt;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime updateDt ;
-
-    public void setStoreOrderDetailDtos(List<StoreOrderDetailDto> storeOrderDetailDtos) {
-        this.storeOrderDetailDtos = storeOrderDetailDtos ;
-    }
 
     public StoreOrder toEntity() {
         return StoreOrder.builder()
