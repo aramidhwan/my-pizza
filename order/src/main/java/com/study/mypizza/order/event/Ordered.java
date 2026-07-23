@@ -1,9 +1,5 @@
 package com.study.mypizza.order.event;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.study.mypizza.order.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,12 +16,6 @@ public class Ordered extends AbstractEvent {
     private String statusInfo;
     private String regionNm;
     private Integer totalPrice;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createDt;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime updateDt;
 
     /**
      * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.
