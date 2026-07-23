@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
@@ -55,7 +56,10 @@ public class EventHandler {
 
                     ModelMapper modelMapper = new ModelMapper();
 //                    modelMapper.getConfiguration().setSkipNullEnabled(true).setMatchingStrategy(MatchingStrategies.STRICT);
-                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+                    modelMapper.getConfiguration()
+                            .setMatchingStrategy(MatchingStrategies.STRICT)
+                            .setFieldMatchingEnabled(true)  /* target class에 @Setter 설정이 없을때 사용(field에 직접 복사) */
+                            .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);  /* 직접 복사할 field의 access level */
 
                     MyPage myPage = modelMapper.map(ordered, MyPage.class);
                     myPageRepository.save(myPage) ;
