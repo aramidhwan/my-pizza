@@ -7,7 +7,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,7 +25,6 @@ public interface InternalGateway {
     @GetMapping("/order-service/items/getItemNm")
     @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryGetItemNm")
     @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitFallbackGetItemNm")
-    @Cacheable(value = "itemNm", key="#itemId")
     GatewayDto<ItemDto> getItemNm(@RequestParam("itemId") Long itemId) ;
 
     default GatewayDto<ItemDto> retryGetItemNm(Long itemId, Throwable cause) {
