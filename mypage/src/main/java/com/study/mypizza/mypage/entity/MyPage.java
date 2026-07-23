@@ -1,24 +1,21 @@
 package com.study.mypizza.mypage.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.study.mypizza.mypage.config.OrderStatusConverter;
 import com.study.mypizza.mypage.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(name="t_mypage")
-@Builder
+@SuperBuilder
+@Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Getter
-@Setter
-public class MyPage {
+@EntityListeners(AuditingEntityListener.class)
+public class MyPage extends BaseEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long myPageId;
@@ -31,9 +28,6 @@ public class MyPage {
     private String statusInfo;
     private String regionNm;
     private Integer totalPrice;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createDt;
 
     public void updateStoreId(Long storeId) {
         this.storeId = storeId ;
