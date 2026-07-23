@@ -31,13 +31,10 @@ public class StoreOrder extends BaseEntity {
     private Store store = new Store();
 //    private Long storeId;
     private Long orderId;
+    @Setter
     @Column(name = "status", columnDefinition = "VARCHAR(255)")
     @Convert(converter = OrderStatusConverter.class) // 변환기 적용
     private OrderStatus status;
-
-    public void setStatus(OrderStatus status) {
-        this.status = status ;
-    }
 
     @PostPersist
     private void onPostPersist() {
