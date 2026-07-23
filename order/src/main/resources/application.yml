@@ -38,11 +38,15 @@ spring:
 #          주의) kafka 토픽 partition 수가 (Pod 수 * concurrency) 보다 많아야 효과가 있음
 #          주의) kafka 토픽 partition 수 ≥ Pod 수 × concurrency
 #          해당 binding 안에서 Kafka consumer 스레드(consumer container)를 최대 3개 실행하겠다는 의미입니다.
+#          테스트) 1. kafka 토픽의 파티션 수 증설 1-->2개
+#                 2. 아래 consumer.concurrency를 2개로 설정
+#                 3. 메시지 producer 쪽(store)에서 produce 시 kafka key(orderId) 지정(해시)
+#                 4. kafka key의 해시값에 따라 2개 consumer thread가 동시 수행됨
 #          Consumer thread 1 → partition 0
 #          Consumer thread 2 → partition 1
 #          Consumer thread 3 → partition 2
 #          consumer:
-#            concurrency: 3
+#            concurrency: 2
         whenever_deliveryEvent_updateStatus-in-0:
           group: whenever_deliveryEvent_updateStatus
           destination: myPizza-delivery
@@ -165,6 +169,7 @@ logging:
   level:
     root: info
     com.study: debug
+#    com.study.mypizza.order.eventHandler: trace
 #    org.springframework.security: trace
 #    org.springframework.transaction: DEBUG
 #    org.springframework.orm.jpa.JpaTransactionManager: DEBUG
