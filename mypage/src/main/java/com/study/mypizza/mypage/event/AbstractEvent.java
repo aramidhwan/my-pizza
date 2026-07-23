@@ -22,7 +22,7 @@ public class AbstractEvent {
     private String eventType ;
     private String fullClassName ;
     private String timestamp ;
-    private static String bindingName = "mypageEvent-out-0" ;
+    private static String bindingName = "myPageEvent-out-0" ;
 
     public AbstractEvent() {
         this.setEventType(this.getClass().getSimpleName());
