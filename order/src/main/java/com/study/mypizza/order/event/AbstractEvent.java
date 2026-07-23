@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.study.mypizza.order.OrderApplication;
 import lombok.Data;
-import org.springframework.beans.BeanUtils;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.MimeTypeUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,8 +31,13 @@ public class AbstractEvent {
         this.setTimestamp(simpleDateFormat.format(new Date()));
     }
 
-    public void toEntity(Object entity) {
-        BeanUtils.copyProperties(this, entity);
+    /**
+     * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.
+     * 각 key는 AbstractEvent를 상속받는 이벤트에서 직접 구현한다.
+     * getPartitionKey() 구현이 없는 이벤트는 null을 반환한다.
+     */
+    protected String getPartitionKey() {
+        return null;
     }
 
     @SuppressWarnings("deprecation")
@@ -51,28 +57,43 @@ public class AbstractEvent {
     }
 
     private void publish(String json){
-        if( json != null ){
-            StreamBridge streamBridge = OrderApplication.applicationContext.getBean(StreamBridge.class);
-            streamBridge.send(bindingName, MessageBuilder
-                    .withPayload(json)
-                    .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-                    .build());
+        if( json == null ){
+            return ;
         }
+
+        StreamBridge streamBridge = OrderApplication.applicationContext.getBean(StreamBridge.class);
+        MessageBuilder<String> builder = MessageBuilder
+                .withPayload(json)
+                .setHeader(
+                        MessageHeaders.CONTENT_TYPE,
+                        MimeTypeUtils.APPLICATION_JSON
+                );
+
+        // kafka 파티션 키 설정 (옵션이지만 파티션이 여러개일 경우 분산을 위해 해주는 것이 좋음)
+        String partitionKey = getPartitionKey();
+        if (partitionKey != null && !partitionKey.isBlank()) {
+            builder.setHeader(
+                    KafkaHeaders.KEY,
+                    partitionKey.getBytes(StandardCharsets.UTF_8)
+            );
+        }
+
+        streamBridge.send(bindingName, builder.build());
     }
 
     private String toJson() {
-        String jsonString = null ;
+        String json = null ;
 
         try {
-            jsonString = new ObjectMapper().writeValueAsString(this) ;
+            json = new ObjectMapper().writeValueAsString(this) ;
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        return jsonString ;
+        return json ;
     }
 
-    public boolean validate(){
+    public boolean validate() {
         return getEventType().equals(getClass().getSimpleName());
     }
 }
