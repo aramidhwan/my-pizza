@@ -7,10 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,7 +16,7 @@ public class CacheService {
     // [주의] @Cacheable 메소드는 같은 클래스 내부에서 호출하면 동작하지 않는다.
     @Cacheable(value = "storeNm", key="#storeId", unless = "#result == null || #result.startsWith('[ERROR]')")
     public String getStoreNm(Long storeId) {
-        log.debug("### storeNm 캐시 호출 !! : storeId = {}", storeId);
+        log.debug("### storeNm 캐시 Miss !! : storeId = {}", storeId);
         GatewayDto<StoreDto> gatewayDto = internalGateway.getStoreNm(storeId) ;
         if (gatewayDto.getBizSuccess() != 0) {
             if ( gatewayDto.getDto() != null ) {
