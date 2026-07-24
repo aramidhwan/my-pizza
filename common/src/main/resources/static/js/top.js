@@ -189,21 +189,21 @@ function checkSignIn() {
                 liMyPage.classList.remove("hidden");
                 initDisplay = "loadOrderMain" ;    // Spring Boot 호출
             }
-            // ROLE_ADMIN 권한이 있을 경우
-            if ( authorities.includes(Roles.ROLE_ADMIN) ) {
-                liStore.classList.remove("hidden");
-                liAdmin.classList.remove("hidden");
-                initDisplay = "loadOrderMain" ;    // Spring Boot 호출
-            }
             // ROLE_STORE_ADMIN 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_STORE_ADMIN) ) {
                 liStoreAdmin.classList.remove("hidden");
                 initDisplay = "loadStoreAdminMain" ;    // Spring Boot 호출
             }
-            // ROLE_STORE_ADMIN 권한이 있을 경우
+            // ROLE_DELIVERY_ADMIN 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_DELIVERY_ADMIN) ) {
                 liDeliveryAdmin.classList.remove("hidden");
                 initDisplay = "loadDeliveryAdminMain" ;    // Spring Boot 호출
+            }
+            // ROLE_ADMIN 권한이 있을 경우
+            if ( authorities.includes(Roles.ROLE_ADMIN) ) {
+                liStore.classList.remove("hidden");
+                liAdmin.classList.remove("hidden");
+                initDisplay = "loadOrderMain" ;    // Spring Boot 호출
             }
         // 비로그인 사용자 인 경우
         } else if ( data.BIZ_SUCCESS == "1" ) {
