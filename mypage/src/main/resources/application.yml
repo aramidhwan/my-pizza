@@ -9,10 +9,10 @@ spring:
         show_sql: false
         format_sql: true
         highlight_sql: true
+    generate-ddl: true      # generate-ddl 은 아래 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
     hibernate:
       ddl-auto: validate
 #      ddl-auto: create        # 기존 테이블 DROP 후 재 생성, 반드시 로컬환경에서만 사용(운영X)
-      generate-ddl: true      # generate-ddl 은 위의 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
 
   config:
     import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트

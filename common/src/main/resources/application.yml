@@ -25,6 +25,7 @@ spring:
         format_sql: true
         highlight_sql: true
         # dialect: org.hibernate.dialect.MySQL57Dialect
+    generate-ddl: true      # generate-ddl 은 아래 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
     hibernate:
       # create, create-drop, update, validate, none
       # create : SessionFactory 시작시 스키마를 삭제하고 다시 생성
@@ -37,7 +38,6 @@ spring:
 #      ddl-auto: update
       ddl-auto: validate
 #      ddl-auto: create
-      generate-ddl: true      # generate-ddl ? ?? ddl-auto ??? ???? ??? ???? ????.(??? false)
 #    defer-datasource-initialization: true
   sql:
     init:

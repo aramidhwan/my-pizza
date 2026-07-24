@@ -8,6 +8,7 @@ spring:
         show_sql: false
         format_sql: true
         # dialect: org.hibernate.dialect.MySQL57Dialect
+    generate-ddl: true      # generate-ddl 은 아래 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
     hibernate:
       # create, create-drop, update, validate, none
       # create : SessionFactory 시작시 스키마를 삭제하고 다시 생성
@@ -19,7 +20,6 @@ spring:
       # 운영환경에서는 절대 create, create-drop, update를 사용하면 안됨
       ddl-auto: validate     # 실제 운영에서 서비스 배포시는 none or validate만 사용, generate-ddl도 false로 운영
 #      ddl-auto: create        # 기존 테이블 DROP 후 재 생성, 반드시 로컬환경에서만 사용(운영X)
-      generate-ddl: true      # generate-ddl 은 위의 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
 
   config:
     import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트

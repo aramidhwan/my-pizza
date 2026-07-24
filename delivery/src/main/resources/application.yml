@@ -9,11 +9,11 @@ spring:
       hibernate:
         show_sql: false
         format_sql: true
+    generate-ddl: true      # generate-ddl 은 아래 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
     hibernate:
       # create, create, create-drop, update, validate, none
       ddl-auto: validate
 #      ddl-auto: create
-      generate-ddl: true
 
   config:
     import: optional:configserver:http://admin:admin@localhost:6060 # http://???:????@???:??
