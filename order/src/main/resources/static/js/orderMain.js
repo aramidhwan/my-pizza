@@ -63,6 +63,7 @@ function orderClicked() {
     // 선택된 메뉴들
     const arrayItemIds  = $("tr[id=selectedItemId]").get() ;
     const arrayItemQtys  = $("td[id=selectedItemQty]").get() ;
+    const arrayItemPricePerOnes = $("td[id=selectedItemPricePerOne]").get() ;
 
     if ( arrayItemIds.length == 0 ) {
         alert("⚠️ 주문하실 메뉴를 선택해 주세요.");
@@ -78,6 +79,7 @@ function orderClicked() {
         const objOrderedItems = {};
         objOrderedItems.itemId = arrayItemIds[inx].getAttribute('value');
         objOrderedItems.qty    = arrayItemQtys[inx].getAttribute('value');
+        objOrderedItems.pricePerOne    = arrayItemPricePerOnes[inx].getAttribute('value');
         arrayOrderedItems.push(objOrderedItems);
     }
 
