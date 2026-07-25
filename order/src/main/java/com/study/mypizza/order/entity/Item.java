@@ -19,10 +19,12 @@ import java.time.LocalDateTime;
 public class Item {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="item_id")
     private Long itemId;
+    @Column(nullable = false)
     private String itemNm;
+    @Column(nullable = false)
     private String itemGroup;
+    @Column(nullable = false)
     private Integer pricePerOne;
     @CreatedDate
     private LocalDateTime registDt;
