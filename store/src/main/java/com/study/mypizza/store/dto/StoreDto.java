@@ -21,7 +21,7 @@ public class StoreDto extends BaseDto {
     @Setter
     private Long orderCnt;
     @Setter
-    private List<StoreOrderDto> storeOrderDtos;
+    private List<StoreOrderDto> storeOrderDtoList;
 
     public Store toEntity() {
         return Store.builder()
