@@ -1,14 +1,12 @@
 package com.study.mypizza.store.eventHandler;
 
-import com.study.mypizza.store.entity.Store;
-import com.study.mypizza.store.entity.StoreOrder;
 import com.study.mypizza.store.entity.StoreOrderDetail;
-import com.study.mypizza.store.enums.OrderStatus;
 import com.study.mypizza.store.event.OrderDetailOrdered;
 import com.study.mypizza.store.event.Ordered;
 import com.study.mypizza.store.repository.StoreOrderDetailRepository;
 import com.study.mypizza.store.repository.StoreOrderRepository;
 import com.study.mypizza.store.repository.StoreRepository;
+import com.study.mypizza.store.service.EventService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,41 +14,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EventHandler {
+    private final EventService eventService;
+
     private final StoreRepository storeRepository ;
     private final StoreOrderRepository storeOrderRepository ;
     private final StoreOrderDetailRepository storeOrderDetailRepository ;
 
     @Bean
-    @Transactional
+    // @Transactional은 실제 lambda 실행 시점에 적용되지 않으므로, 별도 서비스의 public 메서드로 DB 처리를 옮겨야 합니다.
+//    @Transactional
     public Consumer<Message<Ordered>> whenever_ordered_orderAccept() {
-        return eventMessage -> {
-            Ordered ordered = eventMessage.getPayload() ;
+        return message -> {
+            Ordered ordered = message.getPayload() ;
             if (!ordered.validate()) return;
 
-            log.trace("### [{}] event received..!! : {}", new Object(){}.getClass().getEnclosingMethod().getName(), ordered.toString());
-
-            List<Store> storeList = storeRepository.findByRegionNmAndOpenYNTrue(ordered.getRegionNm()) ;
-            int openStoreCnt = storeList.size();
-
-            // 주문이 들어온 regionNm에 Open된 Sotre가 한군데라도 있으면 주문접수
-            if (openStoreCnt > 0) {
-                int random = new Random().nextInt(openStoreCnt) ;
-
-                StoreOrder storeOrder = StoreOrder.builder()
-                        .store(Store.builder().storeId(storeList.get(random).getStoreId()).build())
-                        .orderId(ordered.getOrderId())
-                        .status(OrderStatus.ORDER_ACCEPTED)
-                        .build();
-                storeOrderRepository.save(storeOrder) ;
-            }
+            log.info("### [{}] event received..!! : {}", new Object(){}.getClass().getEnclosingMethod().getName(), ordered);
+            eventService.handleEvent(ordered);
         } ;
     }
 
@@ -61,7 +46,7 @@ public class EventHandler {
             OrderDetailOrdered orderDetailOrdered = eventMessage.getPayload() ;
             if (!orderDetailOrdered.validate()) return;
 
-            log.trace("### [{}] event received..!! : {}", new Object(){}.getClass().getEnclosingMethod().getName(), orderDetailOrdered.toString());
+            log.info("xxxxxxxxxxxxxxxxx###xxxxxxxxxxxxxxxxxxxx [{}] event received..!! : {}", new Object(){}.getClass().getEnclosingMethod().getName(), orderDetailOrdered);
 
 //            Optional<StoreOrderDto> storeOrderDto = storeOrderRepository.findByOrderId(orderDetailOrdered.getOrderId())
 //                    .map(StoreOrderDto::of);
@@ -71,7 +56,7 @@ public class EventHandler {
 //            }
             StoreOrderDetail storeOrderDetail = StoreOrderDetail.builder()
                     .orderDetailId(orderDetailOrdered.getOrderDetailId())
-                    .orderId(orderDetailOrdered.getOrderId())
+//                    .orderId(orderDetailOrdered.getOrderId())
                     .itemId(orderDetailOrdered.getItemId())
                     .qty(orderDetailOrdered.getQty())
                     .pricePerOne(orderDetailOrdered.getPricePerOne())
