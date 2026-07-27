@@ -23,9 +23,9 @@ spring:
 
   sql:
     init:
-#      mode: always        # 항상 실행 (schema.sql / data.sql)
-      mode: none
-#      mode: embeded       # (기본값) 임베디드(H2, HSQLDB, Derby 같은 내장 DB) 메모리 DB일 때만 SQL 스크립트를 실행하고, 외장 DB에 연결되었을 때는 실행하지 않습니다.
+#      mode: ALWAYS        # 항상 실행 (schema.sql / data.sql)
+      mode: NEVER
+#      mode: EMBEDDED       # (기본값) 임베디드(H2, HSQLDB, Derby 같은 내장 DB) 메모리 DB일 때만 SQL 스크립트를 실행하고, 외장 DB에 연결되었을 때는 실행하지 않습니다.
 
   config:
     import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트

@@ -41,7 +41,7 @@ spring:
 #    defer-datasource-initialization: true
   sql:
     init:
-      mode: never  # never, always
+      mode: NEVER  # never, always
 
   thymeleaf:
     prefix: classpath:/templates/   # Optional
