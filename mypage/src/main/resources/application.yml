@@ -9,10 +9,16 @@ spring:
         show_sql: false
         format_sql: true
         highlight_sql: true
-    generate-ddl: true      # generate-ddl 은 아래 ddl-auto 속성을 사용할지 말지를 결정하는 옵션이다.(기본값 false)
+#    generate-ddl: true      # ddl-auto가 설정되어 있으면 generate-ddl 설정값과 무관하게 aal-auto(우선값임)로 동작한다.
     hibernate:
       ddl-auto: validate
 #      ddl-auto: create        # 기존 테이블 DROP 후 재 생성, 반드시 로컬환경에서만 사용(운영X)
+
+  sql:
+    init:
+#      mode: always        # 항상 실행 (schema.sql / import.sql)
+      mode: none
+#      mode: embeded       # (기본값) 임베디드(H2, HSQLDB, Derby 같은 내장 DB) 메모리 DB일 때만 SQL 스크립트를 실행하고, 외장 DB에 연결되었을 때는 실행하지 않습니다.
 
   config:
     import: optional:configserver:http://admin:admin@localhost:6060 # http://아이디:비밀번호@아이피:포트
@@ -128,6 +134,7 @@ logging:
   level:
     root: info
     com.study: info
+    com.study.mypizza.mypage.service: trace
     #    org.springframework.security: trace
     org.hibernate: info
     # Logs the JDBC parameters passed to a query
