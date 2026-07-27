@@ -27,10 +27,12 @@ public class Delivery extends BaseEntity {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long deliveryId;
+    @Column(nullable = false, unique = true)
     private Long orderId;
+    @Column(nullable = false)
     private Long storeId;
     @Convert(converter = OrderStatusConverter.class) // 변환기 적용
-    @Column(name = "status", columnDefinition = "VARCHAR(255)")
+    @Column(name = "status", columnDefinition = "VARCHAR(255)", nullable = false)
     private OrderStatus status;
     private int ownerNo ;
 
@@ -39,7 +41,7 @@ public class Delivery extends BaseEntity {
         DeliveryAccepted deliveryAccepted = new DeliveryAccepted() ;
         BeanUtils.copyProperties(this, deliveryAccepted);
         deliveryAccepted.publishAfterCommit();
-        log.trace("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), deliveryAccepted.toString());
+        log.info("■■■■ Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), deliveryAccepted.toString());
     }
 
     @PostUpdate
@@ -48,19 +50,19 @@ public class Delivery extends BaseEntity {
             DeliveryAccepted deliveryAccepted = new DeliveryAccepted() ;
             BeanUtils.copyProperties(this, deliveryAccepted);
             deliveryAccepted.publishAfterCommit();
-            log.trace("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), deliveryAccepted.toString());
+            log.info("■■■■ Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), deliveryAccepted.toString());
 
         } else if ( OrderStatus.DELIVERY_STARTED == this.status) {
             DeliveryStarted deliveryStarted = new DeliveryStarted() ;
             BeanUtils.copyProperties(this, deliveryStarted);
             deliveryStarted.publishAfterCommit();
-            log.trace("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), deliveryStarted.toString());
+            log.info("■■■■ Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), deliveryStarted.toString());
 
         } else if ( OrderStatus.DELIVERED == this.status) {
             Delivered delivered = new Delivered() ;
             BeanUtils.copyProperties(this, delivered);
             delivered.publishAfterCommit();
-            log.trace("#### Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), delivered.toString());
+            log.info("■■■■ Published in [{}.{}()] : {}", this.getClass().getSimpleName(), new Object(){}.getClass().getEnclosingMethod().getName(), delivered.toString());
         }
     }
 
