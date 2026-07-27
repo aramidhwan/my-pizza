@@ -25,18 +25,18 @@ public class InitialDataLoader implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         // 프로퍼티 값 읽기 (기본값 설정 가능)
-        String ddlAuto = env.getProperty("spring.jpa.hibernate.ddl-auto", "none");
+        String sqlInitMode = env.getProperty("spring.sql.init.mode", "never");
 
         // create 또는 create-drop 일 때만 실행
-        if ("create".equalsIgnoreCase(ddlAuto) || "create-drop".equalsIgnoreCase(ddlAuto)) {
+        if ("ALWAYS".equalsIgnoreCase(sqlInitMode) || "EMBEDED".equalsIgnoreCase(sqlInitMode)) {
             insertInitialData();
         } else {
-            System.out.println("✅ ddl-auto가 '" + ddlAuto + "'이므로 초기 데이터 적재를 스킵했습니다");
+            System.out.println("✅ spring.sql.init.mode가 '" + sqlInitMode + "'이므로 초기 데이터(t_customer) 적재를 스킵했습니다");
         }
     }
 
     private void insertInitialData() {
-        System.out.println("✅ t_customer 테이블 초기 데이터 적재를 시작합니다... t_authority 초기 적재는 import.sql로 대체합니다.");
+        System.out.println("✅ t_customer 테이블 초기 데이터 적재를 시작합니다... t_authority 초기 적재는 data.sql로 대체합니다.");
 
         // ROLE_ADMIN 등록
         CustomerDto customerDto = CustomerDto.builder()
