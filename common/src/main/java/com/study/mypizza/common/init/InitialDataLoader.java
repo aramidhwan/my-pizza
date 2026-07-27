@@ -68,5 +68,7 @@ public class InitialDataLoader implements CommandLineRunner {
             // 데이터 적재 로직 작성
             loginService.signUp(customerDto) ;
         }
+
+        System.out.println("✅ t_customer 테이블 초기 데이터 적재를 성공적으로 마쳤습니다.");
     }
 }
