@@ -2,14 +2,12 @@ package com.study.mypizza.common.init;
 
 import com.study.mypizza.common.dto.AuthorityDto;
 import com.study.mypizza.common.dto.CustomerDto;
-import com.study.mypizza.common.repository.CustomerRepository;
 import com.study.mypizza.common.service.LoginService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Component
