@@ -8,10 +8,24 @@ import org.apache.ibatis.annotations.Param;
 import java.util.Optional;
 
 @Mapper
-public interface CustomerMapper {
+public interface CommonMapper {
     //Member 저장
     int insertMember(@Param("member") Customer customer);
 
     //Member 조회
     Optional<CustomerDto> selectCustomer(@Param("email") String email);
+
+    void delOrderDetail();
+
+    void delOrder();
+
+    void delMyPageOrderDetail();
+
+    void delMyPage();
+
+    void delStoreOrderDetail();
+
+    void delStoreOrder();
+
+    void delDelivery();
 }
