@@ -120,6 +120,10 @@ management:                 # Spring Actuator
         include: env
 
 logging:
+  pattern:
+    dateformat: "yyyy-MM-dd HH:mm:ss.SSS"
+    console: "%d{${logging.pattern.dateformat}} [%15.15t] %-39.39logger{39} : [%-5level] %msg%n"
+
   level:
     root: info
     com.study: info

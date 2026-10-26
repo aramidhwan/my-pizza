@@ -10,12 +10,9 @@ import java.util.Optional;
 /* @RepositoryRestResource : Repository를 REST API로 자동 노출. 예: /myPages */
 //@RepositoryRestResource(path="deliveries")
 public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
-    List<Delivery> findByStatus(String status) ;
-
-    List<Delivery> findByOwnerNoOrderByStoreIdAscCreateDtDesc(int customerNo);
-    List<Delivery> findAllByOrderByStoreIdAscCreateDtDesc();
-
     Optional<Delivery> findByOrderId(Long orderId);
 
     List<Delivery> findAllByCreateDtBetweenOrderByStoreIdAscCreateDtDesc(LocalDateTime startDate, LocalDateTime endDate);
+
+    boolean existsByOrderId(Long orderId);
 }

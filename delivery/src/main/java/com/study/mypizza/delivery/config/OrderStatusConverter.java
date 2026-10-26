@@ -24,7 +24,7 @@ public class OrderStatusConverter implements AttributeConverter<OrderStatus, Str
         if (dbData == null) {
             return null;
         }
-        return OrderStatus.fromStatus(dbData); // "Ordered" → ORDERED
+        return OrderStatus.fromString(dbData); // "Ordered" → ORDERED
     }
 }
 

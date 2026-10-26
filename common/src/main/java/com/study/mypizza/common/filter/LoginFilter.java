@@ -39,13 +39,9 @@ import java.nio.charset.StandardCharsets;
  */
 @Slf4j
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
-    private final AuthenticationManager authenticationManager ;
-    private final TokenProvider tokenProvider;
 
-    public LoginFilter(AuthenticationManager authenticationManager, TokenProvider tokenProvider, LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler) {
-        this.authenticationManager = authenticationManager ;
+    public LoginFilter(AuthenticationManager authenticationManager, LoginSuccessHandler loginSuccessHandler, LoginFailureHandler loginFailureHandler) {
         setAuthenticationManager(authenticationManager) ;
-        this.tokenProvider = tokenProvider;
         // 이 UsernamePasswordAuthenticationFilter 필터는 "/login"에 접근할 때만 동작한다.(하드코딩)
         // 그렇기 때문에 내가 원하는 Url에서 필터가 동작하길 원한다면 setFilterProcessesUrl()로 Url를 설정해줘야 작동한다.
         setFilterProcessesUrl("/api/auth/sign-in");
@@ -59,6 +55,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         ObjectMapper objectMapper = new ObjectMapper() ;
 //        UserDetails userDetails = null ;
+        // UserDetails를 상속받은 로그인 객체
         LoginDto userDetails = null ;
 
         // 1. Client Request 로 부터 Parameter 방식이 아닌 JSON 방식으로 ID/PASSWORD 얻어오는 경우

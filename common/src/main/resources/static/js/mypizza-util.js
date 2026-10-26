@@ -85,7 +85,8 @@ function dateTimeFormatter(localDateTimeStr) {
     const seconds = String(dateObj.getSeconds()).padStart(2, '0');
 
     // 원하는 형식으로 출력
-    const formattedDate = `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
+//    const formattedDate = `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
+    const formattedDate = `${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
 
 //    console.log(formattedDate); // 출력: "2025-03-06 14:30:45"
     return formattedDate ;

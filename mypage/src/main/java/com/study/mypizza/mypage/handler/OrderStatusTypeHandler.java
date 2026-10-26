@@ -23,18 +23,18 @@ public class OrderStatusTypeHandler extends BaseTypeHandler<OrderStatus> {
     @Override
     public OrderStatus getNullableResult(ResultSet rs, String columnName)
             throws SQLException {
-        return OrderStatus.fromStatus(rs.getString(columnName));
+        return OrderStatus.fromString(rs.getString(columnName));
     }
 
     @Override
     public OrderStatus getNullableResult(ResultSet rs, int columnIndex)
             throws SQLException {
-        return OrderStatus.fromStatus(rs.getString(columnIndex));
+        return OrderStatus.fromString(rs.getString(columnIndex));
     }
 
     @Override
     public OrderStatus getNullableResult(CallableStatement cs, int columnIndex)
             throws SQLException {
-        return OrderStatus.fromStatus(cs.getString(columnIndex));
+        return OrderStatus.fromString(cs.getString(columnIndex));
     }
 }

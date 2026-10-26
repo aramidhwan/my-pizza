@@ -5,8 +5,6 @@
      나는 그냥 이 푸터 전체에 fragment를 주는 방법을 선택했다.
      Footer만 들어가는 css나 스크립트가 있다면 그것도 자유롭게 수정하고 싶어서!-->
 <th:block th:fragment="top">
-    <!--도미노피자(상단) 용 css-->
-    <link rel="stylesheet" type="text/css" href="/common-service/css/domino.css">
     <script src="/common-service/js/top.js"></script>
     <style>
         .a_header {
@@ -15,18 +13,47 @@
         .hidden {
             display: none;
         }
+
+        /* 토스트 팝업 기본 스타일 */
+        .custom-toast {
+            position: fixed;
+            top: 130px; /* 화면 상단에서 100px 띄움 */
+            left: 50%;
+            transform: translateX(-50%); /* 가운데 정렬 */
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out; /* 부드럽게 사라지는 효과 */
+            /* message의 줄바꿈(\n) 적용은 이 속성을 추가하세요! */
+<!--            white-space: pre-line;-->
+        }
+
+        /* 토스트 팝업 사라질 때 적용할 클래스 */
+        .custom-toast.fade-out {
+            opacity: 0;
+        }
     </style>
 <div id="header">
     <!-- //top_event_bnr -->
     <div class="top-wrap">
         <div class="inner-box" id="tip-box-top">
-            <a href="/common-service/common/layout" class="btn-logo">
+            <a href="/common-service/html/auth/loginPage" class="btn-logo">
                 <img src="/common-service/images/mypizza_logo.gif" width="200" height="40">
             </a>
 
             <div class="util-nav">
-                <a id='signYN' href='javascript:void(0);' data-value="N"></a>
-                <a href="/common-service/html/auth/loginPage">회원가입</a>
+<!--                <a id='delAllData' data-value=""></a>-->
+                <button type="button" id="delAllData" data-value="" style="cursor: pointer; border: none; background: none; text-decoration: underline dotted; text-underline-offset: 4px;" onclick="fnDelAllData();">데이터삭제</button>
+                &nbsp;
+                <button type="button" id="signYN" data-value="" style="cursor: pointer; border: none; background: none; text-decoration: underline dotted; text-underline-offset: 4px;"></button>
+<!--                <a id='signYN' href='javascript:void(0);' data-value="N"></a>-->
+                &nbsp;
+                <button type="button" data-value="" style="cursor: pointer; border: none; background: none; text-decoration: underline dotted; text-underline-offset: 4px;" onclick="signUp();">회원가입</button>
+<!--                <a href="/common-service/html/auth/loginPage">회원가입</a>-->
                 <!--2020-03-17 추가(s)-->
                 <a href="javascript:void(0);" class="lang">
                     <div class="select-type2 language">

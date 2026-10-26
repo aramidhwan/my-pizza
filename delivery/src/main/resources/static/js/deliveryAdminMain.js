@@ -110,25 +110,30 @@ function displayDeliveryAdmin(json) {
         newCell4.classList.add("cssAlignCenter") ;
         newCell4.innerText = dateTimeFormatter(deliveryDto.createDt) ;
 
-        var newCell5 = newRow.insertCell(cellIndex++);    // 체크박스
+        var newCell5 = newRow.insertCell(cellIndex++);    // 현상태시간
+        newCell5.id = "updateDt_" + deliveryDto.deliveryId ; // 👈 현상태시간 셀에 고유 ID 부여!
         newCell5.classList.add("cssAlignCenter") ;
-        newCell5.innerHTML = '<div class="form-check form-switch center-checkbox"><input name="deliveryStarted" data-order-id="'+deliveryDto.orderId+'" class="form-check-input" type="checkbox" role="switch"'+chkboxForDeliveryStarted+'></div>';
+        newCell5.innerText = dateTimeFormatter(deliveryDto.updateDt) ;
 
         var newCell6 = newRow.insertCell(cellIndex++);    // 체크박스
         newCell6.classList.add("cssAlignCenter") ;
-        newCell6.innerHTML = '<div class="form-check form-switch center-checkbox"><input name="delivered" data-order-id="'+deliveryDto.orderId+'" class="form-check-input" type="checkbox" role="switch"'+chkboxForDelivered+'></div>';
+        newCell6.innerHTML = '<div class="form-check form-switch center-checkbox"><input name="deliveryStarted" data-order-id="'+deliveryDto.orderId+'" class="form-check-input" type="checkbox" role="switch"'+chkboxForDeliveryStarted+'></div>';
+
+        var newCell7 = newRow.insertCell(cellIndex++);    // 체크박스
+        newCell7.classList.add("cssAlignCenter") ;
+        newCell7.innerHTML = '<div class="form-check form-switch center-checkbox"><input name="delivered" data-order-id="'+deliveryDto.orderId+'" class="form-check-input" type="checkbox" role="switch"'+chkboxForDelivered+'></div>';
 
         prevStoreId = deliveryDto.storeDto.storeId ;
     }
 
     addEventCheckBox(document.querySelectorAll("input[name='deliveryStarted']")) ;
     addEventCheckBox(document.querySelectorAll("input[name='delivered']")) ;
-
 }
 
 function addEventCheckBox(checkboxes) {
     let displayStatus = null ;
     let status = null ;
+
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener("change", function (event) {
             // this는 INPUT 객체임
@@ -146,6 +151,7 @@ function addEventCheckBox(checkboxes) {
             }
             const orderId = this.dataset.orderId; // 주문 ID 가져오기 (예: data-order-id)
             if ( !confirm("주문번호["+orderId+"] : "+displayStatus+" 처리하시겠습니까?\n"+displayStatus+" 처리 시 취소할 수 없습니다.") ) {
+                // confirm 취소 시 checked를 false로 둔다.
                 this.checked = false ;
                 return false ;
             }
@@ -158,18 +164,24 @@ function addEventCheckBox(checkboxes) {
             const params = {
                 method: 'POST',
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json', // 데이터 형식 설정
-                },
                 redirect: "follow", // follow, error, or manual
-                body: JSON.stringify({
-                    "orderId": orderId,
-                    'status': status
-                })
+                // JSON @RequestBody 형식
+//                headers: {
+//                    'Content-Type': 'application/json', // 데이터 형식 설정
+//                },
+//                body: JSON.stringify({
+//                    "orderId": orderId,
+//                    'status': status
+//                })
             } ;
+            // URL parameter 방식
+            const queryString = new URLSearchParams({
+                orderId: orderId,
+                status: status
+            }).toString();
 
             // 서버로 데이터 전송 (fetch API)
-            callFetchApi(url, null, params, "successfullyUpdated") ;
+            callFetchApi(url, queryString, params, "successfullyUpdated") ;
         });
     });
 }
@@ -185,6 +197,13 @@ function successfullyUpdated(json) {
         document.querySelector('input[name="delivered"][data-order-id="'+orderId+'"]').disabled = false ;
     } else if ( status == "DELIVERED" ) {
         selectedCheckBox = document.querySelector('input[name="delivered"][data-order-id="'+orderId+'"]');
+    }
+
+    // 현상태시간 셀 찾아서 innerText 업데이트
+    const updateDtCell = document.getElementById("updateDt_" + json.data.deliveryId);
+    if (updateDtCell) {
+        // 서버에서 받아온 updateDt(또는 조리완료시간 필드)를 포맷팅하여 입력
+        updateDtCell.innerText = dateTimeFormatter(json.data.updateDt);
     }
 
     selectedCheckBox.checked = true ;
@@ -227,7 +246,8 @@ function createDeliveryAdminTable() {
         { text: "상점명", width: "60px" },
         { text: "주문번호", width: "50px" },
         { text: "상태", width: "90px" },
-        { text: "접수시간", width: "100px" },
+        { text: "접수시간", width: "80px" },
+        { text: "현상태시간", width: "80px" },
         { text: "배달시작", width: "30px" },
         { text: "배달완료", width: "30px" }
     ];

@@ -14,6 +14,7 @@ public class Cooked extends AbstractEvent {
     private Long orderId;
     private Date acceptDt;
     private OrderStatus status;
+    private String statusInfo;
 
     /**
      * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.

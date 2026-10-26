@@ -2,11 +2,13 @@ package com.study.mypizza.order.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Getter
+@ToString
 @SuperBuilder
 @NoArgsConstructor
 public abstract class BaseDto {

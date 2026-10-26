@@ -36,7 +36,7 @@ public class InitialDataLoader implements CommandLineRunner {
     }
 
     private void insertInitialData() {
-        System.out.println("✅ t_customer 테이블 초기 데이터 적재를 시작합니다... t_authority 초기 적재는 data.sql로 대체합니다.");
+        System.out.println("✅ InitialDataLoader 클래스에서 t_customer 테이블 초기 데이터 적재를 시작합니다... t_authority 초기 적재는 data.sql로 대체합니다.");
 
         // ROLE_ADMIN 등록
         CustomerDto customerDto = CustomerDto.builder()

@@ -53,7 +53,7 @@ public class UpdateStatusWorkerThread implements Runnable {
 //                return ;
 //            }
 
-            order.statusUpdate(OrderStatus.fromStatus(this.status));
+            order.updateStatus(OrderStatus.fromString(this.status));
             log.debug("### [{}] event received..!2! : orderId={}, status={}", new Object(){}.getClass().getEnclosingMethod().getName(), orderId, order.getStatus());
             orderRepository.save(order);
         }

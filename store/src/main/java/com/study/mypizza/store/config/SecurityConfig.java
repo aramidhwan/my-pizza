@@ -52,6 +52,7 @@ public class SecurityConfig {
                 // 권한정보 (인증이 아님!)
                 .authorizeHttpRequests(authorize  -> authorize
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                        .requestMatchers("/stores/getOpenRegionNmList").permitAll()
                         .requestMatchers("/html/**").permitAll()
                         .anyRequest().authenticated()   // 그 외 인증 없이 접근X
                 )

@@ -10,6 +10,7 @@ public class DeliveryAccepted extends AbstractEvent {
     private Long deliveryId;
     private Long orderId;
     private OrderStatus status;
+    private String statusInfo;
 
     /**
      * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.

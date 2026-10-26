@@ -7,6 +7,9 @@ $(
     }
 );
 
+function signUp() {
+    window.location.href = global_loginPageUrl + "?mode=signUp" ;
+}
 function signIn(event) {
     event.preventDefault();
     window.location.href = global_loginPageUrl ;
@@ -21,6 +24,11 @@ function logout(event) {
     const signYN  = document.getElementById("signYN") ;
     const liAdmin = document.getElementById("liAdmin") ;
     const liStore = document.getElementById("liStore") ;
+    const delAllDataButton = document.getElementById("delAllData") ;
+
+    // "데이터삭제" 비활성화
+    // 화면에서 완전히 숨김 (공간 차지 안 함, 마우스 커서 문제 자동 해결)
+    delAllDataButton.style.display = "none";
 
     fetch(url, params)
     .then(response => {
@@ -146,19 +154,16 @@ function initMyPageMain() {
 //    loadMyOrder();
 }
 
-/*
-    top 우측상단의 "로그인"/"로그아웃" 결정하기 위한 자동호출
-*/
-function checkSignIn() {
-    let initDisplay = "" ;
-    const url = '/common-service/api/auth/checkSignIn' ;
+function fnDelAllData() {
+    const url = '/common-service/api/delAllData' ;
     const params = {
       method: 'GET',
       credentials: 'include'
     };
-    const signYN  = document.getElementById("signYN") ;
-    const liAdmin = document.getElementById("liAdmin") ;
-    const liStore = document.getElementById("liStore") ;
+
+    if ( !confirm("전체 데이터를 삭제하시겠습니까?") ) {
+        return false;
+    }
 
     fetch(url, params)
     .then(response => {
@@ -174,39 +179,93 @@ function checkSignIn() {
         return response.json() ;
     }) // 서버 응답을 JSON 형식으로 변환합니다.
     .then(data => {
+        if ( data.BIZ_SUCCESS == "0" ) {
+            showToast(data.msg) ;
+        } else if ( data.BIZ_SUCCESS == "1" ) {
+            alert(data.msg) ;
+        } else if ( data.BIZ_SUCCESS == "2" ) {
+            alert(data.msg) ;
+        } else {
+            alert("예상치 못한 BIZ_SUCCESS : " + data.BIZ_SUCCESS) ;
+            return ;
+        }
+    })
+    .catch(error => {
+        alert("❌ 설마 이거? " + error.message) ;
+    })
+    ;
+}
+/*
+    top 우측상단의 "로그인"/"로그아웃" 결정하기 위한 자동호출
+*/
+function checkSignIn() {
+    let initDisplay = "" ;
+    const url = '/common-service/api/auth/checkSignIn' ;
+    const params = {
+      method: 'GET',
+      credentials: 'include'
+    };
+    const signYN  = document.getElementById("signYN") ;
+    const liAdmin = document.getElementById("liAdmin") ;
+    const liStore = document.getElementById("liStore") ;
+    const delAllDataButton = document.getElementById("delAllData") ;
+
+    fetch(url, params)
+    .then(response => {
+        if ( !response.ok ) {
+            if ( response.status == 401 ) {
+                // 401 : JWT 토큰이 없거나 잘못된 경우
+                // 401 : JWT 토큰이 있는데 만료된 경우
+                // Do Nothing Here!
+            } else {
+                throw new Error("❌ " + response.status + ' 에러가 발생했습니다.') ;
+            }
+        }
+        return response.json() ;
+    }) // 서버 응답을 JSON 형식으로 변환합니다.
+    .then(data => {
+        // "데이터삭제" 비활성화
+        // 화면에서 완전히 숨김 (공간 차지 안 함, 마우스 커서 문제 자동 해결)
+        delAllDataButton.style.display = "none";
+
         // 로그인 된 사용자인 경우
         if ( data.BIZ_SUCCESS == "0" ) {
             signYN.innerText = '로그아웃' ;
             signYN.setAttribute("data-value", "Y") ;
-            signYN.removeEventListener("click", signIn); // 기존 이벤트 제거
-            signYN.addEventListener("click", logout); // 신규 이벤트 등록
+            signYN.removeEventListener("click", signIn);    // 기존 이벤트 제거
+            signYN.addEventListener("click", logout);       // 신규 이벤트 등록
 
             const authorities = data.data ;
 
             // ROLE_CUSTOMER 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_CUSTOMER) ) {
-                liOrder.classList.remove("hidden");
-                liMyPage.classList.remove("hidden");
-                initDisplay = "loadOrderMain" ;    // Spring Boot 호출
+                liOrder.classList.remove("hidden");             // 주문
+                liMyPage.classList.remove("hidden");            // 마이페이지
+                initDisplay = "loadOrderMain" ;                 // Spring Boot 호출
             }
             // ROLE_STORE_ADMIN 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_STORE_ADMIN) ) {
-                liStoreAdmin.classList.remove("hidden");
-                initDisplay = "loadStoreAdminMain" ;    // Spring Boot 호출
+                liStoreAdmin.classList.remove("hidden");        // 가맹점
+                liStore.classList.remove("hidden");             // 가맹점 관리
+                initDisplay = "loadStoreAdminMain" ;            // Spring Boot 호출
             }
             // ROLE_DELIVERY_ADMIN 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_DELIVERY_ADMIN) ) {
-                liDeliveryAdmin.classList.remove("hidden");
-                initDisplay = "loadDeliveryAdminMain" ;    // Spring Boot 호출
+                liDeliveryAdmin.classList.remove("hidden");     // 배달점
+                initDisplay = "loadDeliveryAdminMain" ;         // Spring Boot 호출
             }
             // ROLE_ADMIN 권한이 있을 경우
             if ( authorities.includes(Roles.ROLE_ADMIN) ) {
-                liStore.classList.remove("hidden");
-                liAdmin.classList.remove("hidden");
-                initDisplay = "loadOrderMain" ;    // Spring Boot 호출
+                liStore.classList.remove("hidden");         // 가맹점 관리
+                liAdmin.classList.remove("hidden");         // ADMIN
+                initDisplay = "loadOrderMain" ;             // Spring Boot 호출
+
+                // "데이터삭제" 활성화
+                delAllDataButton.style.display = "inline-block";
+//                delAllDataButton.innerText = "데이터삭제";
             }
         // 비로그인 사용자 인 경우
-        } else if ( data.BIZ_SUCCESS == "1" ) {
+        } else if ( data.BIZ_SUCCESS == "1" || data.BIZ_SUCCESS == "2" ) {
             signYN.innerText = '로그인' ;
             signYN.setAttribute("data-value", "N") ;
             signYN.removeEventListener("click", logout); // 기존 이벤트 제거
@@ -230,6 +289,10 @@ function checkSignIn() {
 
     })
     .catch(error => {
+        // "데이터삭제" 비활성화
+        // 화면에서 완전히 숨김 (공간 차지 안 함, 마우스 커서 문제 자동 해결)
+        delAllDataButton.style.display = "none";
+
         alert("❌ 설마 이거? " + error.message) ;
     })
     ;

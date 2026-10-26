@@ -77,6 +77,7 @@
                     <th class="cssAlignCenter" style="width: 200px">상점명</th>
                     <th class="cssAlignCenter" style="width: 120px">지역명</th>
                     <th class="cssAlignCenter" style="width: 120px">영업여부</th>
+                    <th class="cssAlignCenter" style="width: 120px">주문접수모드</th>
 <!--                    <th class="cssAlignCenter" style="width: 120px">주문건수</th>-->
                     <th class="cssAlignCenter">주소</th>
                 </tr>
@@ -85,7 +86,7 @@
                 <th:block th:each="store : ${storeDtos}">
                     <tr>
                         <td class="cssAlignCenter">[[${storeStat.count}]]</td>
-                        <td class="cssAlignCenter"><a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#registModal" th:data-bs-storeId="${store.storeId}" th:data-bs-storeNm="${store.storeNm}" th:data-bs-regionNm="${store.regionNm}" th:data-bs-addr="${store.addr}" th:data-bs-openYN="${store.openYN}" href="#">[[${store.storeNm}]]</a></td>
+                        <td class="cssAlignCenter"><a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#registModal" th:data-bs-storeId="${store.storeId}" th:data-bs-storeNm="${store.storeNm}" th:data-bs-regionNm="${store.regionNm}" th:data-bs-addr="${store.addr}" th:data-bs-orderAcceptMode="${store.orderAcceptMode}" th:data-bs-openYN="${store.openYN}" href="#">[[${store.storeNm}]]</a></td>
                         <td class="cssAlignCenter">[[${store.regionNm}]]</td>
                         <td class="cssAlignCenter" th:if="${store.openYN}">영업중</td>
                         <td class="cssAlignCenter" th:unless="${store.openYN}">휴업</td>
@@ -126,6 +127,10 @@
                             </ul>
                         </div>
                         <div class="mb-3">
+                            <label for="ownerNo" class="col-form-label">상점주인(ownerNo):</label>
+                            <input type="text" class="form-control" id="ownerNo">
+                        </div>
+                        <div class="mb-3">
                             <label for="addr" class="col-form-label">주소:</label>
                             <input type="text" class="form-control" id="addr">
                         </div>
@@ -139,6 +144,19 @@
                             <input class="form-check-input" type="radio" id="openN" name="openYN" value="false">
                             <label class="form-check-label" for="openN">
                                 휴업중
+                            </label>
+                        </div>
+                        <br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="AUTO_ACCEPT" name="orderAcceptMode" value="AUTO_ACCEPT" checked>
+                            <label class="form-check-label" for="AUTO_ACCEPT">
+                                주문자동접수
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="MANUAL_ACCEPT" name="orderAcceptMode" value="MANUAL_ACCEPT">
+                            <label class="form-check-label" for="MANUAL_ACCEPT">
+                                주문수동접수
                             </label>
                         </div>
                     </form>

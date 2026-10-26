@@ -2,6 +2,7 @@ package com.study.mypizza.mypage.controller;
 
 import com.study.mypizza.mypage.dto.MyPageDto;
 import com.study.mypizza.mypage.dto.ResponseDto;
+import com.study.mypizza.mypage.enums.OrderStatus;
 import com.study.mypizza.mypage.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public class MyPageController {
         model.addAttribute("viewType", viewType);
         return "html/myPageMain" ;
     }
+
     @GetMapping("/api/getMyOrders")
     @PreAuthorize(
             "hasAuthority('ROLE_ADMIN')"
@@ -59,6 +62,32 @@ public class MyPageController {
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)
                 .data(response)
+                .build();
+
+        return ResponseEntity.ok(responseDto) ;
+    }
+
+    @PostMapping("/api/updateOrderStatus")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ResponseDto> updateOrderStatus(
+            Authentication authentication
+            ,@RequestParam(required = true) Long orderId, @RequestParam(required = true) String status
+    ) {
+        log.trace("### [/api/updateStatus] is called. ###");
+        // Authentication 에서 customerNo 가져오기
+        Integer customerNo = (Integer) authentication.getDetails();
+
+        MyPageDto myPageDto = myPageService.updateOrderStatus(customerNo, orderId, status) ;
+        String msg = null ;
+        if (OrderStatus.ORDER_CANCELLED == myPageDto.getStatus()) {
+            msg = "주문취소";
+        } else {
+            msg = "알수없음" ;
+        }
+        ResponseDto responseDto = ResponseDto.builder()
+                .BIZ_SUCCESS(0)
+                .msg("✅ 주문번호["+myPageDto.getOrderId()+"] "+msg+" 처리되었습니다.")
+                .data(myPageDto)
                 .build();
 
         return ResponseEntity.ok(responseDto) ;

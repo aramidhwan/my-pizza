@@ -2,6 +2,7 @@ package com.study.mypizza.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,21 +22,14 @@ import java.util.*;
 @AllArgsConstructor
 public class CustomerDto implements UserDetails {
     private int customerNo;
-
     private String customerId;
-
     private String customerName;
-
     private String email;
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String verifyPassword;
-
     private boolean activated;
-
     private Collection<? extends GrantedAuthority> authorities;
 
     public CustomerDto(String email, String password, Collection<? extends GrantedAuthority> authorities) {
@@ -43,22 +37,6 @@ public class CustomerDto implements UserDetails {
         this.password = password ;
         this.authorities = authorities ;
     }
-
-//    @Override
-//    public Collection<GrantedAuthority> getAuthorities() {
-//        if ( this.authorities == null ) return null ;
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        Collection<GrantedAuthority> collectors = new HashSet<>();
-//        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-//
-//        AuthorityDto authorityDto = null ;
-//        while (iterator.hasNext()) {
-//            authorityDto = mapper.convertValue(iterator.next(), AuthorityDto.class);
-//            collectors.add(authorityDto);
-//        }
-//        return collectors;
-//    }
 
     @Override
     public String getUsername() {

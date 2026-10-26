@@ -2,18 +2,19 @@ package com.study.mypizza.store.service;
 
 import com.study.mypizza.store.dto.GatewayDto;
 import com.study.mypizza.store.dto.StoreDto;
-import com.study.mypizza.store.dto.StoreOrderDetailDto;
 import com.study.mypizza.store.dto.StoreOrderDto;
 import com.study.mypizza.store.entity.Store;
 import com.study.mypizza.store.entity.StoreOrder;
 import com.study.mypizza.store.enums.OrderStatus;
+import com.study.mypizza.store.event.*;
 import com.study.mypizza.store.exception.MyPizzaException;
+import com.study.mypizza.store.mapper.StoreMapper;
 import com.study.mypizza.store.repository.StoreOrderDetailRepository;
 import com.study.mypizza.store.repository.StoreOrderRepository;
 import com.study.mypizza.store.repository.StoreRepository;
-import com.study.mypizza.store.util.MyPizzaAssert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
@@ -36,11 +37,20 @@ public class StoreService {
     private final StoreOrderRepository storeOrderRepository ;
     private final StoreOrderDetailRepository storeOrderDetailRepository ;
     private final CacheService cacheService;
+    private final StoreMapper storeMapper;
+
+    public GatewayDto<List<String>> getOpenRegionNmList() {
+        log.debug("■■■ /store/getOpenRegionNmList is called.") ;
+        List<String> regionNmList = storeRepository.findActiveRegionNmList(true) ;
+        return GatewayDto.<List<String>>builder()
+                .dto(regionNmList)
+                .build();
+    }
 
     public GatewayDto<StoreDto> getStoreNm(Long storeId) {
         StoreDto storeDto = storeRepository.findById(storeId)
                 .map(StoreDto::of)
-                .orElseThrow(() -> new MyPizzaException("STORE_ID:["+storeId+"]에 해당하는 상점이 없습니다."))
+                .orElseThrow(() -> new MyPizzaException("⚠️ STORE_ID:["+storeId+"]에 해당하는 상점이 없습니다."))
                 ;
         log.debug("##### /store/getStoreNm is called in [storeId = {}:{}]", storeId, storeDto.getStoreNm()) ;
         return GatewayDto.<StoreDto>builder()
@@ -48,22 +58,22 @@ public class StoreService {
                 .build();
     }
 
-    public String checkOpenYn(String regionNm) {
-        log.trace("##### [/store/chkOpenYn] is called in [{}]", regionNm) ;
+    public GatewayDto<String> checkOpenYn(String regionNm) {
+        log.info("##### [/store/chkOpenYn] is called in [{}]", regionNm) ;
         String openYN = "N" ;
 
         try {
             // CircuitBreaker timeout 검증을 위한 임시 코드
 //            if ("서초구".equals(regionNm.trim())) {
-//                log.debug("##### 서초구 일부러 Exception...");
-//                throw new RuntimeException("### 서초구 일부러 Exception");
+//                log.warn("##### 서초구 일부러 Exception for CircuitBreak of ORDER MSA.");
+//                throw new RuntimeException("### 서초구 일부러 Exception for CircuitBreak of ORDER MSA.");
 //            }
 
             // CircuitBreaker timeout 검증을 위한 임시 코드
-            if ("종로구".equals(regionNm.trim())) {
-                log.debug("##### 종로구 Sleeping 5s...");
-                Thread.sleep(5000);
-            }
+//            if ("종로구".equals(regionNm.trim())) {
+//                log.warn("##### 종로구 Sleeping 5s...");
+//                Thread.sleep(5000);
+//            }
 
             List<Store> storeList = storeRepository.findByRegionNmAndOpenYNTrue(regionNm);
             int openStoreCnt = storeList.size();
@@ -73,13 +83,15 @@ public class StoreService {
                 openYN = "Y";
             } else {
                 openYN = "N";
-                log.debug("##### No Store opened in [{}]", regionNm);
+                log.warn("##### No Store opened in [{}]", regionNm);
             }
         } catch (Throwable t) {
             openYN = t.getMessage();
         }
 
-        return openYN ;
+        return GatewayDto.<String>builder()
+                .dto(openYN)
+                .build();
     }
 
     public boolean checkOrderCancel(Long orderId) {
@@ -116,184 +128,118 @@ public class StoreService {
 //                .toList();
 //    }
 
-    private List<StoreDto> getStoresByNameLike(String storeNm) {
-        return storeRepository.findByStoreNmLike(storeNm)
-                .stream()
-                .map(StoreDto::of)
-                .collect(Collectors.toList());
-    }
+    public List<StoreDto> getStores(boolean isRoleAdmin, int ownerNo) {
+        List<StoreDto> storeDtoList = null ;
 
-    @Transactional(rollbackFor = MyPizzaException.class)
-    public void createModifyStore(StoreDto storeDto) {
-        createModifyStore(List.of(storeDto)) ;
-    }
-
-    @Transactional(rollbackFor = MyPizzaException.class)
-    public void createModifyStore(List<StoreDto> storeDtos) {
-        Store storeFromDB = null ;
-        ArrayList<StoreDto> existStores = new ArrayList<>();
-        for(StoreDto storeDto:storeDtos) {
-            existStores.addAll(getStoresByNameLike(storeDto.getStoreNm())) ;
+        // ROLE_ADMIN 인 경우 전체 조회
+        if (isRoleAdmin) {
+            storeDtoList = storeRepository.findAll(PageRequest.of(0,10, Sort.by(ASC,"storeNm","regionNm")))
+                    .stream()
+                    .map(StoreDto::of)
+                    .toList();
+        // ROLE_STORE_ADMIN 인 경우 로그인 사용자가 owner인 상점만 조회
+        } else {
+            storeDtoList = storeRepository.findByOwnerNoOrderByStoreNmAscRegionNmAsc(ownerNo)
+                    .stream()
+                    .map(StoreDto::of)
+                    .toList();
         }
 
-        for(StoreDto storeDto:storeDtos) {
-            // 수정
-            if ( storeDto.getStoreId() != null ) {
-                storeFromDB = storeRepository.findById(storeDto.getStoreId())
-                        .orElseThrow(() -> new MyPizzaException("해당하는 Store가 없습니다. STORE_ID=["+storeDto.getStoreId()+"]"));
-
-                if ( !existStores.isEmpty() && !Objects.equals(existStores.get(0).getStoreId(), storeDto.getStoreId())) {
-                    throw new MyPizzaException("이미 비슷한 명칭의 Store가 존재합니다. ["+(existStores.size()>0? existStores.get(0).getStoreNm():"")+"]");
-                }
-                storeRepository.save(storeDto.toEntity()) ;
-            // 등록
-            } else {
-                // 기존 Store 명칭이 있으면 반려
-                MyPizzaAssert.isTrue(existStores.isEmpty(),"이미 비슷한 명칭의 Store가 존재합니다. ["+(existStores.size()>0? existStores.get(0).getStoreNm():"")+"]");
-
-                storeRepository.save(storeDto.toEntity()) ;
-            }
-        }
-
-//        List<Store> stores = storeRepository.saveAll(storeDtos.stream().map(StoreDto::toEntity).toList());
-    }
-
-    public List<StoreDto> getStores() {
-        List<StoreDto> storeDtos = storeRepository.findAll(PageRequest.of(0,10, Sort.by(ASC,"storeNm","regionNm")))
-                .stream()
-                .map(StoreDto::of)
-                .toList();
-
-        for (StoreDto storeDto:storeDtos) {
+        for (StoreDto storeDto:storeDtoList) {
             storeDto.setOrderCnt( storeOrderRepository.countByStoreStoreId(storeDto.getStoreId()) ) ;
         }
 
-        return storeDtos ;
+        return storeDtoList ;
     }
 
-    public List<StoreDto> getStoreAdmin(int customerNo, String startDate, String endDate) {
+    /**
+     * 상점 Owner 페이지
+     * 로그인된 사용자가 Owner인 상점 리스트와 각 상점별 주문 리스트를 가져온다.
+     * @param ownerNo
+     * @param startDate (주문일)
+     * @param endDate (주문일)
+     * @return List<StoreDto>
+     */
+    public List<StoreDto> getStoreAdmin(int ownerNo, String startDate, String endDate) {
         // 변환: 하루의 시작부터 끝까지 포함되도록
         LocalDateTime startDateTime = LocalDate.parse(startDate).atStartOfDay();
         LocalDateTime endDateTime = LocalDate.parse(endDate).atTime(23, 59, 59);
-        LocalDateTime today = LocalDate.now().atStartOfDay();
-
-        List<StoreOrderDetailDto> storeOrderDetailDtos = null ;
-        List<StoreDto> storeDtos = storeRepository.findByOwnerNo(customerNo)
-                .stream()
-                .map(StoreDto::of)
-                .toList();
-
-        // storeId -> StoreDto 매핑
-        Map<Long, StoreDto> storeDtoMap = storeDtos
-                .stream()
-                .collect(Collectors.toMap(StoreDto::getStoreId, Function.identity()));
-
-        // 해당 customer의 모든 storeId를 가져온 뒤, 한 번에 주문 조회
-        List<Long> storeIds = storeDtos.stream()
-                .map(StoreDto::getStoreId)
-                .toList();
-
-        // 모든 상점별 주문(StoreOrder) 미리 조회
-//        List<StoreOrder> allStoreOrders = storeOrderRepository.findByStoreStoreIdInAndCreateDtAfter(storeIds, today);
-        List<StoreOrder> allStoreOrders = storeOrderRepository.findByStoreStoreIdInAndCreateDtBetween(storeIds, startDateTime, endDateTime);
-
-        // orderId -> StoreOrderDto 매핑
-        Map<Long, StoreOrderDto> orderDtoMap = allStoreOrders
-                .stream()
-                .map(StoreOrderDto::of)
-                .collect(Collectors.toMap(StoreOrderDto::getOrderId, Function.identity()));
-
-        // 주문 ID 목록 미리 수집 후, 상세 주문 한 번에 조회
-        List<Long> orderIds = allStoreOrders.stream()
-                .map(StoreOrder::getOrderId)
-                .toList();
-
-        List<StoreOrderDetailDto> allDetails = storeOrderDetailRepository.findByOrderIdIn(orderIds)
-                .stream()
-                .map(StoreOrderDetailDto::of)
-                .peek(dto -> dto.setItemNm(cacheService.getItemNm(dto.getItemId())))
-                .toList();
-
-        // 주문 상세를 주문 ID 기준으로 그룹핑
-        Map<Long, List<StoreOrderDetailDto>> orderDetailMap = allDetails.stream()
-                .collect(Collectors.groupingBy(StoreOrderDetailDto::getOrderId));
-
-        // 각 주문 DTO에 상세 주문 주입
-        for (StoreOrderDto orderDto : orderDtoMap.values()) {
-            orderDto.setStoreOrderDetailDtos(orderDetailMap.getOrDefault(orderDto.getOrderId(), List.of()));
+        List<StoreDto> storeDtoList = storeMapper.selectStoreAdmin(ownerNo, startDateTime, endDateTime) ;
+        storeDtoList.stream()
+                .filter(store -> store.getStoreOrderDtoList() != null)
+                .flatMap(store -> store.getStoreOrderDtoList().stream())
+                .filter(storeOrder -> storeOrder.getStoreOrderDetailDtoList() != null)
+                .flatMap(storeOrder -> storeOrder.getStoreOrderDetailDtoList().stream())
+                .filter(detail -> Objects.nonNull(detail.getItemId()) && !Objects.equals(detail.getItemId(), 0L))
+                .forEach(detail -> detail.setItemNm(cacheService.getItemNm(detail.getItemId())));
+//        storeDtoList.forEach(storeDto -> log.trace("{}", storeDto));
+        if (log.isTraceEnabled()) {
+            storeDtoList.stream().map(StoreDto::toString).forEach(log::trace);
         }
-
-        // 주문들을 storeId 기준으로 그룹핑
-        Map<Long, List<StoreOrderDto>> storeOrdersMap = orderDtoMap.values().stream()
-                .collect(Collectors.groupingBy(orderDto -> {
-                    StoreOrder storeOrder = allStoreOrders.stream()
-                            .filter(o -> o.getOrderId().equals(orderDto.getOrderId()))
-                            .findFirst().orElse(null);
-                    return storeOrder != null ? storeOrder.getStore().getStoreId() : null;
-                }));
-
-        // storeDto에 주문 주입
-        for (StoreDto storeDto : storeDtos) {
-            storeDto.setStoreOrderDtos(storeOrdersMap.getOrDefault(storeDto.getStoreId(), List.of()));
-        }
-
-        return storeDtos;
-
-//        ---------------------------------
-//        for (StoreDto storeDto:storeDtos) {
-//            List<StoreOrder> storeOrders = storeOrderRepository.findByStoreStoreIdAndCreateDtAfterOrderByOrderIdAsc(storeDto.getStoreId(), today) ;
-//
-//            storeDto.setStoreOrderDtos(storeOrders
-//                    .stream()
-////                    .peek(order -> log.debug("### status : " + order.getStatus()))
-//                    .map(StoreOrderDto::of)
-//                    .toList()) ;
-//
-//            for ( StoreOrderDto storeOrderDto : storeDto.getStoreOrderDtos() ) {
-//                storeOrderDetailDtos = storeOrderDetailRepository.findByOrderIdOrderByItemId(storeOrderDto.getOrderId())
-//                        .stream()
-//                        .map(StoreOrderDetailDto::of)
-//                        .toList();
-//
-//                for (StoreOrderDetailDto storeOrderDetailDto : storeOrderDetailDtos ) {
-//                    // Cache 처리된 setItemNm 메소드 호출
-//                    storeOrderDetailDto.setItemNm(orderGateway.getItemNm(storeOrderDetailDto.getItemId()));
-//                }
-//
-//                storeOrderDto.setStoreOrderDetailDtos(storeOrderDetailDtos) ;
-//            }
-//        }
-//
-//        return storeDtos ;
+        return storeDtoList;
     }
 
+    // 주문 status 업데이트
     @Transactional
-    public StoreDto udpateStore(StoreDto storeDto) {
-        return StoreDto.of(storeRepository.save(storeDto.toEntity())) ;
-    }
-
-    @Transactional(rollbackFor = MyPizzaException.class)
-    public void deleteStore(Long storeId) {
-        Store storeFromDB = storeRepository.findById(storeId)
-                .orElseThrow(() -> new MyPizzaException("STORE ID=["+storeId+"]에 해당하는 상점이 없습니다.")) ;
-
-        if ( storeFromDB.getOpenYN() ) {
-            throw new MyPizzaException("영업중인 Store는 삭제할 수 없습니다. ["+storeFromDB.getStoreNm()+"]") ;
-        } else {
-            storeRepository.deleteById(storeId);
-        }
-    }
-
-    // 주문 status 업데이트 (조리완료 처리)
-    @Transactional(rollbackFor = MyPizzaException.class)
     public StoreOrderDto updateOrderStatus(StoreOrderDto storeOrderDto) {
         StoreOrder storeOrder = storeOrderRepository.findByOrderId(storeOrderDto.getOrderId())
-                .orElseThrow(() -> new MyPizzaException("주문번호:["+storeOrderDto.getOrderId()+"]에 해당하는 주문이 없습니다.")) ;
+                .orElseThrow(() -> new MyPizzaException("⚠️ 주문번호:["+storeOrderDto.getOrderId()+"]에 해당하는 주문이 없습니다.")) ;
 
-        if ( storeOrder.getStatus() != OrderStatus.ORDER_ACCEPTED ) {
-            throw new MyPizzaException("주문번호:["+storeOrderDto.getOrderId()+"]가 조리완료(Cooked) 처리할 상태가 아닙니다.\n현재 상태(Status) : " + storeOrderDto.getStatus()) ;
+        // 아래 comment 처리된 부분과 바꿔야 함 ("kafka 테스트" 버튼 때문에 임시임)
+        boolean canTransition = OrderStatus.canTransitionTo(storeOrder.getOrderId(), storeOrder.getStatus(), storeOrderDto.getStatus()) ;
+        if (!"SKIP_STATUS_CHECK".equals(storeOrderDto.getForTest()) && !canTransition) {
+            String msg = "⚠️ 주문번호:[" + storeOrder.getOrderId() + "]가 "+storeOrderDto.getStatus().getStatus()+" 처리할 상태가 아닙니다.\n현재 상태(Status) : " + storeOrder.getStatus() ;
+            log.error(msg) ;
+            throw new MyPizzaException(msg) ;
         }
         storeOrder.setStatus(storeOrderDto.getStatus());
-        return StoreOrderDto.of(storeOrderRepository.save(storeOrder)) ;
+//        boolean isSucceeded = storeOrder.updateStatus(storeOrderDto.getStatus()) ;
+//        if (!isSucceeded) {
+//            String msg = "⚠️ 주문번호:[" + storeOrder.getOrderId() + "]가 "+storeOrderDto.getStatus().getStatus()+" 처리할 상태가 아닙니다.\n현재 상태(Status) : " + storeOrder.getStatus() ;
+//            log.error(msg) ;
+//            throw new MyPizzaException(msg) ;
+//        }
+
+        // 반드시 2줄로 분리해서 실행해야 갱신된 updateDt 값이 StoreOrderDto 에 담겨서 리턴된다.
+        // 이미 조회된 엔티티는 영속 상태이므로 save()를 생략하고 flush만 호출해도 됩니다.
+        // SQL UPDATE 및 @LastModifiedDate 반영
+        storeOrderRepository.flush();
+        publishEvent(storeOrder);
+        return StoreOrderDto.of(storeOrder);
+    }
+
+    // kafka 이벤트(Ordered) 발행
+    private void publishEvent(StoreOrder storeOrder) {
+        AbstractEvent event = null ;
+
+        if (OrderStatus.ORDER_ACCEPTED == storeOrder.getStatus()) {
+            OrderAccepted orderAccepted = new OrderAccepted() ;
+            BeanUtils.copyProperties(storeOrder, orderAccepted);
+            orderAccepted.setStoreId(storeOrder.getStore().getStoreId());
+            event = orderAccepted ;
+        } else if (OrderStatus.ORDER_REJECTED == storeOrder.getStatus()) {
+            OrderRejected orderRejected = new OrderRejected();
+            BeanUtils.copyProperties(storeOrder, orderRejected);
+            orderRejected.setStoreId(storeOrder.getStore().getStoreId());
+            event = orderRejected ;
+            // 조리완료 처리
+        } else if (OrderStatus.COOKED == storeOrder.getStatus()) {
+            Cooked cooked = new Cooked() ;
+            BeanUtils.copyProperties(storeOrder, cooked);
+            cooked.setStoreId(storeOrder.getStore().getStoreId());
+            event = cooked ;
+            // 접수취소 처리
+        } else if (OrderStatus.ORDER_CANCELLED == storeOrder.getStatus()) {
+            OrderCancelled orderCancelled = new OrderCancelled() ;
+            BeanUtils.copyProperties(storeOrder, orderCancelled);
+            event = orderCancelled ;
+        } else {
+            String msg = "⚠️ 카프카 이벤트 발송에서 알 수 없는 상태입니다. orderId=[" + storeOrder.getOrderId() + "], " + storeOrder.getStatus() ;
+            log.error(msg) ;
+            throw new MyPizzaException(msg) ;
+        }
+
+        event.publishAfterCommit();
+        log.info("👉 카프카 이벤트 발송..!! : {}", event);
     }
 }

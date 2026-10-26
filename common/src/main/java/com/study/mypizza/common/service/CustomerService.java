@@ -4,12 +4,11 @@ import com.study.mypizza.common.dto.AuthorityDto;
 import com.study.mypizza.common.dto.CustomerDto;
 import com.study.mypizza.common.entity.Customer;
 import com.study.mypizza.common.exception.MyPizzaException;
-import com.study.mypizza.common.mapper.CustomerMapper;
+import com.study.mypizza.common.mapper.CommonMapper;
 import com.study.mypizza.common.repository.AuthorityRepository;
 import com.study.mypizza.common.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +24,15 @@ import java.util.stream.Collectors;
 public class CustomerService {         // 회원 서비스
     private final CustomerRepository customerRepository;
     private final AuthorityRepository authorityRepository ;
-    private final CustomerMapper customerMapper;
+    private final CommonMapper commonMapper;
 
+    @Transactional(readOnly = true)
     public CustomerDto getCustomerByMyBatis(String email) {
-        CustomerDto customerDto = customerMapper.selectCustomer(email)
+        // 현재는 xml select 구문에서 authorities 안가져온다. 필요하면 추가할 것.
+        return commonMapper.selectCustomer(email)
                 .orElseThrow(RuntimeException::new)
                 ;
-        Hibernate.initialize(customerDto.getAuthorities());
-        return customerDto ;
+//        Hibernate.initialize(customer.getAuthorities());
     }
 
     /**
@@ -40,16 +40,16 @@ public class CustomerService {         // 회원 서비스
      * @param email
      * @return
      */
+    @Transactional(readOnly = true)
     public CustomerDto getCustomer(String email) {
-        CustomerDto customerDto = customerRepository.findOneByEmail(email)
+        return customerRepository.findOneByEmail(email)
                 .map(CustomerDto::of)
                 .orElseThrow(RuntimeException::new)
                 ;
-        Hibernate.initialize(customerDto.getAuthorities());
-
-        return customerDto ;
+//        Hibernate.initialize(customer.getAuthorities());   CustomerDto::of 안에서 Entity.authorities 적재됨
     }
 
+    @Transactional(readOnly = true)
     public List<AuthorityDto> getRoles() {
         return authorityRepository.findAll()
                 .stream()
@@ -57,6 +57,7 @@ public class CustomerService {         // 회원 서비스
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     // 회원 리스트
     public List<CustomerDto> getCustomers() throws MyPizzaException {
         return customerRepository.findAll()
@@ -70,6 +71,7 @@ public class CustomerService {         // 회원 서비스
         Customer customer = customerRepository.findOneByEmail(customerDto.getEmail())
                 .orElseThrow(RuntimeException::new);
         customer.setAuthorities(customerDto.getAuthorities().stream().map(AuthorityDto::toEntity).collect(Collectors.toList()));
-        return CustomerDto.of(customerRepository.save(customer));
+        customerRepository.flush();
+        return CustomerDto.of(customer);
     }
 }

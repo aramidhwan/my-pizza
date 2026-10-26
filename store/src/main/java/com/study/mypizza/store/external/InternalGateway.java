@@ -22,13 +22,35 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface InternalGateway {
     Logger log = LoggerFactory.getLogger(InternalGateway.class);
 
+    @GetMapping("/order-service/api/assignStoreId")
+    @Retry(name = "RETRY-assignStoreId", fallbackMethod = "retryAssignStoreId")
+    @CircuitBreaker(name = "CIRCUIT-assignStoreId", fallbackMethod = "circuitFallbackAssignStoreId")
+    void assignStoreId(@RequestParam("orderId") Long orderId, @RequestParam("storeId") Long storeId) ;
+
+    default void retryAssignStoreId(Long orderId, Long storeId, Throwable cause) {
+        if (cause instanceof feign.codec.DecodeException) {
+            log.error("⚠️ 상대서버(ORDER) 다운으로 HTML 페이지가 수신되어 디코딩에 실패했습니다.");
+        } else {
+            log.error("[InternalGateway] retryAssignStoreId API 호출 실패: orderId=[{}]", orderId, cause);
+        }
+    }
+
+    // io.github.resilience4j.circuitbreaker.CallNotPermittedException
+    default void circuitFallbackAssignStoreId(Long orderId, Long storeId, Throwable cause) {
+        log.warn("[InternalGateway] circuitFallbackAssignStoreId. orderId=[{}]", orderId, cause);
+    }
+
     @GetMapping("/order-service/items/getItemNm")
     @Retry(name = "RETRY-getItemNm", fallbackMethod = "retryGetItemNm")
     @CircuitBreaker(name = "CIRCUIT-getItemNm", fallbackMethod = "circuitFallbackGetItemNm")
     GatewayDto<ItemDto> getItemNm(@RequestParam("itemId") Long itemId) ;
 
     default GatewayDto<ItemDto> retryGetItemNm(Long itemId, Throwable cause) {
-        log.warn("[InternalGateway] retryGetItemNm. itemId={}", itemId, cause);
+        if (cause instanceof feign.codec.DecodeException) {
+            log.error("⚠️ 상대서버(ORDER) 다운으로 HTML 페이지가 수신되어 디코딩에 실패했습니다.");
+        } else {
+            log.error("[InternalGateway] retryGetItemNm API 호출 실패: itemId={}", itemId, cause);
+        }
         return GatewayDto.<ItemDto>builder()
                 .bizSuccess(1)
                 .dto(ItemDto.builder().itemNm("[메뉴명]일시장애(Retry)").build())

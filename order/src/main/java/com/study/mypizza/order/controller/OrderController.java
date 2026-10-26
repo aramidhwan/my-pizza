@@ -29,7 +29,9 @@ public class OrderController {
     @GetMapping("/html/orderMain")
     public String orderMain(Model model) {
         List<ItemDto> itemDtos = itemService.getItems() ;
+        List<String> openRegionNmList = orderService.getOpenRegionNmList() ;
         model.addAttribute("itemDtos", itemDtos);
+        model.addAttribute("openRegionNmList", openRegionNmList);
         model.addAttribute("regionNm", "강남구");
 
         return "html/orderMain";
@@ -52,6 +54,20 @@ public class OrderController {
                 .BIZ_SUCCESS(0)
                 .msg("✅ 주문이 완료되었습니다!")
                 .data(newOrderDto)
+                .build();
+
+        return ResponseEntity.ok(responseDto) ;
+    }
+
+    @GetMapping("/api/delOrderData")
+    @PreAuthorize("hasRole('ADMIN')") // 권한 주기
+    public ResponseEntity<ResponseDto> delOrderData() {
+        // 주문 데이터 삭제 + PK 초기화
+        orderService.delOrderData() ;
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .BIZ_SUCCESS(0)
+                .msg("✅ 주문 데이터가 삭제 및 초기화 되었습니다!")
                 .build();
 
         return ResponseEntity.ok(responseDto) ;

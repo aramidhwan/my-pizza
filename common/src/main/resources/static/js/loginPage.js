@@ -6,8 +6,18 @@ $( function() {
     const container = document.querySelector(".container");
     let   jwtAccessToken ;
 
-    // 화면 load 시 로그인 부터 표시
-    container.classList.remove("right-panel-active");
+    // ⭐️ 1. URL에서 파라미터 읽어오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+
+    // ⭐️ 2. mode 파라미터 값에 따라 화면 분기
+    if (mode === 'signUp') {
+        // 화면 load 시 회원가입(signUp) 부터 표시
+        container.classList.add("right-panel-active");    // 회원가입 폼 표시
+    } else {
+        // 화면 load 시 로그인(signIn) 부터 표시
+        container.classList.remove("right-panel-active"); // 로그인 폼 표시 (기본값)
+    }
 
     signInBtn.addEventListener("click", () => {
       container.classList.remove("right-panel-active");
@@ -80,6 +90,15 @@ $( function() {
 
         callFetchApi(url, null, params, "loadMainPage") ;
     });
+
+    // 회원가입 form에서 ID 변경 시 email도 실시간 변경
+    const customerIdInput = document.getElementById("customerIdSignUp");
+    const emailInput = document.getElementById("emailSignUp");
+
+    customerIdInput.addEventListener("input", function () {
+        const idValue = customerIdInput.value.trim();
+        emailInput.value = idValue ? `${idValue}@naver.com` : "";
+    });
 } );
 
 // -------------------------------
@@ -88,14 +107,3 @@ $( function() {
 function loadMainPage(data) {
     window.location.href = '/common-service/html/index';
 }
-
-// 회원가입 form에서 ID 변경 시 email도 실시간 변경
-document.addEventListener("DOMContentLoaded", function () {
-    const customerIdInput = document.getElementById("customerIdSignUp");
-    const emailInput = document.getElementById("emailSignUp");
-
-    customerIdInput.addEventListener("input", function () {
-        const idValue = customerIdInput.value.trim();
-        emailInput.value = idValue ? `${idValue}@naver.com` : "";
-    });
-});

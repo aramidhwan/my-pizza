@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--bootstrap 용 css-->
-    <link rel="stylesheet" href="/mypage-service/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="/mypage-service/css/bootstrap.min.css">-->
     <style>
         table th {
             white-space: nowrap;
-            overflow: hidden;   // 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다.
+            overflow: hidden;   /* 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다. */
             text-overflow: ellipsis;
         }
         table td {
             white-space: nowrap;
-            overflow: hidden;   // 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다.
+            overflow: hidden;   /* 만약 셀 크기가 너무 작아 글자가 잘린다면, overflow: hidden; 또는 text-overflow: ellipsis; 속성을 활용하면 좋습니다. */
             text-overflow: ellipsis;
         }
         .cssAlignCenter {
@@ -22,11 +22,14 @@
         }
         .custom-popover {
           --bs-popover-max-width: 200px;
-          --bs-popover-border-color: var(--bd-violet-bg);
-          --bs-popover-header-bg: var(--bd-violet-bg);
-          --bs-popover-header-color: var(--bs-white);
+          --bs-popover-border-color: #712cf9;
+          --bs-popover-header-bg: #712cf9;
+          --bs-popover-header-color: #fff;
           --bs-popover-body-padding-x: 1rem;
           --bs-popover-body-padding-y: .5rem;
+        }
+        .custom-popover .popover-header {
+            text-align: center;
         }
         div.colcss1 {
             padding-bottom: 3px;
@@ -35,6 +38,18 @@
         }
         img.css1 {
             object-fit: none;
+        }
+        .center-checkbox {
+            display: flex;
+            justify-content: center;
+        }
+        #tableContainer {
+            max-height: calc(100vh - 300px);
+            min-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            padding-bottom: 1rem;
         }
     </style>
 </head>

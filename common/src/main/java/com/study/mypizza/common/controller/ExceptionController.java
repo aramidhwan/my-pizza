@@ -19,7 +19,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class ExceptionController {
     @ExceptionHandler(DuplicateMemberException.class)
     public ResponseEntity<ResponseDto> handleDuplicateMemberException(final DuplicateMemberException ex) {
-        log.warn("### ExceptionController.handleDuplicateMemberException", ex);
+        log.debug("### ExceptionController.handleDuplicateMemberException", ex);
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(2)     // 0: 성공, 1: JWT 토큰 관련
                 .msg(ex.getMessage())

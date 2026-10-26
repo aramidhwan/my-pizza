@@ -23,8 +23,8 @@ spring:
 
   sql:
     init:
-#      mode: ALWAYS        # 항상 실행 (schema.sql / data.sql)
-      mode: NEVER
+      mode: ALWAYS        # 항상 실행 (schema.sql / data.sql)
+#      mode: NEVER
 #      mode: EMBEDDED       # (기본값) 임베디드(H2, HSQLDB, Derby 같은 내장 DB) 메모리 DB일 때만 SQL 스크립트를 실행하고, 외장 DB에 연결되었을 때는 실행하지 않습니다.
 
   config:
@@ -35,8 +35,11 @@ spring:
       enabled: false
     function:
       definition: >
-        whenever_storeEvent_updateStatus; whenever_deliveryEvent_updateStatus
+        whenever_storeEvent_updateStatus; whenever_deliveryEvent_updateStatus; whenever_myPageEvent_updateStatus
     stream:
+      default:
+        consumer:
+          max-attempts: 2   # eventHandler/eventService 예외 발생 시 재시도 횟수 (default:3)
       bindings:
         whenever_storeEvent_updateStatus-in-0:
           group: whenever_storeEvent_updateStatus
@@ -53,11 +56,16 @@ spring:
 #          Consumer thread 3 → partition 2
 #          consumer:
 #            concurrency: 2
+#            max-attempts: 2   # eventHandler/eventService 예외 발생 시 재시도 횟수 (default:3)
         whenever_deliveryEvent_updateStatus-in-0:
           group: whenever_deliveryEvent_updateStatus
           destination: myPizza-delivery
-#          consumer:
-#            concurrency: 3
+        #          consumer:
+        #            concurrency: 3
+        #            max-attempts: 2   # eventHandler/eventService 예외 발생 시 재시도 횟수 (default:3)
+        whenever_myPageEvent_updateStatus-in-0:
+          group: whenever_myPageEvent_updateStatus
+          destination: myPizza-mypage
         orderEvent-out-0:
           destination: myPizza-order
 
@@ -161,16 +169,17 @@ management:                 # Spring Actuator
         include: refresh, health, metrics, logfile, env, loggers   #, env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
 
 logging:
-  file:
-    name: order.log
-#    path:
-  logback:
-    rollingpolicy:
-      max-history: 2          # 로그 파일을 유지할 기간(일수)을 설정
-      max-file-size: 100KB    # 로그 파일의 한 개의 최대 사이즈 설정
-      file-name-pattern: order.%d{yyyy-MM-dd}-%i.log # 로그 파일의 사이즈가 설정한 용량을 초과하거나 날짜가 변경될 경우 명명할 로그파일의 이름에 대한 설정
+#  file:
+#    name: order.log
+##    path:
+#  logback:
+#    rollingpolicy:
+#      max-history: 2          # 로그 파일을 유지할 기간(일수)을 설정
+#      max-file-size: 100KB    # 로그 파일의 한 개의 최대 사이즈 설정
+#      file-name-pattern: order.%d{yyyy-MM-dd}-%i.log # 로그 파일의 사이즈가 설정한 용량을 초과하거나 날짜가 변경될 경우 명명할 로그파일의 이름에 대한 설정
   pattern:
-    dateformat: Asia/Seoul
+    dateformat: "yyyy-MM-dd HH:mm:ss.SSS"
+    console: "%d{${logging.pattern.dateformat}} [%15.15t] %-39.39logger{39} : [%-5level] %msg%n"
 
   level:
     root: info
@@ -184,6 +193,7 @@ logging:
     # For Spring Boot 3, as it uses Hibernate 6, "logging.level.org.hibernate.type: trace" not working, Ues blow.
 #    org.hibernate.SQL: debug
 #    org.hibernate.orm.jdbc.bind: trace
+#    com.study.mypizza.order.mapper: TRACE
     org.springframework.cloud: info
     org.apache.kafka.common.utils.AppInfoParser: WARN
     org.apache.kafka.clients.Metadata: WARN

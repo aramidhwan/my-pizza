@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/delivery-service/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="/delivery-service/css/bootstrap.min.css">-->
     <!--Store 용 js-->
     <script src="/delivery-service/js/deliveryAdminMain.js"></script>
     <style>
@@ -46,6 +46,14 @@
             border: 1px solid #dad55e;
             background: #fffa90;
             color: #777620;
+        }
+        #tableContainer {
+            max-height: calc(100vh - 300px);
+            min-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            padding-bottom: 1rem;
         }
     </style>
     <script>

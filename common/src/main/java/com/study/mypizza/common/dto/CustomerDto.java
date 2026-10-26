@@ -51,7 +51,7 @@ public class CustomerDto implements UserDetails {
     }
 
     private Collection<AuthorityDto> createAuthorities(String roles){
-        Collection<AuthorityDto> authorities = new ArrayList<>();
+        Collection<AuthorityDto> authorities = new HashSet<>();
 
         for(String role : roles.split(",")){
             if (!StringUtils.hasText(role)) continue;
@@ -63,6 +63,18 @@ public class CustomerDto implements UserDetails {
     @Override
     public Collection<AuthorityDto> getAuthorities() {
         return authorities;
+    }
+
+    /**
+     * 자격증명(LoginService.loadUserByUsername)을 위한 메소드
+     * 기본적으로 of(Customer customer) 메소드와 동일하고 유일한 차이점은 password 컬럼도 셋팅한다는 점이다.
+     * @param customer
+     * @return
+     */
+    public static CustomerDto authenticationDto(Customer customer) {
+        CustomerDto customerDto = of(customer) ;
+        customerDto.setPassword(customer.getPassword());
+        return customerDto ;
     }
 
     public static CustomerDto of(Customer customer) {

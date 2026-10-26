@@ -9,13 +9,14 @@ import java.util.List;
 @SuperBuilder
 @Getter
 @ToString
-@NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)
+@NoArgsConstructor(force = true, access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 public class StoreDto extends BaseDto {
     private Long storeId;
     private String storeNm;
     private String addr;
     private String regionNm;
+    private String orderAcceptMode;
     private Boolean openYN;
     private int ownerNo ;
     @Setter
@@ -29,6 +30,7 @@ public class StoreDto extends BaseDto {
                 .storeNm(storeNm)
                 .addr(addr)
                 .regionNm(regionNm)
+                .orderAcceptMode(orderAcceptMode)
                 .openYN(openYN)
                 .ownerNo(ownerNo)
                 .build();
@@ -40,6 +42,7 @@ public class StoreDto extends BaseDto {
                 .storeNm(store.getStoreNm())
                 .addr(store.getAddr())
                 .regionNm(store.getRegionNm())
+                .orderAcceptMode(store.getOrderAcceptMode())
                 .openYN(store.getOpenYN())
                 .ownerNo(store.getOwnerNo())
                 .build();

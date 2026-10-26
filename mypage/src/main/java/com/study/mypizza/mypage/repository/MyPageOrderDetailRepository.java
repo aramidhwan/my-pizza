@@ -9,5 +9,5 @@ import java.util.List;
 
 @RepositoryRestResource(path="myPageOrderDetails", collectionResourceRel = "myPageOrderDetails")
 public interface MyPageOrderDetailRepository extends JpaRepository<MyPageOrderDetail, Long> {
-    List<MyPageOrderDetail> findByOrderIdOrderByItemIdAsc(Long orderId);
+    List<MyPageOrderDetail> findByMypage_OrderIdOrderByItemIdAsc(Long orderId);
 }

@@ -15,4 +15,6 @@ public interface MyPageRepository extends JpaRepository<MyPage, Long> {
     List<MyPage> findByCustomerNoOrderByStoreIdAscCreateDtDesc(int customerNo);
     List<MyPage> findByCustomerNoAndCreateDtAfterOrderByStoreIdAscCreateDtDesc(int customerNo, LocalDateTime today);
     List<MyPage> findByCustomerNoAndCreateDtBetweenOrderByStoreIdAscCreateDtDesc(int customerNo, LocalDateTime startDate, LocalDateTime endDate);
+
+    boolean existsByOrderId(Long orderId);
 }

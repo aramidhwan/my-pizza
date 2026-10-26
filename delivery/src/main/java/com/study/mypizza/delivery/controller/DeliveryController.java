@@ -2,18 +2,14 @@ package com.study.mypizza.delivery.controller;
 
 import com.study.mypizza.delivery.dto.DeliveryDto;
 import com.study.mypizza.delivery.dto.ResponseDto;
-import com.study.mypizza.delivery.entity.Delivery;
 import com.study.mypizza.delivery.enums.OrderStatus;
-import com.study.mypizza.delivery.event.StatusUpdated;
 import com.study.mypizza.delivery.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,10 +59,10 @@ public class DeliveryController {
     // 주문 status 업데이트 (배달시작 처리)
     @PostMapping("/api/updateOrderStatus")
     @Secured("ROLE_DELIVERY_ADMIN")
-    public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody StatusUpdated statusUpdated) {
+    public ResponseEntity<ResponseDto> updateOrderStatus(@RequestParam(required = true) Long orderId, @RequestParam(required = true) String status) {
         log.trace("### [updateOrderStatus] is called. ###");
         String msgStatus = null ;
-        DeliveryDto deliveryDto = deliveryService.updateOrderStatus(statusUpdated);
+        DeliveryDto deliveryDto = deliveryService.updateOrderStatus(orderId, status);
 
         if (deliveryDto.getStatus() == OrderStatus.DELIVERY_STARTED) {
             msgStatus = "배달시작" ;
@@ -75,7 +71,7 @@ public class DeliveryController {
         }
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)
-                .msg("주문번호["+deliveryDto.getOrderId()+"] "+ msgStatus +" 처리되었습니다.")
+                .msg("✅ 주문번호["+deliveryDto.getOrderId()+"] "+ msgStatus +" 처리되었습니다.")
                 .data(deliveryDto)
                 .build();
 

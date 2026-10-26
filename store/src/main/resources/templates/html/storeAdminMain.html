@@ -6,7 +6,7 @@
     <!--jquery script-->
 <!--    <script src="/store-service/js/jquery-3.7.1.js"></script>-->
     <!--bootstrap 용 css-->
-    <link rel="stylesheet" href="/store-service/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="/store-service/css/bootstrap.min.css">-->
     <!--bootstrap 용 js-->
 <!--    <script src="/store-service/js/bootstrap.bundle.min.js"></script>-->
     <!--MyPizza 용 js-->
@@ -49,6 +49,14 @@
             background: #fffa90;
             color: #777620;
         }
+        #tableContainer {
+            max-height: calc(100vh - 300px);
+            min-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            padding-bottom: 1rem;
+        }
     </style>
     <script>
     </script>
@@ -59,6 +67,8 @@
         <div style="display: flex; align-items: center;">
             <!-- 왼쪽 h4 -->
             <h4 style="margin: 0; white-space: nowrap;">최고의 수익 보장! MyPizza의 멤버가 되어 보세요!</h4>
+            &nbsp;&nbsp;
+            <button type="button" data-bs-toggle="modal" data-bs-target="#kafkaTestModal" data-bs-storeId="" class="btn btn-secondary">Kafka 테스트</button>
             <!-- 오른쪽 입력 그룹 -->
             <div style="display: flex; align-items: center; gap: 8px; margin-left: auto;">
                 <label for="startDate" style="margin: 0;">기간 선택</label>
@@ -93,6 +103,42 @@
 <!--                <tbody>-->
 <!--                </tbody>-->
 <!--            </table>-->
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="kafkaTestModal" tabindex="-1" aria-labelledby="kafkaTestModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="kafkaTestModalLabel">KAFKA 이벤트 발생기</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="validateTips">정보를 입력하십시요.</p>
+                    <form>
+                        <div class="mb-3">
+                            <label for="kafkaOrderId" class="col-form-label">주문번호:</label>
+                            <input type="text" class="form-control" id="kafkaOrderId">
+                        </div>
+                        <div id="dropdownKafkaStatus" class="dropdown">
+                            <button id="kafkaStatus" style="border:1px solid" class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                상태를 선택하세요...
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">ORDER_ACCEPTED</a></li>
+                                <li><a class="dropdown-item" href="#">ORDER_CANCELLED</a></li>
+                                <li><a class="dropdown-item" href="#">COOKED</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="buttonCancel" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" id="buttonPublishKafka">이벤트 발생</button>
+                </div>
+            </div>
         </div>
     </div>
 

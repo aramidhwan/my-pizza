@@ -45,14 +45,17 @@
 /* HTML5 display-role reset for older browsers */
 body {
   overflow-x: hidden;
+/*
   line-height: 1;
   font-family: "Roboto", "Noto", sans-serif;
   font-weight: 500;
   font-size: 14px;
   letter-spacing: -1px;
+*/
   color: #000;
 }
 
+/*
 button {
   line-height: 1;
   font-family: "Roboto", "Noto", sans-serif;
@@ -61,6 +64,7 @@ button {
   letter-spacing: -1px;
   color: #000;
 }
+*/
 
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
   display: block;
@@ -79,12 +83,14 @@ blockquote:before, blockquote:after, q:before, q:after {
   display: block;
 }
 
+/*
 h1, h2, h3, h4, h5, h6 {
   font-size: 100%;
   font-weight: 500;
   color: #000;
   line-height: 1em;
 }
+*/
 
 strong {
   font-weight: 700;

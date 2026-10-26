@@ -33,54 +33,6 @@ public class LoginDto implements UserDetails {
     private String verifyPassword;
     private Collection<? extends GrantedAuthority> authorities;
 
-//    public LoginDto(String email, String password, Collection<? extends GrantedAuthority> authorities) {
-//        this.email = email;
-//        this.password = password ;
-//        this.authorities = authorities ;
-//    }
-//
-//    public LoginDto(String email, String password, String roles) {
-//        this.email = email;
-//        this.password = password ;
-//        this.authorities = createAuthorities(roles) ;
-//    }
-
-//    public void setAuthorityDtos(Set<AuthorityDto> authorities) {
-//        this.authorities = authorities ;
-//    }
-//
-//    private Collection<AuthorityDto> createAuthorities(String roles){
-//        Collection<AuthorityDto> authorities = new ArrayList<>();
-//
-//        for(String role : roles.split(",")){
-//            if (!StringUtils.hasText(role)) continue;
-//            authorities.add(new AuthorityDto(role));
-//        }
-//        return authorities;
-//    }
-
-//    private Collection<AuthorityDto> convertToAuthrityDto(Collection<Authority> authorities) {
-//        Collection<AuthorityDto> authorityDtos = new ArrayList<>();
-//        for (Authority authority:authorities) {
-//            authorityDtos.add(new AuthorityDto(authority.getAuthorityName())) ;
-//        }
-//        return authorityDtos ;
-//    }
-
-//    public void setAuthorities(Collection<Authority> authorities) {
-//        Set<AuthorityDto> tmpAuthorities = new HashSet<>() ;
-//        ObjectMapper mapper = new ObjectMapper() ;
-//        for (Authority authority : authorities) {
-//            tmpAuthorities.add(new AuthorityDto(authority.getAuthorityName())) ;
-//        }
-//        setAuthorityDtos(tmpAuthorities);
-//    }
-
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return authorities;
-//    }
-
     @Override
     public String getUsername() {
         return this.email;
@@ -110,5 +62,4 @@ public class LoginDto implements UserDetails {
     public boolean isEnabled() {
         return true ;
     }
-
 }

@@ -46,7 +46,8 @@ function callFetchApi(url, queryString, params, callBackFunctionName) {
     .then(json => {
         if ( json.BIZ_SUCCESS == "0" ) {
             if ( json.msg != null ) {
-                alert(json.msg) ;
+//                alert(json.msg) ;
+                showToast(json.msg) ;
             }
             if ( callBackFunctionName != null ) {
                 if (typeof window[callBackFunctionName] === "function") {
@@ -90,4 +91,26 @@ function callFetchApi(url, queryString, params, callBackFunctionName) {
         alert(error.message) ;
     })
     ;
+}
+
+// 주문성공 메시지 팝업
+function showToast(message) {
+    // 1. 토스트 요소 생성
+    const toast = document.createElement('div');
+    toast.classList.add('custom-toast');
+    // 수정 후: \n을 <br>로 모두 치환하여 삽입
+//    toast.textContent = message;
+    toast.innerHTML = message.replace(/\n/g, '<br>');
+    // 2. body에 추가하여 화면에 표시
+    document.body.appendChild(toast);
+
+    // 3. 2.5초 뒤에 fade-out 클래스 추가 (투명해짐)
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+
+        // 4. 애니메이션이 끝난 후(0.5초 뒤) DOM에서 완전히 제거
+        setTimeout(() => {
+            toast.remove();
+        }, 500);
+    }, 2000); // 2.0초 대기
 }

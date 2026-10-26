@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="t_item")
 @Builder
-@Setter
 @Getter
 @ToString
 @NoArgsConstructor
@@ -19,6 +18,8 @@ import java.time.LocalDateTime;
 public class Item {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    // OrderDetail 엔티티에서 item_id로 @JoinColumn 하므로 반드시 지정.
+    @Column(name="item_id")
     private Long itemId;
     @Column(nullable = false)
     private String itemNm;

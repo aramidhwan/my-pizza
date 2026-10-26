@@ -1,10 +1,16 @@
 package com.study.mypizza.mypage.event;
 
+import com.study.mypizza.mypage.dto.MyPageOrderDetailDto;
+import com.study.mypizza.mypage.dto.OrderDetailDto;
 import com.study.mypizza.mypage.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.util.List;
 
 @Data
+@ToString
 @EqualsAndHashCode(callSuper=false)
 public class Ordered extends AbstractEvent {
     private Long orderId;
@@ -14,6 +20,8 @@ public class Ordered extends AbstractEvent {
     private String statusInfo;
     private String regionNm;
     private Integer totalPrice;
+
+    private List<OrderDetailDto> orderDetailDtoList;
 
     /**
      * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.mypizza.store.mapper.StoreMapper">
+    <resultMap id="storeOrderDetailResultMap" type="com.study.mypizza.store.dto.StoreOrderDetailDto">
+        <id column="ORDER_DETAIL_ID" property="orderDetailId"/>
+        <result column="ITEM_ID" property="itemId"/>
+        <result column="QTY" property="qty"/>
+        <result column="PRICE_PER_ONE" property="pricePerOne"/>
+    </resultMap>
+    <resultMap id="storeOrderResultMap" type="com.study.mypizza.store.dto.StoreOrderDto">
+        <!-- 일반 컬럼 -->
+        <id column="STORE_ORDER_ID" property="storeOrderId"/>
+        <result column="ORDER_ID" property="orderId"/>
+        <!-- enum 컬럼 -->
+        <result column="STATUS" property="status"
+                typeHandler="com.study.mypizza.store.handler.OrderStatusTypeHandler"/>
+        <result column="CREATE_DT" property="createDt"/>
+        <result column="UPDATE_DT" property="updateDt"/>
+        <!-- store_id 컬럼을 storeDto 내부의 storeId 필드로 직접 매핑 -->
+        <!--        <result column="STORE_ID" property="storeDto.storeId"/>-->
+        <!-- StoreDto 객체 매핑 -->
+<!--        <association property="storeDto" javaType="com.study.mypizza.store.dto.StoreDto">-->
+<!--            <id column="STORE_ID" property="storeId"/>-->
+<!--            <result column="STORE_NM" property="storeNm"/>-->
+<!--        </association>-->
+        <!-- collection -->
+        <collection property="storeOrderDetailDtoList"
+                    resultMap="storeOrderDetailResultMap"
+                    notNullColumn="ORDER_DETAIL_ID"/>
+    </resultMap>
+    <resultMap id="storeResultMap" type="com.study.mypizza.store.dto.StoreDto">
+        <!-- 일반 컬럼 -->
+        <id column="STORE_ID" property="storeId"/>
+        <result column="STORE_NM" property="storeNm"/>
+        <result column="ADDR" property="addr"/>
+        <result column="REGION_NM" property="regionNm"/>
+        <result column="OPEN_YN" property="openYN"/>
+        <result column="OWNER_NO" property="ownerNo"/>
+        <!-- collection -->
+        <collection property="storeOrderDtoList"
+                    resultMap="storeOrderResultMap"
+                    notNullColumn="STORE_ORDER_ID"/>
+    </resultMap>
+
+    <!--  select 쿼리-->
+    <select id="selectStoreAdmin" resultMap="storeResultMap" resultOrdered="true">
+        SELECT  store.STORE_ID                     AS STORE_ID,
+                store.STORE_NM                     AS STORE_NM,
+                store.ADDR                         AS ADDR,
+                store.REGION_NM                    AS REGION_NM,
+                store.OPEN_YN                      AS OPEN_YN,
+                store.OWNER_NO                     AS OWNER_NO,
+
+                storeOrder.store_order_id          AS STORE_ORDER_ID,
+<!--                storeOrder.store_id                AS STORE_ID,-->
+                storeOrder.order_id                AS ORDER_ID,
+                storeOrder.status                  AS STATUS,
+                storeOrder.create_dt               AS CREATE_DT,
+                storeOrder.update_dt               AS UPDATE_DT,
+
+                storeOrderDetail.order_detail_id   AS ORDER_DETAIL_ID,
+                storeOrderDetail.item_id           AS ITEM_ID,
+                storeOrderDetail.qty               AS QTY,
+                storeOrderDetail.price_per_one     AS PRICE_PER_ONE
+        FROM t_store store
+        LEFT JOIN t_store_order storeOrder
+                ON storeOrder.store_id = store.store_id
+                AND storeOrder.create_dt BETWEEN #{startDateTime} AND #{endDateTime}
+        LEFT JOIN t_store_orderdetail storeOrderDetail
+                ON storeOrderDetail.store_order_id = storeOrder.store_order_id
+        WHERE 1=1
+        <if test="customerNo != null">
+            AND store.owner_no = #{customerNo}
+        </if>
+        ORDER BY store.store_id , storeOrder.order_id, storeOrderDetail.item_id
+    </select>
+</mapper>

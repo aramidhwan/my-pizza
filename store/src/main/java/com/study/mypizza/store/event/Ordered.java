@@ -1,21 +1,24 @@
 package com.study.mypizza.store.event;
 
+import com.study.mypizza.store.dto.OrderDetailDto;
 import com.study.mypizza.store.enums.OrderStatus;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class Ordered extends AbstractEvent {
     private Long orderId;
+    private int customerNo;
     private Long storeId;
-    private Long customerId;
-    private String pizzaNm;
-    private Integer qty;
     private OrderStatus status;
     private String statusInfo;
     private String regionNm;
     private Integer totalPrice;
+
+    private List<OrderDetailDto> orderDetailDtoList;
 
     /**
      * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.

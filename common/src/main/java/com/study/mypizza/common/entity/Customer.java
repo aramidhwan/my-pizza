@@ -43,11 +43,12 @@ public class Customer {
     @Column(length = 1000, nullable = true)
     private String extraRoles;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "t_customer_authority",        // Table명
             joinColumns = {@JoinColumn(name = "customer_no", referencedColumnName = "customer_no")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")}
+    )
     @ToString.Exclude       // ToString is not recommanded for lazy loading field
     private Collection<Authority> authorities;
 }

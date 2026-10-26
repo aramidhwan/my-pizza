@@ -1,13 +1,8 @@
 package com.study.mypizza.delivery.eventHandler.workers;
 
-import com.study.mypizza.delivery.enums.OrderStatus;
-import com.study.mypizza.delivery.event.StatusUpdated;
 import com.study.mypizza.delivery.repository.DeliveryRepository;
-import com.study.mypizza.delivery.entity.Delivery;
-import com.study.mypizza.delivery.event.Cooked;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +12,6 @@ import org.springframework.stereotype.Component;
 public class DeliveryAcceptWorkerThread implements Runnable {
     @Autowired
     private DeliveryRepository deliveryRepository;
-
-    private StatusUpdated statusUpdated ;
 
     @Override
     public void run() {

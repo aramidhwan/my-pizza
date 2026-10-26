@@ -131,10 +131,14 @@ management:                 # Spring Actuator
         include: env    # 엔드포인트가 어떤 항목들을 사용할 것인지 지정 (여기서는 gateway)
 
 logging:
+  pattern:
+    dateformat: "yyyy-MM-dd HH:mm:ss.SSS"
+    console: "%d{${logging.pattern.dateformat}} [%15.15t] %-39.39logger{39} : [%-5level] %msg%n"
+
   level:
     root: info
     com.study: info
-    com.study.mypizza.mypage.service: trace
+#    com.study.mypizza.mypage.service: trace
     #    org.springframework.security: trace
     org.hibernate: info
     # Logs the JDBC parameters passed to a query

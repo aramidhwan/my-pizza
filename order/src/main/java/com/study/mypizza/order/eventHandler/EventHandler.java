@@ -1,6 +1,5 @@
 package com.study.mypizza.order.eventHandler;
 
-import com.study.mypizza.order.repository.OrderRepository;
 import com.study.mypizza.order.service.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import java.util.function.Consumer;
 @Slf4j
 public class EventHandler {
     private final EventService eventService;
-    private final OrderRepository orderRepository;
 
 
     @Bean
@@ -22,14 +20,21 @@ public class EventHandler {
 //    @Transactional
     public Consumer<Message<String>> whenever_storeEvent_updateStatus() {
         return message -> {
-            eventService.handleStoreEvent(message.getPayload());
+            eventService.handleEvent(message.getPayload());
         } ;
     }
 
     @Bean
     public Consumer<Message<String>> whenever_deliveryEvent_updateStatus() {
         return message -> {
-            eventService.handleDeliveryEvent(message.getPayload());
+            eventService.handleEvent(message.getPayload());
+        } ;
+    }
+
+    @Bean
+    public Consumer<Message<String>> whenever_myPageEvent_updateStatus() {
+        return message -> {
+            eventService.handleEvent(message.getPayload());
         } ;
     }
 }

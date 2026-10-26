@@ -213,6 +213,7 @@ public class Jwt1GlobalFilter implements GlobalFilter, Ordered {
                     ,"/common-service/index.html"           // (비로그인)메인페이지를 추가합니다.
                     ,"/common-service/common/layout"        // (비로그인)메인페이지를 추가합니다.
                     ,"/order-service/orderMain"             // 로그인 액션 URL을 추가합니다.
+                    ,"/store-service/stores/getOpenRegionNmList"  // 주문지역 추가합니다.(비로그인자도 가능)
             );
 
     // JWT 토큰 검증에서 제외할 url

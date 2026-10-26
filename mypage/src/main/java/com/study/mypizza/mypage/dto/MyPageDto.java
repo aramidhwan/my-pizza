@@ -1,16 +1,11 @@
 package com.study.mypizza.mypage.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.study.mypizza.mypage.entity.MyPage;
 import com.study.mypizza.mypage.enums.OrderStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @SuperBuilder
@@ -26,18 +21,15 @@ public class MyPageDto extends BaseDto {
     private int customerNo;
     private String customerName;
     private Long storeId;
+    private Long deliveryId;
     @Setter
     private String storeNm;
     private String regionNm;
-//    private List<ItemDto> itemDtos;
-    @Setter
-    private List<MyPageOrderDetailDto> myPageOrderDetailDtos;
     private OrderStatus status;
     private String statusInfo;
     private Integer totalPrice;
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createDt;
+    @Setter
+    private List<MyPageOrderDetailDto> myPageOrderDetailDtoList;
 
     public MyPage toEntity() {
         return MyPage.builder()

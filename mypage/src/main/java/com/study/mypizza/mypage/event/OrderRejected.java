@@ -1,22 +1,25 @@
 package com.study.mypizza.mypage.event;
 
 import com.study.mypizza.mypage.enums.OrderStatus;
+import com.study.mypizza.mypage.dto.OrderDetailDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class OrderRejected extends AbstractEvent {
     private Long orderId;
-    private Long storeId;
     private int customerNo;
-    private Integer qty;
+    private Long storeId;
+    private String regionNm;
     private OrderStatus status;
     private String statusInfo;
-    private String regionNm;
+//    private Integer qty;
     private Integer totalPrice;
+
+    private List<OrderDetailDto> orderDetailDtoList;
 
     /**
      * 동일 aggregate의 이벤트 순서를 보장하기 위한 Kafka key.

@@ -20,8 +20,8 @@ public class EventHandler {
 //    @Transactional
     public Consumer<Message<String>> whenever_OrderedEvent_CreateModifyMyPage() {
         return eventMessage -> {
-            String jsonString = eventMessage.getPayload() ;
-            eventService.handleEvent(jsonString);
+            String payload = eventMessage.getPayload() ;
+            eventService.handleEvent(payload);
         } ;
     }
 }

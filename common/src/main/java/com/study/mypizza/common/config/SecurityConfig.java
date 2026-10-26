@@ -32,7 +32,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @RequiredArgsConstructor
@@ -179,7 +178,7 @@ public class SecurityConfig {
                 // 따라서 UsernamePasswordAuthenticationFilter 를 상속받은 LoginFilter 를 새로 만들어 그 자리에 등록해 준다.
                 // formLogin 방식을 disable 했으므로 UsernamePasswordAuthenticationFilter 자리에 이를 상속받은 LoginFilter 를 등록한다.
                 .addFilterAt(
-                        new LoginFilter(authenticationConfiguration.getAuthenticationManager(), tokenProvider, loginSuccessHandler, loginFailureHandler),
+                        new LoginFilter(authenticationConfiguration.getAuthenticationManager(), loginSuccessHandler, loginFailureHandler),
                         UsernamePasswordAuthenticationFilter.class
                 )
 

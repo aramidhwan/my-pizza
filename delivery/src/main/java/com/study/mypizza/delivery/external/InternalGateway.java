@@ -30,7 +30,11 @@ public interface InternalGateway {
     GatewayDto<StoreDto> getStoreNm(@RequestParam("storeId") Long storeId) ;
 
     default GatewayDto<StoreDto> retryGetStoreNm(Long storeId, Throwable cause) {
-        log.warn("[InternalGateway] retryGetStoreNm. storeId={}, cause={}", storeId, cause.getMessage());
+        if (cause instanceof feign.codec.DecodeException) {
+            log.error("■■■ [ERROR] 상대서버(STORE) 다운으로 HTML 페이지가 수신되어 디코딩에 실패했습니다.");
+        } else {
+            log.error("[InternalGateway] retryGetStoreNm. storeId={}, cause={}", storeId, cause.getMessage());
+        }
         return GatewayDto.<StoreDto>builder()
                 .bizSuccess(1)
                 .dto(StoreDto.builder().storeNm("[상점명]일시장애(Retry)").build())

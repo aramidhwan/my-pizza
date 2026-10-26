@@ -1,12 +1,14 @@
 DROP TABLE IF EXISTS t_orderdetail;
 DROP TABLE IF EXISTS t_order;
 DROP TABLE IF EXISTS t_item;
+--DROP TABLE IF EXISTS t_pending_event_order;
 
 CREATE TABLE t_order (
   `order_id` bigint NOT NULL AUTO_INCREMENT,
   `customer_no` int NOT NULL,
   `store_id` bigint DEFAULT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `delivery_id` bigint DEFAULT NULL,
+  `status` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status_info` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `region_nm` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `total_price` int NOT NULL,
@@ -36,3 +38,15 @@ CREATE TABLE t_orderdetail (
   CONSTRAINT `fk_orderdetail_item` FOREIGN KEY (`item_id`) REFERENCES `t_item` (`item_id`),
   CONSTRAINT `fk_orderdetail_order` FOREIGN KEY (`order_id`) REFERENCES `t_order` (`order_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--CREATE TABLE t_pending_event_order (
+--  `event_id` bigint NOT NULL AUTO_INCREMENT,
+--  `order_id` bigint NOT NULL,
+--  `event_type` VARCHAR(30) NOT NULL,
+--  `status` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+--  `payload` text NOT NULL,
+--  `is_completed` bit(1) NOT NULL,
+--  `create_dt` timestamp NULL DEFAULT NULL,
+--  `update_dt` timestamp NULL DEFAULT NULL,
+--  PRIMARY KEY (`event_id`)
+--) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -7,6 +7,14 @@
     const registModal = document.getElementById('registModal') ;
     if (registModal) {
         registModal.addEventListener('show.bs.modal', fnShowRegistModal) ;
+        // 👇 모달이 닫힐 때 포커스 해제 (접근성 경고 해결)
+        registModal.addEventListener('hide.bs.modal', function () {
+            // 취소 버튼 등에 남아있는 포커스를 강제로 해제
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+        });
+
     }
 
     // -------------------------------
@@ -48,7 +56,6 @@
         $('#regionNm').html(html+' ');
         $('#regionNm').val(html);
     });
-
 })()
 
 // 전역 변수 선언 (중복 방지)
@@ -59,7 +66,7 @@ if (typeof gStoreId === "undefined") {
 }
 
 // -------------------------------
-// 가맹점 신규 등록 Modal 팝업 처리
+// 가맹점 신규등록/수정 Modal 팝업 처리
 // -------------------------------
 function fnShowRegistModal(event) {
     event.stopPropagation();
@@ -89,8 +96,20 @@ function fnShowRegistModal(event) {
         registModal.querySelector('#regionNm').value = regionNm ;
         registModal.querySelector('#regionNm').innerHTML = regionNm+' ' ;
 
+        const ownerNo = clickedObj.getAttribute('data-bs-ownerNo') ;
+        registModal.querySelector('#ownerNo').value = ownerNo ;
+
         const addr = clickedObj.getAttribute('data-bs-addr') ;
         registModal.querySelector('#addr').value = addr ;
+
+        const orderAcceptMode = clickedObj.getAttribute('data-bs-orderAcceptMode') ;
+        if ( orderAcceptMode == "AUTO_ACCEPT" ) {
+            registModal.querySelector('#AUTO_ACCEPT').checked = true ;
+        } else if ( orderAcceptMode == "MANUAL_ACCEPT" ) {
+            registModal.querySelector('#MANUAL_ACCEPT').checked = true ;
+        } else {
+            alert("이상한 orderAcceptMod : " + orderAcceptMode) ;
+        }
 
         const openYN = clickedObj.getAttribute('data-bs-openYN') ;
         if ( openYN == "true" ) {
@@ -111,6 +130,7 @@ registModal.addEventListener('hidden.bs.modal', event => {
     registModal.querySelector('#regionNm').innerText = "지역을 선택하세요..." ;
     registModal.querySelector('#regionNm').value = "" ;
     registModal.querySelector('#addr').value = "" ;
+    registModal.querySelector('#AUTO_ACCEPT').checked = true ;
     registModal.querySelector('#openY').checked = true ;
 })
 
@@ -184,15 +204,18 @@ function loadStores() {
 function createStoreClicked(event) {
     const storeNm = document.getElementById("storeNm") ;
     const regionNm = document.getElementById("regionNm") ;
+    const ownerNo = document.getElementById("ownerNo") ;
     const addr = document.getElementById("addr") ;
 
     let valid = true;
     storeNm.classList.remove("ui-state-error");
     regionNm.classList.remove("ui-state-error");
+    ownerNo.classList.remove("ui-state-error");
     addr.classList.remove("ui-state-error");
 
     valid = valid && checkLength( storeNm, "상점명", 2, 20 );
     valid = valid && checkSelect( regionNm, "지역" ) ;
+    valid = valid && checkLength( ownerNo, "상점주인", 1, 5 );
     valid = valid && checkLength( addr, "주소", 2, 50 );
 
     if ( !valid ) {
@@ -211,7 +234,9 @@ function createStoreClicked(event) {
             'storeId': gStoreId,
             'storeNm': storeNm.value,
             'regionNm': regionNm.value,
+            'ownerNo': ownerNo.value,
             'addr': addr.value,
+            'orderAcceptMode': $("input:radio[name='orderAcceptMode']:checked").val(),
             'openYN': $("input:radio[name='openYN']:checked").val()
         })
     } ;
@@ -238,23 +263,36 @@ function displayStores(data) {
         // 선택된 메뉴 내용 표시
         var newRow = tbody.insertRow(tbody.rows.length);
 
-        var newCell1 = newRow.insertCell(cellIndex++);    // #
-        var newCell2 = newRow.insertCell(cellIndex++);    // 상점명
-        var newCell3 = newRow.insertCell(cellIndex++);    // 지역명
-        var newCell4 = newRow.insertCell(cellIndex++);    // 영업여부
-//        var newCell5 = newRow.insertCell(cellIndex++);    // 주문건수
-        var newCell6 = newRow.insertCell(cellIndex++);    // 주소
-        newCell1.classList.add("cssAlignCenter") ;
-        newCell2.classList.add("cssAlignCenter") ;
-        newCell3.classList.add("cssAlignCenter") ;
-        newCell4.classList.add("cssAlignCenter") ;
-//        newCell5.classList.add("cssAlignCenter") ;
-        newCell6.classList.add("cssAlignCenter") ;
-        newCell1.innerText = storeDto.storeId ;
-        newCell2.innerHTML = '<a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#registModal" data-bs-storeId="'+storeDto.storeId+'" data-bs-storeNm="'+storeDto.storeNm+'" data-bs-regionNm="'+storeDto.regionNm+'" data-bs-addr="'+storeDto.addr+'" data-bs-openYN="'+storeDto.openYN+'" href="#">'+storeDto.storeNm+'</a>' ;
-        newCell3.innerText = storeDto.regionNm ;
-        newCell4.innerText = storeDto.openYN? '영업중':'휴업' ;
-//        newCell5.innerHTML = (storeDto.orderCnt===0)? '0건':'<a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#orderCntModal" data-bs-storeId="'+storeDto.storeId+'" data-bs-storeNm="'+storeDto.storeNm+'" href="#">'+storeDto.orderCnt+'건</a>' ;
-        newCell6.innerText = storeDto.addr ;
+        var newCell = newRow.insertCell(cellIndex++);    // #
+        newCell.classList.add("cssAlignCenter") ;
+        newCell.innerText = storeDto.storeId ;
+
+        newCell = newRow.insertCell(cellIndex++);    // 상점명
+        newCell.classList.add("cssAlignCenter") ;
+//        newCell.innerHTML = '<a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#registModal" data-bs-storeId="'+storeDto.storeId+'" data-bs-storeNm="'+storeDto.storeNm+'" data-bs-regionNm="'+storeDto.regionNm+'" data-bs-ownerNo="'+storeDto.ownerNo+'" data-bs-addr="'+storeDto.addr+'" data-bs-orderAcceptMode="'+storeDto.orderAcceptMode+'"  data-bs-openYN="'+storeDto.openYN+'" href="#">'+storeDto.storeNm+'</a>' ;
+        newCell.innerHTML = '<button type="button" id="delAllData" data-bs-toggle="modal" data-bs-target="#registModal" data-bs-storeId="'+storeDto.storeId+'" data-bs-storeNm="'+storeDto.storeNm+'" data-bs-regionNm="'+storeDto.regionNm+'" data-bs-ownerNo="'+storeDto.ownerNo+'" data-bs-addr="'+storeDto.addr+'" data-bs-orderAcceptMode="'+storeDto.orderAcceptMode+'"  data-bs-openYN="'+storeDto.openYN+'" style="cursor: pointer; border: none; background: none; text-decoration: underline dotted; text-underline-offset: 4px;">'+storeDto.storeNm+'</button>' ;
+
+        newCell = newRow.insertCell(cellIndex++);    // 지역명
+        newCell.classList.add("cssAlignCenter") ;
+        newCell.innerText = storeDto.regionNm ;
+
+        newCell = newRow.insertCell(cellIndex++);    // 영업여부
+        newCell.classList.add("cssAlignCenter") ;
+        newCell.innerText = storeDto.openYN? '영업중':'휴업중' ;
+
+        newCell = newRow.insertCell(cellIndex++);    // 주문접수모드
+        newCell.classList.add("cssAlignCenter") ;
+        // 👉 조건에 맞춰 텍스트 변환
+        newCell.innerText = storeDto.orderAcceptMode === "AUTO_ACCEPT" ? "자동접수"
+                          : storeDto.orderAcceptMode === "MANUAL_ACCEPT" ? "수동접수"
+                          : "알수없음";
+
+//        newCell = newRow.insertCell(cellIndex++);    // 주문건수
+//        newCell.classList.add("cssAlignCenter") ;
+//        newCell.innerHTML = (storeDto.orderCnt===0)? '0건':'<a class="storeNm-css1" data-bs-toggle="modal" data-bs-target="#orderCntModal" data-bs-storeId="'+storeDto.storeId+'" data-bs-storeNm="'+storeDto.storeNm+'" href="#">'+storeDto.orderCnt+'건</a>' ;
+
+        newCell = newRow.insertCell(cellIndex++);    // 주소
+        newCell.classList.add("cssAlignCenter") ;
+        newCell.innerText = storeDto.addr ;
     }
 }

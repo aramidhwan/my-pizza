@@ -14,6 +14,7 @@ public class OrderCancelled extends AbstractEvent {
     private String pizzaNm;
     private Integer qty;
     private OrderStatus status;
+    private String statusInfo;
     private String regionNm;
     private Date orderDt;
 

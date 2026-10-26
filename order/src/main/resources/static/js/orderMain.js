@@ -14,7 +14,7 @@ $( function() {
 
     // 주문 버튼 클릭시 이벤트
     if (!window.btnOrder) {  // 이미 실행되었는지 체크
-        document.getElementById("btnOrder").addEventListener("click", orderClicked) ;
+        document.getElementById("btnOrder").addEventListener("click", fnOrderClicked) ;
         window.btnOrder = true;  // 중복 실행 방지 플래그 설정
     }
 
@@ -23,6 +23,14 @@ $( function() {
         items: "> :not(.ui-widget-header)"
     });
 
+    // -------------------------------
+    // 드랍다운[지역명] 처리
+    // -------------------------------
+    $('#dropdownRegion .dropdown-menu li > button').bind('click', function (e) {
+        var html = $(this).html();
+        $('#regionNm').html(html+' ');
+        $('#regionNm').val(html);
+    });
 } );
 
 // "삭제" 버튼 클릭 시 호출되는 함수
@@ -50,7 +58,7 @@ function deleteSelectedMenu(event) {
 }
 
 // "주문" 버튼 클릭시 호출되는 함수
-function orderClicked() {
+function fnOrderClicked() {
     if ( document.getElementById("signYN").getAttribute("data-value") !== "Y" ) {
         if (confirm("[orderMain.js]\n주문하시려면 로그인이 필요합니다.\n로그인 페이지로 이동하시겠습니까?") ) {
             window.location.href = global_loginPageUrl + "?redirectUrl=/order-service/orderMain" ;
@@ -60,13 +68,20 @@ function orderClicked() {
             return false;
         }
     }
+
+    let regionNm = document.getElementById("regionNm");
+    if ( regionNm.value == "" ) {
+        showToast("⚠️ 주문 지역을 선택해 주세요.");
+        return false;
+    }
+
     // 선택된 메뉴들
     const arrayItemIds  = $("tr[id=selectedItemId]").get() ;
     const arrayItemQtys  = $("td[id=selectedItemQty]").get() ;
     const arrayItemPricePerOnes = $("td[id=selectedItemPricePerOne]").get() ;
 
     if ( arrayItemIds.length == 0 ) {
-        alert("⚠️ 주문하실 메뉴를 선택해 주세요.");
+        showToast("⚠️ 주문하실 메뉴를 선택해 주세요.");
         return false;
     }
     if ( !confirm("주문하시겠습니까?") ) {
@@ -193,4 +208,46 @@ function calcTotalPrice(selectedItemPricePerOne, selectedItemQty, operator) {
         objTotalPrice.style.textAlign = "left";
         objTotalPrice.innerText = '주문하실 메뉴를 선택해 주세요.' ;
     }
+}
+
+function fnDelOrderData() {
+    if ( !confirm("모든 주문 테이블을 삭제+초기화 하시겠습니까?") ) {
+        return false;
+    }
+
+    const url = '/order-service/api/delOrderData' ;
+    const params = {
+      method: 'GET',
+      credentials: 'include'
+    };
+
+    fetch(url, params)
+    .then(response => {
+        if ( !response.ok ) {
+            if ( response.status == 401 ) {
+                // 401 : JWT 토큰이 없거나 잘못된 경우
+                // 401 : JWT 토큰이 있는데 만료된 경우
+                // Do Nothing Here!
+            } else {
+                throw new Error("❌ " + response.status + ' 에러가 발생했습니다.') ;
+            }
+        }
+        return response.json() ;
+    }) // 서버 응답을 JSON 형식으로 변환합니다.
+    .then(data => {
+        if ( data.BIZ_SUCCESS == "0" ) {
+            showToast(data.msg) ;
+        } else if ( data.BIZ_SUCCESS == "1" ) {
+            alert(data.msg) ;
+        } else if ( data.BIZ_SUCCESS == "2" ) {
+            alert(data.msg) ;
+        } else {
+            alert("예상치 못한 BIZ_SUCCESS : " + data.BIZ_SUCCESS) ;
+            return ;
+        }
+    })
+    .catch(error => {
+        alert("❌ 설마 이거? " + error.message) ;
+    })
+    ;
 }

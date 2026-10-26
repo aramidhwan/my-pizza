@@ -28,4 +28,6 @@ public interface CommonMapper {
     void delStoreOrder();
 
     void delDelivery();
+
+    void delPendingEvent();
 }

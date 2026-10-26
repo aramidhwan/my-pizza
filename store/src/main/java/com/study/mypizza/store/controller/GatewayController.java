@@ -10,15 +10,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class GatewayController {
     private final StoreService storeService;
 
+    // Order MSA에서 호출되는 메소드 (주문 화면의 주문지역 리스트 출력)
+    @GetMapping("/stores/getOpenRegionNmList")
+    public GatewayDto<List<String>> getOpenRegionNmList() {
+        log.warn("주문지역 리스트(getOpenRegionNmList) 호출됨!") ;
+        return storeService.getOpenRegionNmList();
+    }
+
     // Order MSA에서 호출되는 메소드 (지역의 상점 오픈 여부 체크)
     @GetMapping("/stores/checkOpenYn")
-    public String checkOpenYn(@RequestParam("regionNm") String regionNm) {
+    public GatewayDto<String> checkOpenYn(@RequestParam("regionNm") String regionNm) {
         return storeService.checkOpenYn(regionNm);
     }
 

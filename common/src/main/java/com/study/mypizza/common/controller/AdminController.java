@@ -4,6 +4,7 @@ import com.study.mypizza.common.dto.AuthorityDto;
 import com.study.mypizza.common.dto.CustomerDto;
 import com.study.mypizza.common.dto.ResponseDto;
 import com.study.mypizza.common.exception.MyPizzaException;
+import com.study.mypizza.common.service.AdminService;
 import com.study.mypizza.common.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,22 +23,23 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class AdminController {
     private final CustomerService customerService ;
+    private final AdminService adminService;
 
     @GetMapping("/html/roleMain")
     public String roleMain() throws MyPizzaException {
-        log.debug("### [/api/roleMain] is called. ###");
+        log.trace("### [/api/roleMain] is called. ###");
         return "html/manageRole";
     }
 
     @GetMapping("/api/getCustomers")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> getCustomers() throws MyPizzaException {
-        log.debug("### [/api/getCustomers] is called. ###");
-        List<CustomerDto> customerDtos = customerService.getCustomers() ;
+        log.trace("### [/api/getCustomers] is called. ###");
+        List<CustomerDto> customerDtoList = customerService.getCustomers() ;
 
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)
-                .data(customerDtos)
+                .data(customerDtoList)
                 .build();
 
         return ResponseEntity.ok(responseDto) ;
@@ -45,7 +47,7 @@ public class AdminController {
     @GetMapping("/api/getRoles")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> getRoles(@RequestParam String email) throws MyPizzaException {
-        log.debug("### [/api/getRoles] is called. ###");
+        log.trace("### [/api/getRoles] is called. ###");
         CustomerDto customerDto = customerService.getCustomer(email) ;
 //        CustomerDto customerDto = customerService.getCustomerByMyBatis(email) ;
         List<AuthorityDto> authorityDtos = customerService.getRoles() ;
@@ -79,13 +81,28 @@ public class AdminController {
     @PostMapping("/api/addModifyRole")
     @Secured("ROLE_ADMIN")
     public ResponseEntity<ResponseDto> addModifyRole(@RequestBody CustomerDto customerDto) throws MyPizzaException {
-        log.debug("### [addModifyRole] is called. ###");
+        log.trace("### [addModifyRole] is called. ###");
         customerDto = customerService.updateCustomer(customerDto) ;
 
         ResponseDto responseDto = ResponseDto.builder()
                 .BIZ_SUCCESS(0)
                 .data(customerDto)
                 .msg("성공적으로 권한을 등록하였습니다.")
+                .build();
+
+        return ResponseEntity.ok(responseDto) ;
+    }
+
+    @GetMapping("/api/delAllData")
+    @Secured("ROLE_ADMIN")
+    public ResponseEntity<ResponseDto> delAllData() throws MyPizzaException {
+        log.trace("### [/api/delAllData] is called. ###");
+        adminService.delAllData() ;
+
+        ResponseDto responseDto = ResponseDto.builder()
+                .BIZ_SUCCESS(0)
+                .data(null)
+                .msg("✅ 성공적으로 삭제하였습니다.")
                 .build();
 
         return ResponseEntity.ok(responseDto) ;
